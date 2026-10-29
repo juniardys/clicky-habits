@@ -99,6 +99,139 @@ p {
   color: var(--peach-deep);
 }
 
+a.brand {
+  color: var(--char);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.nav-link {
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--char-dim);
+  text-decoration: none;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 2.5px solid transparent;
+  transition: transform 0.12s ease, color 0.12s ease;
+}
+
+.nav-link:hover {
+  color: var(--char);
+  transform: translateY(-1px);
+}
+
+.nav-link.active {
+  color: var(--char);
+  background: var(--mint, #7fd8a6);
+  border-color: var(--char);
+  box-shadow: 0 3px 0 rgba(70, 54, 74, 0.9);
+}
+
+.topbar-right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.topbar-user {
+  color: var(--char-dim);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.lang-toggle {
+  display: inline-flex;
+  background: #ffffff;
+  border: 2.5px solid var(--char);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 3px 0 rgba(70, 54, 74, 0.9);
+}
+
+.lang-option {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--char-dim);
+  box-shadow: none;
+}
+
+.lang-option:hover {
+  transform: none;
+  color: var(--char);
+}
+
+.lang-option.active {
+  background: var(--gold, #ffce4f);
+  color: var(--char);
+}
+
+.login-lang {
+  align-self: flex-end;
+  margin-bottom: -6px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.clay-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.clay-table th {
+  text-align: left;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 800;
+  color: var(--char-dim);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 8px 12px;
+  border-bottom: 2.5px solid var(--char);
+}
+
+.clay-table td {
+  padding: 11px 12px;
+  border-bottom: 2px dashed #e4d8cc;
+  font-weight: 600;
+}
+
+.clay-table tr:last-child td {
+  border-bottom: none;
+}
+
+.table-link {
+  color: var(--peach-deep);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.table-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    flex-wrap: wrap;
+  }
+  .topbar-user {
+    display: none;
+  }
+}
+
 button {
   font-family: "Baloo 2", sans-serif;
   font-weight: 700;

@@ -3,9 +3,11 @@ import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { api, todayKey, type HabitDetail } from "../lib/api";
+import { useI18n } from "../lib/i18n";
 import { playChime, playPop, playScratch } from "../lib/sound";
 import Calendar3D from "../components/Calendar3D";
 import Jar3D, { JAR_CAPACITY } from "../components/Jar3D";
+import Navbar from "../components/Navbar";
 
 function burstAt(el: HTMLElement | null, big = false) {
   const rect = el?.getBoundingClientRect();
@@ -26,6 +28,7 @@ function burstAt(el: HTMLElement | null, big = false) {
 }
 
 export default function HabitPage() {
+  const { t, locale } = useI18n();
   const { id } = useParams<{ id: string }>();
   const [habit, setHabit] = useState<HabitDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -56,9 +59,10 @@ export default function HabitPage() {
   if (error) {
     return (
       <div className="container">
+        <Navbar />
         <p className="error-text">{error}</p>
         <Link to="/">
-          <button className="btn">Kembali</button>
+          <button className="btn">{t("common.back")}</button>
         </Link>
       </div>
     );
@@ -144,28 +148,32 @@ export default function HabitPage() {
     } else setViewMonth(viewMonth + 1);
   }
 
-  const monthLabel = new Date(viewYear, viewMonth, 1).toLocaleDateString("id-ID", {
+  const monthLabel = new Date(viewYear, viewMonth, 1).toLocaleDateString(locale, {
     month: "long",
     year: "numeric",
   });
 
   return (
     <div className="container">
+      <Navbar />
       <div className="page-head">
         <div>
           <h1>{habit.name}</h1>
           <div className="sub">
             {habit.type === "CALENDAR"
-              ? "🗓️ Coret kalender — klik tanggal saat kebiasaanmu selesai"
-              : `🪙 Total ${total} koin · ${Math.floor(total / JAR_CAPACITY)} toples penuh`}
+              ? t("habit.calendarSub")
+              : t("habit.jarSub", {
+                  total,
+                  jars: Math.floor(total / JAR_CAPACITY),
+                })}
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <Link to={`/habits/${id}/stats`}>
-            <button className="btn">Statistik</button>
+            <button className="btn">{t("common.stats")}</button>
           </Link>
           <Link to="/">
-            <button className="btn-ghost">← Beranda</button>
+            <button className="btn-ghost">{t("common.back")}</button>
           </Link>
         </div>
       </div>
@@ -179,11 +187,11 @@ export default function HabitPage() {
           <>
             <div className="canvas-wrap">
               <div className="canvas-top">
-                <button className="nav-arrow" onClick={prevMonth} aria-label="Bulan sebelumnya">
+                <button className="nav-arrow" onClick={prevMonth} aria-label={t("habit.prevMonth")}>
                   ←
                 </button>
                 <span className="month-label">{monthLabel}</span>
-                <button className="nav-arrow" onClick={nextMonth} aria-label="Bulan berikutnya">
+                <button className="nav-arrow" onClick={nextMonth} aria-label={t("habit.nextMonth")}>
                   →
                 </button>
               </div>
@@ -200,12 +208,12 @@ export default function HabitPage() {
                   onClick={() => handleToggle(todayKey())}
                 >
                   {markedDates.has(todayKey())
-                    ? "✓ Hari ini tercoret — batalkan"
-                    : "✗ Coret Hari Ini"}
+                    ? t("habit.todayCrossed")
+                    : t("habit.crossToday")}
                 </button>
               </div>
             </div>
-            <p className="hint">Klik tanggal mana pun untuk mencoret / membatalkan.</p>
+            <p className="hint">{t("habit.calendarHint")}</p>
           </>
         ) : (
           <>
@@ -218,12 +226,17 @@ export default function HabitPage() {
                     setJustAdded(false);
                     setViewJar(shownJar - 1);
                   }}
-                  aria-label="Toples sebelumnya"
+                  aria-label={t("habit.prevJar")}
                 >
                   ←
                 </button>
                 <span className="jar-label">
-                  Toples {shownJar + 1}/{jarCount} · {coinsInShownJar}/{JAR_CAPACITY} koin
+                  {t("habit.jarLabel", {
+                    cur: shownJar + 1,
+                    total: jarCount,
+                    coins: coinsInShownJar,
+                    cap: JAR_CAPACITY,
+                  })}
                 </span>
                 <button
                   className="nav-arrow"
@@ -232,7 +245,7 @@ export default function HabitPage() {
                     setJustAdded(false);
                     setViewJar(shownJar + 1);
                   }}
-                  aria-label="Toples berikutnya"
+                  aria-label={t("habit.nextJar")}
                 >
                   →
                 </button>
@@ -249,14 +262,11 @@ export default function HabitPage() {
                   onClick={handleCoin}
                   disabled={busy}
                 >
-                  🪙 Masukkan Koin
+                  {t("habit.addCoin")}
                 </button>
               </div>
             </div>
-            <p className="hint">
-              Tarik toples untuk memutar. Satu toples muat {JAR_CAPACITY} koin — penuh,
-              otomatis lanjut ke toples berikutnya.
-            </p>
+            <p className="hint">{t("habit.jarHint", { cap: JAR_CAPACITY })}</p>
           </>
         )}
       </motion.div>

@@ -32,6 +32,17 @@ export interface HabitStats {
   completionRate30: number;
 }
 
+export interface DashboardData {
+  totalHabits: number;
+  totalCoins: number;
+  totalDaysMarked: number;
+  activeDays30: number;
+  completionRate30: number;
+  bestStreak: { value: number; name: string };
+  last30Days: { date: string; count: number }[];
+  habits: (HabitStats & { id: string; name: string; type: TrackerType })[];
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
     credentials: "include",
@@ -66,6 +77,7 @@ export const api = {
       { method: "POST", body: JSON.stringify({ date: todayKey() }) }
     ),
   getStats: (id: string) => request<HabitStats>(`/api/habits/${id}/stats`),
+  getDashboard: () => request<DashboardData>("/api/habits-dashboard"),
 };
 
 export function todayKey(): string {

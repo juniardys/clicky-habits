@@ -10,8 +10,11 @@ import {
   YAxis,
 } from "recharts";
 import { api, type HabitStats } from "../lib/api";
+import { useI18n } from "../lib/i18n";
+import Navbar from "../components/Navbar";
 
 export default function StatsPage() {
+  const { t } = useI18n();
   const { id } = useParams<{ id: string }>();
   const [stats, setStats] = useState<HabitStats | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -27,9 +30,10 @@ export default function StatsPage() {
   if (error) {
     return (
       <div className="container">
+        <Navbar />
         <p className="error-text">{error}</p>
         <Link to="/">
-          <button className="btn">Kembali</button>
+          <button className="btn">{t("common.back")}</button>
         </Link>
       </div>
     );
@@ -51,19 +55,20 @@ export default function StatsPage() {
 
   return (
     <div className="container">
+      <Navbar />
       <div className="page-head">
         <div>
-          <h1>Statistik — {stats.name}</h1>
+          <h1>{t("stats.title", { name: stats.name })}</h1>
           <div className="sub">
-            {isJar ? "🪙 Koin dalam Toples" : "🗓️ Coret Kalender"}
+            {isJar ? t("home.typeJar") : t("home.typeCalendar")}
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <Link to={`/habits/${id}`}>
-            <button className="btn">Tracking</button>
+            <button className="btn">{t("common.tracking")}</button>
           </Link>
           <Link to="/">
-            <button className="btn-ghost">← Beranda</button>
+            <button className="btn-ghost">{t("common.back")}</button>
           </Link>
         </div>
       </div>
@@ -71,34 +76,34 @@ export default function StatsPage() {
       <div className="stat-tiles">
         <div className="stat-tile">
           <div className="value">{stats.currentStreak}</div>
-          <div className="label">Streak saat ini (hari)</div>
+          <div className="label">{t("stats.currentStreak")}</div>
         </div>
         <div className="stat-tile">
           <div className="value">{stats.bestStreak}</div>
-          <div className="label">Streak terbaik (hari)</div>
+          <div className="label">{t("stats.bestStreak")}</div>
         </div>
         <div className="stat-tile">
           <div className="value">{isJar ? stats.totalCount : stats.totalDays}</div>
-          <div className="label">{isJar ? "Total koin" : "Total hari tercoret"}</div>
+          <div className="label">{isJar ? t("stats.totalCoins") : t("stats.totalDays")}</div>
         </div>
         {isJar && (
           <div className="stat-tile">
             <div className="value">{Math.floor(stats.totalCount / 100)}</div>
-            <div className="label">Toples penuh</div>
+            <div className="label">{t("stats.jarsFull")}</div>
           </div>
         )}
         <div className="stat-tile">
           <div className="value">{stats.completionRate30}%</div>
-          <div className="label">Konsistensi 30 hari terakhir</div>
+          <div className="label">{t("stats.consistency30")}</div>
         </div>
         <div className="stat-tile">
           <div className="value">{stats.thisMonthDays}</div>
-          <div className="label">Hari aktif bulan ini</div>
+          <div className="label">{t("stats.activeThisMonth")}</div>
         </div>
       </div>
 
       <div className="chart-card">
-        <h3>{isJar ? "Koin per hari — 30 hari terakhir" : "Aktivitas — 30 hari terakhir"}</h3>
+        <h3>{isJar ? t("stats.chartJar") : t("stats.chartCalendar")}</h3>
         <ResponsiveContainer width="100%" height={260}>
           <BarChart data={chartData}>
             <CartesianGrid stroke="#e4d8cc" strokeDasharray="3 3" vertical={false} />
@@ -115,7 +120,10 @@ export default function StatsPage() {
               labelFormatter={(_, payload) =>
                 payload?.[0]?.payload?.date ?? ""
               }
-              formatter={(value: number) => [value, isJar ? "koin" : "selesai"]}
+              formatter={(value: number) => [
+                value,
+                isJar ? t("stats.unitCoins") : t("stats.unitDone"),
+              ]}
             />
             <Bar dataKey="count" fill="#ff9a76" radius={[8, 8, 0, 0]} />
           </BarChart>

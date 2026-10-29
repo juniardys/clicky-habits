@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { api, type HabitSummary, type TrackerType } from "../lib/api";
-import { signOut, useSession } from "../lib/auth";
+import { useI18n } from "../lib/i18n";
 import { playPop } from "../lib/sound";
+import Navbar from "../components/Navbar";
 
 const spring = { type: "spring" as const, duration: 0.45, bounce: 0 };
 
 export default function HomePage() {
-  const { data: session } = useSession();
+  const { t } = useI18n();
   const [habits, setHabits] = useState<HabitSummary[] | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [name, setName] = useState("");
@@ -35,38 +36,26 @@ export default function HomePage() {
       setShowAdd(false);
       await refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal membuat kebiasaan");
+      setError(err instanceof Error ? err.message : t("home.createFailed"));
     } finally {
       setBusy(false);
     }
   }
 
   async function handleDelete(id: string, habitName: string) {
-    if (!confirm(`Hapus kebiasaan "${habitName}" beserta semua datanya?`)) return;
+    if (!confirm(t("home.deleteConfirm", { name: habitName }))) return;
     await api.deleteHabit(id);
     await refresh();
   }
 
   return (
     <div className="container">
-      <div className="topbar">
-        <div className="brand">
-          Clicky <span>Habits</span>
-        </div>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <span style={{ color: "var(--text-dim)", fontSize: 14 }}>
-            {session?.user.name || session?.user.email}
-          </span>
-          <button className="btn-ghost" onClick={() => signOut()}>
-            Keluar
-          </button>
-        </div>
-      </div>
+      <Navbar />
 
       <div className="page-head">
-        <h1>Kebiasaanku</h1>
+        <h1>{t("home.myHabits")}</h1>
         <button className="btn btn-primary" onClick={() => setShowAdd(true)}>
-          + Tambah Kebiasaan
+          {t("home.addHabit")}
         </button>
       </div>
 
@@ -82,10 +71,7 @@ export default function HomePage() {
           transition={spring}
         >
           <div className="big">🗓️🪙</div>
-          <p>
-            Belum ada kebiasaan. Tambah satu, lalu pilih mau coret kalender atau
-            masukkan koin ke toples.
-          </p>
+          <p>{t("home.empty")}</p>
         </motion.div>
       ) : (
         <div className="habit-grid">
@@ -100,32 +86,38 @@ export default function HomePage() {
                 transition={{ ...spring, delay: i * 0.06 }}
               >
                 <span className="type-badge">
-                  {h.type === "CALENDAR" ? "🗓️ Coret Kalender" : "🪙 Koin dalam Toples"}
+                  {h.type === "CALENDAR" ? t("home.typeCalendar") : t("home.typeJar")}
                 </span>
                 <h3>{h.name}</h3>
                 <span className="meta">
                   {h.type === "CALENDAR"
-                    ? `${h.totalDays} hari tercoret`
-                    : `${h.totalCount} koin · ${Math.floor(h.totalCount / 100)} toples penuh`}
+                    ? t("home.daysCrossed", { n: h.totalDays })
+                    : t("home.coinsMeta", {
+                        n: h.totalCount,
+                        jars: Math.floor(h.totalCount / 100),
+                      })}
                 </span>
                 {h.type === "JAR" && (
-                  <div className="progress-track" title={`Toples aktif: ${Math.round(jarProgress * 100)}%`}>
+                  <div
+                    className="progress-track"
+                    title={t("home.activeJar", { pct: Math.round(jarProgress * 100) })}
+                  >
                     <div
                       className="progress-fill"
                       style={{ width: `${Math.max(jarProgress * 100, h.totalCount > 0 ? 3 : 0)}%` }}
                     />
                   </div>
                 )}
-                {h.doneToday && <span className="done-dot">✓ Sudah hari ini</span>}
+                {h.doneToday && <span className="done-dot">{t("home.doneToday")}</span>}
                 <div className="actions">
                   <Link to={`/habits/${h.id}`}>
-                    <button className="btn btn-primary">Tracking</button>
+                    <button className="btn btn-primary">{t("common.tracking")}</button>
                   </Link>
                   <Link to={`/habits/${h.id}/stats`}>
-                    <button className="btn">Statistik</button>
+                    <button className="btn">{t("common.stats")}</button>
                   </Link>
                   <button className="btn-ghost" onClick={() => handleDelete(h.id, h.name)}>
-                    Hapus
+                    {t("common.delete")}
                   </button>
                 </div>
               </motion.div>
@@ -153,10 +145,10 @@ export default function HomePage() {
               exit={{ opacity: 0, scale: 0.97, y: 8 }}
               transition={spring}
             >
-              <h2>Kebiasaan Baru</h2>
+              <h2>{t("home.newHabit")}</h2>
               <input
                 autoFocus
-                placeholder="Contoh: olahraga rutin, bikin konten…"
+                placeholder={t("home.namePlaceholder")}
                 value={name}
                 required
                 onChange={(e) => setName(e.target.value)}
@@ -167,25 +159,25 @@ export default function HomePage() {
                   onClick={() => setType("CALENDAR")}
                 >
                   <span className="icon">🗓️</span>
-                  Coret Kalender
-                  <small>1x per hari, coret tanggalnya</small>
+                  {t("home.calendarOption")}
+                  <small>{t("home.calendarDesc")}</small>
                 </div>
                 <div
                   className={`type-option ${type === "JAR" ? "selected" : ""}`}
                   onClick={() => setType("JAR")}
                 >
                   <span className="icon">🪙</span>
-                  Koin dalam Toples
-                  <small>Bisa berkali-kali, 100 koin per toples</small>
+                  {t("home.jarOption")}
+                  <small>{t("home.jarDesc")}</small>
                 </div>
               </div>
               {error && <p className="error-text">{error}</p>}
               <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
                 <button type="button" className="btn-ghost" onClick={() => setShowAdd(false)}>
-                  Batal
+                  {t("common.cancel")}
                 </button>
                 <button type="submit" className="btn btn-primary" disabled={busy}>
-                  Simpan
+                  {t("common.save")}
                 </button>
               </div>
             </motion.form>

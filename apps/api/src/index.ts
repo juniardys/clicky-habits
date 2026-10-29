@@ -25,6 +25,12 @@ app.use("/api/habits/*", async (c, next) => {
   c.set("userId", session.user.id);
   await next();
 });
+app.use("/api/habits-dashboard", async (c, next) => {
+  const session = await auth.api.getSession({ headers: c.req.raw.headers });
+  if (!session) return c.json({ error: "Unauthorized" }, 401);
+  c.set("userId", session.user.id);
+  await next();
+});
 app.use("/api/habits", async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
   if (!session) return c.json({ error: "Unauthorized" }, 401);
@@ -62,9 +68,9 @@ app.get("/api/habits", async (c) => {
 app.post("/api/habits", async (c) => {
   const body = await c.req.json<{ name?: string; type?: string }>();
   const name = body.name?.trim();
-  if (!name) return c.json({ error: "Nama kebiasaan wajib diisi" }, 400);
+  if (!name) return c.json({ error: "Habit name is required" }, 400);
   if (body.type !== "CALENDAR" && body.type !== "JAR") {
-    return c.json({ error: "Jenis tracker tidak valid" }, 400);
+    return c.json({ error: "Invalid tracker type" }, 400);
   }
   const habit = await prisma.habit.create({
     data: { userId: c.get("userId"), name, type: body.type },
@@ -115,7 +121,7 @@ app.post("/api/habits/:id/toggle", async (c) => {
   if (!habit) return c.json({ error: "Not found" }, 404);
   const body = await c.req.json<{ date?: string }>().catch(() => ({}) as { date?: string });
   const date = parseDate(body.date);
-  if (!date) return c.json({ error: "Tanggal tidak valid" }, 400);
+  if (!date) return c.json({ error: "Invalid date" }, 400);
 
   const existing = await prisma.entry.findUnique({
     where: { habitId_date: { habitId: habit.id, date } },
@@ -136,7 +142,7 @@ app.post("/api/habits/:id/coin", async (c) => {
   if (!habit) return c.json({ error: "Not found" }, 404);
   const body = await c.req.json<{ date?: string }>().catch(() => ({}) as { date?: string });
   const date = parseDate(body.date);
-  if (!date) return c.json({ error: "Tanggal tidak valid" }, 400);
+  if (!date) return c.json({ error: "Invalid date" }, 400);
 
   const entry = await prisma.entry.upsert({
     where: { habitId_date: { habitId: habit.id, date } },
@@ -151,6 +157,63 @@ app.post("/api/habits/:id/coin", async (c) => {
     date: entry.date.toISOString().slice(0, 10),
     countToday: entry.count,
     totalCount: agg._sum.count ?? 0,
+  });
+});
+
+// Aggregated dashboard across all habits of the user.
+app.get("/api/habits-dashboard", async (c) => {
+  const habits = await prisma.habit.findMany({
+    where: { userId: c.get("userId") },
+    orderBy: { createdAt: "asc" },
+    include: { entries: true },
+  });
+
+  const perHabit = habits.map((h) => ({
+    id: h.id,
+    name: h.name,
+    type: h.type,
+    ...computeStats(h.entries),
+  }));
+
+  // Combined daily activity: count of entry-units per day across all habits.
+  const combined = new Map<string, number>();
+  for (const h of habits) {
+    for (const e of h.entries) {
+      const key = e.date.toISOString().slice(0, 10);
+      combined.set(key, (combined.get(key) ?? 0) + e.count);
+    }
+  }
+  const now = new Date();
+  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const last30Days: { date: string; count: number }[] = [];
+  let activeDays30 = 0;
+  for (let i = 29; i >= 0; i--) {
+    const key = new Date(todayUtc - i * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const count = combined.get(key) ?? 0;
+    if (count > 0) activeDays30++;
+    last30Days.push({ date: key, count });
+  }
+
+  const totalCoins = perHabit
+    .filter((h) => h.type === "JAR")
+    .reduce((s, h) => s + h.totalCount, 0);
+  const totalDaysMarked = perHabit
+    .filter((h) => h.type === "CALENDAR")
+    .reduce((s, h) => s + h.totalDays, 0);
+  const best = perHabit.reduce(
+    (acc, h) => (h.bestStreak > acc.value ? { value: h.bestStreak, name: h.name } : acc),
+    { value: 0, name: "" }
+  );
+
+  return c.json({
+    totalHabits: habits.length,
+    totalCoins,
+    totalDaysMarked,
+    activeDays30,
+    completionRate30: Math.round((activeDays30 / 30) * 100),
+    bestStreak: best,
+    last30Days,
+    habits: perHabit,
   });
 });
 

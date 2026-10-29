@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { signIn, signUp } from "../lib/auth";
+import { useI18n, type Lang } from "../lib/i18n";
 
 export default function LoginPage() {
+  const { lang, setLang, t } = useI18n();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,9 +15,7 @@ export default function LoginPage() {
     setError(null);
     const { error } = await signIn.social({ provider: "google", callbackURL: "/" });
     if (error) {
-      setError(
-        "Login Google gagal. Pastikan GOOGLE_CLIENT_ID dan GOOGLE_CLIENT_SECRET sudah diisi di .env (root project)"
-      );
+      setError(t("login.googleFailed"));
     }
   }
 
@@ -26,13 +26,13 @@ export default function LoginPage() {
     try {
       if (mode === "register") {
         const { error } = await signUp.email({ email, password, name: name || email });
-        if (error) throw new Error(error.message ?? "Gagal daftar");
+        if (error) throw new Error(error.message ?? t("login.signUpFailed"));
       } else {
         const { error } = await signIn.email({ email, password });
-        if (error) throw new Error(error.message ?? "Email atau password salah");
+        if (error) throw new Error(error.message ?? t("login.wrongCreds"));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Terjadi kesalahan");
+      setError(err instanceof Error ? err.message : t("login.genericError"));
     } finally {
       setBusy(false);
     }
@@ -41,19 +41,29 @@ export default function LoginPage() {
   return (
     <div className="center-screen">
       <div className="login-card">
+        <div className="lang-toggle login-lang" role="group" aria-label="Language">
+          {(["en", "id"] as Lang[]).map((code) => (
+            <button
+              key={code}
+              type="button"
+              className={`lang-option ${lang === code ? "active" : ""}`}
+              onClick={() => setLang(code)}
+              aria-pressed={lang === code}
+            >
+              {code.toUpperCase()}
+            </button>
+          ))}
+        </div>
         <h1>
           Clicky <span style={{ color: "var(--accent)" }}>Habits</span>
         </h1>
-        <p className="sub">
-          Habit tracker fisik, jadi digital. Coret kalender atau masukkan koin ke
-          toples — tiap kali kebiasaanmu selesai.
-        </p>
+        <p className="sub">{t("login.tagline")}</p>
 
         <button className="btn btn-primary" onClick={handleGoogle}>
-          Masuk dengan Google
+          {t("login.google")}
         </button>
 
-        <div className="divider">atau pakai email</div>
+        <div className="divider">{t("login.orEmail")}</div>
 
         <form
           onSubmit={handleSubmit}
@@ -61,7 +71,7 @@ export default function LoginPage() {
         >
           {mode === "register" && (
             <input
-              placeholder="Nama"
+              placeholder={t("login.name")}
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -75,7 +85,7 @@ export default function LoginPage() {
           />
           <input
             type="password"
-            placeholder="Password (min. 8 karakter)"
+            placeholder={t("login.password")}
             required
             minLength={8}
             value={password}
@@ -83,7 +93,7 @@ export default function LoginPage() {
           />
           {error && <p className="error-text">{error}</p>}
           <button className="btn" type="submit" disabled={busy}>
-            {mode === "login" ? "Masuk" : "Daftar"}
+            {mode === "login" ? t("login.signIn") : t("login.signUp")}
           </button>
         </form>
 
@@ -91,9 +101,7 @@ export default function LoginPage() {
           className="btn-ghost"
           onClick={() => setMode(mode === "login" ? "register" : "login")}
         >
-          {mode === "login"
-            ? "Belum punya akun? Daftar"
-            : "Sudah punya akun? Masuk"}
+          {mode === "login" ? t("login.noAccount") : t("login.hasAccount")}
         </button>
       </div>
     </div>
