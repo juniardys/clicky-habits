@@ -1,0 +1,16 @@
+{
+  "name": "clicky-habits",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "bun run --filter '@clicky/api' --filter '@clicky/web' dev",
+    "dev:api": "bun run --filter '@clicky/api' dev",
+    "dev:web": "bun run --filter '@clicky/web' dev",
+    "build:web": "bun run --filter '@clicky/web' build",
+    "db:generate": "bun run --filter '@clicky/api' db:generate",
+    "db:migrate": "bun run --filter '@clicky/api' db:migrate"
+  }
+}

@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Clicky Habits — Varian 1: Meja Ritual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --walnut: #241709;
+    --walnut-2: #33210f;
+    --paper: #f3e7cf;
+    --paper-dim: #cdbd9d;
+    --amber: #ffb85c;
+    --ember: #e2763a;
+    --brass: #c9933e;
+    --ink: #180f04;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--walnut);
+    color: var(--paper);
+    font-family: "Nunito Sans", system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(340px, 1fr) 1.2fr;
+    align-items: center;
+    gap: 0;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  #scene {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .copy {
+    position: relative;
+    z-index: 2;
+    padding: 80px 0;
+    max-width: 480px;
+    pointer-events: none;
+  }
+  .copy > * { pointer-events: auto; }
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-family: "Fraunces", serif;
+    font-weight: 650;
+    font-size: clamp(40px, 5vw, 62px);
+    line-height: 1.04;
+    margin: 0 0 22px;
+    text-wrap: balance;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--amber);
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--paper-dim);
+    margin: 0 0 34px;
+    text-wrap: pretty;
+  }
+  .cta-row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .cta {
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 15px 30px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--amber), var(--ember));
+    color: var(--ink);
+    box-shadow: 0 2px 6px rgba(0,0,0,.4), 0 10px 32px rgba(226,118,58,.35);
+    transition: scale .15s cubic-bezier(.2,0,0,1), box-shadow .2s;
+  }
+  .cta:hover { box-shadow: 0 2px 6px rgba(0,0,0,.4), 0 14px 44px rgba(226,118,58,.55); }
+  .cta:active { scale: .96; }
+  .cta-ghost {
+    background: transparent;
+    color: var(--paper);
+    border: 1px solid rgba(243,231,207,.3);
+    box-shadow: none;
+  }
+  .ritual-note {
+    margin-top: 26px;
+    font-size: 14px;
+    color: var(--paper-dim);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ritual-note .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 12px var(--amber);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { opacity: .4; } }
+  .features {
+    position: relative;
+    z-index: 2;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 20px 40px 90px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+  }
+  .feature {
+    background: linear-gradient(180deg, rgba(243,231,207,.05), rgba(243,231,207,.015));
+    border: 1px solid rgba(243,231,207,.1);
+    border-radius: 18px;
+    padding: 24px;
+  }
+  .feature h3 {
+    font-family: "Fraunces", serif;
+    font-weight: 650;
+    margin: 0 0 8px;
+    font-size: 19px;
+    color: var(--amber);
+  }
+  .feature p { margin: 0; color: var(--paper-dim); font-size: 14.5px; line-height: 1.6; }
+  .vignette {
+    position: fixed; inset: 0; pointer-events: none; z-index: 3;
+    background: radial-gradient(ellipse 120% 90% at 50% 40%, transparent 55%, rgba(12,7,2,.55) 100%);
+  }
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding-top: 46vh; }
+    .copy { padding: 24px 0 60px; }
+    #scene { height: 100vh; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ritual-note .dot { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="vignette"></div>
+<section class="hero">
+  <div id="scene"></div>
+  <div class="copy">
+    <div class="eyebrow">Varian 1 — Meja Ritual</div>
+    <h1>Ritual kecil di mejamu, <em>tanpa mejanya.</em></h1>
+    <p class="lede">
+      Coret kalender. Masukkan koin ke toples. Dua ritual paling tua untuk menjaga
+      kebiasaan — sekarang hidup di layarmu, lengkap dengan bunyi koin dan goresan pensil.
+    </p>
+    <div class="cta-row">
+      <button class="cta" id="drop-cta">Mulai kebiasaan pertama</button>
+      <button class="cta cta-ghost">Lihat cara kerjanya</button>
+    </div>
+    <div class="ritual-note"><span class="dot"></span> Klik tombol — dengar koinnya jatuh.</div>
+  </div>
+  <div></div>
+</section>
+<section class="features">
+  <div class="feature"><h3>Coret kalender</h3><p>Satu coretan merah per hari. Rantai coretan yang tidak ingin kamu putus.</p></div>
+  <div class="feature"><h3>Koin dalam toples</h3><p>Tiap repetisi, satu koin. Seratus koin memenuhi satu toples — lalu toples berikutnya menunggu.</p></div>
+  <div class="feature"><h3>Statistik yang jujur</h3><p>Streak, konsistensi 30 hari, dan grafik yang menunjukkan kerja kerasmu apa adanya.</p></div>
+</section>
+
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.169.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from "three";
+
+const mount = document.getElementById("scene");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+mount.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x241709, 14, 26);
+const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+camera.position.set(2.6, 3.4, 9.0);
+
+// --- lights: one warm desk lamp story ---
+scene.add(new THREE.AmbientLight(0x3a2a18, 1.4));
+const lamp = new THREE.SpotLight(0xffb85c, 260, 30, Math.PI / 4.4, 0.55, 2);
+lamp.position.set(2.2, 7.2, 2.4);
+lamp.castShadow = true;
+lamp.shadow.mapSize.set(2048, 2048);
+scene.add(lamp);
+const fill = new THREE.PointLight(0x5c76ff, 14, 20);
+fill.position.set(-6, 3, -2);
+scene.add(fill);
+
+// --- desk ---
+const woodMat = new THREE.MeshStandardMaterial({ color: 0x5c3a1c, roughness: 0.75 });
+const desk = new THREE.Mesh(new THREE.BoxGeometry(16, 0.5, 10), woodMat);
+desk.position.y = -0.25;
+desk.receiveShadow = true;
+scene.add(desk);
+
+// --- paper calendar lying on desk ---
+const calGroup = new THREE.Group();
+calGroup.position.set(2.4, 0.02, 1.9);
+calGroup.rotation.y = 0.26;
+scene.add(calGroup);
+const paper = new THREE.Mesh(
+  new THREE.BoxGeometry(3.6, 0.06, 2.9),
+  new THREE.MeshStandardMaterial({ color: 0xf3e7cf, roughness: 0.9 })
+);
+paper.castShadow = true; paper.receiveShadow = true;
+calGroup.add(paper);
+// grid lines
+const lineMat = new THREE.MeshBasicMaterial({ color: 0xb9a888 });
+for (let i = 0; i <= 7; i++) {
+  const v = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.065, 2.46), lineMat);
+  v.position.set(-1.54 + i * 0.44, 0.005, 0.1);
+  calGroup.add(v);
+}
+for (let j = 0; j <= 5; j++) {
+  const h = new THREE.Mesh(new THREE.BoxGeometry(3.08, 0.065, 0.015), lineMat);
+  h.position.set(0, 0.005, -1.13 + j * 0.492);
+  calGroup.add(h);
+}
+// red crosses, drawn progressively
+const crossMat = new THREE.MeshStandardMaterial({ color: 0xc43a2a, roughness: 0.5 });
+const crosses = [];
+function makeCross(col, row) {
+  const g = new THREE.Group();
+  const b1 = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.03, 0.07), crossMat);
+  b1.rotation.y = Math.PI / 4;
+  const b2 = b1.clone(); b2.rotation.y = -Math.PI / 4;
+  g.add(b1, b2);
+  g.position.set(-1.54 + 0.22 + col * 0.44, 0.075, -1.13 + 0.246 + row * 0.492);
+  g.scale.setScalar(0.001);
+  g.userData.target = 0.001;
+  calGroup.add(g);
+  crosses.push(g);
+  return g;
+}
+let crossCount = 0;
+const crossSlots = [];
+for (let r = 0; r < 5; r++) for (let c = 0; c < 7; c++) crossSlots.push([c, r]);
+
+// pencil
+const pencil = new THREE.Group();
+const shaft = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.045, 0.045, 1.5, 6),
+  new THREE.MeshStandardMaterial({ color: 0xe2a13a, roughness: 0.6 })
+);
+shaft.rotation.z = Math.PI / 2.4;
+pencil.add(shaft);
+pencil.position.set(4.0, 0.12, 3.2);
+pencil.castShadow = true;
+scene.add(pencil);
+
+// --- glass jar with coins ---
+const jarGroup = new THREE.Group();
+jarGroup.position.set(4.6, 0, -0.6);
+scene.add(jarGroup);
+const glass = new THREE.Mesh(
+  new THREE.CylinderGeometry(1.15, 1.05, 2.5, 40, 1, true),
+  new THREE.MeshPhysicalMaterial({
+    color: 0xd8ecff, transparent: true, opacity: 0.16, roughness: 0.05,
+    clearcoat: 1, side: THREE.DoubleSide, depthWrite: false,
+  })
+);
+glass.position.y = 1.25;
+jarGroup.add(glass);
+const jarBottom = new THREE.Mesh(
+  new THREE.CylinderGeometry(1.05, 1.05, 0.08, 40),
+  new THREE.MeshPhysicalMaterial({ color: 0xd8ecff, transparent: true, opacity: 0.3 })
+);
+jarBottom.position.y = 0.04;
+jarGroup.add(jarBottom);
+const rim = new THREE.Mesh(
+  new THREE.TorusGeometry(1.15, 0.06, 12, 40),
+  new THREE.MeshStandardMaterial({ color: 0xc9933e, metalness: 0.7, roughness: 0.3 })
+);
+rim.rotation.x = Math.PI / 2;
+rim.position.y = 2.52;
+jarGroup.add(rim);
+
+const coinGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.07, 22);
+const coinMat = new THREE.MeshStandardMaterial({
+  color: 0xffd45e, metalness: 0.8, roughness: 0.25, emissive: 0x6b4a10, emissiveIntensity: 0.3,
+});
+const coins = [];
+function seededPos(i) {
+  const a = (i * 2.399) % (Math.PI * 2);
+  const r = 0.72 * Math.sqrt(((i * 7919) % 100) / 100);
+  return [Math.cos(a) * r, 0.12 + Math.floor(i / 8) * 0.12, Math.sin(a) * r];
+}
+function addCoin(animate = true) {
+  const i = coins.length;
+  const [x, ty, z] = seededPos(i);
+  const c = new THREE.Mesh(coinGeo, coinMat);
+  c.castShadow = true;
+  c.rotation.set((Math.random() - 0.5) * 0.5, Math.random() * Math.PI, (Math.random() - 0.5) * 0.5);
+  c.position.set(x, animate ? 3.6 : ty, z);
+  c.userData = { ty, v: 0, done: !animate, spin: 5 + Math.random() * 4 };
+  jarGroup.add(c);
+  coins.push(c);
+}
+for (let i = 0; i < 26; i++) addCoin(false);
+
+// floating dust motes in lamp light
+const moteGeo = new THREE.BufferGeometry();
+const moteCount = 90;
+const motePos = new Float32Array(moteCount * 3);
+for (let i = 0; i < moteCount; i++) {
+  motePos[i * 3] = (Math.random() - 0.5) * 10;
+  motePos[i * 3 + 1] = Math.random() * 6;
+  motePos[i * 3 + 2] = (Math.random() - 0.5) * 6;
+}
+moteGeo.setAttribute("position", new THREE.BufferAttribute(motePos, 3));
+const motes = new THREE.Points(moteGeo, new THREE.PointsMaterial({
+  color: 0xffd9a0, size: 0.035, transparent: true, opacity: 0.6,
+}));
+scene.add(motes);
+
+// --- interactions ---
+const pointer = { x: 0, y: 0 };
+addEventListener("pointermove", (e) => {
+  pointer.x = (e.clientX / innerWidth) * 2 - 1;
+  pointer.y = (e.clientY / innerHeight) * 2 - 1;
+});
+document.getElementById("drop-cta").addEventListener("click", () => addCoin(true));
+
+// ritual loop: alternate coin drop and calendar cross
+let ritualTimer = 0;
+let ritualStep = 0;
+
+const clock = new THREE.Clock();
+function resize() {
+  const w = mount.clientWidth, h = mount.clientHeight;
+  renderer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+addEventListener("resize", resize);
+resize();
+
+function tick() {
+  requestAnimationFrame(tick);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const t = clock.elapsedTime;
+
+  // ambient ritual
+  ritualTimer += dt;
+  if (ritualTimer > 2.6) {
+    ritualTimer = 0;
+    if (ritualStep % 2 === 0) addCoin(true);
+    else if (crossCount < crossSlots.length) {
+      const [c, r] = crossSlots[crossCount++];
+      makeCross(c, r).userData.target = 1;
+    }
+    ritualStep++;
+  }
+
+  // coins physics
+  for (const c of coins) {
+    if (c.userData.done) continue;
+    c.userData.v += 14 * dt;
+    c.position.y -= c.userData.v * dt;
+    c.rotation.x += c.userData.spin * dt;
+    if (c.position.y <= c.userData.ty) {
+      if (c.userData.v > 2.2) { c.userData.v *= -0.3; c.position.y = c.userData.ty; }
+      else { c.position.y = c.userData.ty; c.userData.done = true; }
+    }
+  }
+  // crosses pop in
+  for (const g of crosses) {
+    const s = g.scale.x + (g.userData.target - g.scale.x) * Math.min(dt * 7, 1);
+    g.scale.setScalar(Math.max(s, 0.001));
+  }
+  // pencil idle wiggle
+  pencil.rotation.y = Math.sin(t * 0.7) * 0.15;
+  pencil.position.y = 0.12 + Math.sin(t * 1.3) * 0.015;
+  // dust drift
+  motes.rotation.y = t * 0.02;
+  // lamp flicker, very subtle
+  lamp.intensity = 260 + Math.sin(t * 9.3) * 5 + Math.sin(t * 23.7) * 3;
+  // camera parallax
+  camera.position.x += ((3.8 + pointer.x * 1.1) - camera.position.x) * Math.min(dt * 3, 1);
+  camera.position.y += ((3.4 - pointer.y * 0.7) - camera.position.y) * Math.min(dt * 3, 1);
+  camera.lookAt(2.7, 0.9, 0.4);
+
+  renderer.render(scene, camera);
+}
+tick();
+</script>
+</body>
+</html>

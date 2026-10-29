@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Clicky Habits — Varian 2: Arcade Neon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --void: #0a0618;
+    --panel: #130b2b;
+    --magenta: #ff3df5;
+    --cyan: #41f0ff;
+    --lime: #b7ff2e;
+    --text: #f2ecff;
+    --dim: #8f85b8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--void);
+    color: var(--text);
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+  .hero { position: relative; min-height: 100vh; }
+  #scene { position: absolute; inset: 0; }
+  .hud {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .hud > * { pointer-events: auto; }
+  .level-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--lime);
+    border: 1px solid rgba(183,255,46,.4);
+    background: rgba(183,255,46,.07);
+    padding: 8px 14px;
+    border-radius: 6px;
+    width: fit-content;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+  h1 {
+    font-family: "Unbounded", sans-serif;
+    font-weight: 900;
+    font-size: clamp(38px, 6vw, 76px);
+    line-height: 1.02;
+    margin: 0 0 20px;
+    max-width: 760px;
+    text-transform: uppercase;
+  }
+  h1 .stroke {
+    color: transparent;
+    -webkit-text-stroke: 2px var(--magenta);
+  }
+  h1 .glow {
+    color: var(--cyan);
+    text-shadow: 0 0 24px rgba(65,240,255,.7), 0 0 60px rgba(65,240,255,.35);
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--dim);
+    max-width: 480px;
+    margin: 0 0 32px;
+  }
+  .lede strong { color: var(--text); }
+  .cta-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .cta {
+    font-family: "Unbounded", sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 16px 32px;
+    border: none;
+    cursor: pointer;
+    color: var(--void);
+    background: linear-gradient(90deg, var(--cyan), var(--lime));
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    box-shadow: 0 0 32px rgba(65,240,255,.4);
+    transition: scale .12s cubic-bezier(.2,0,0,1), box-shadow .2s;
+    text-transform: uppercase;
+  }
+  .cta:hover { box-shadow: 0 0 52px rgba(65,240,255,.7); }
+  .cta:active { scale: .96; }
+  .cta-alt {
+    background: transparent;
+    color: var(--magenta);
+    border: 2px solid var(--magenta);
+    box-shadow: 0 0 24px rgba(255,61,245,.25);
+  }
+  .xp-wrap {
+    margin-top: 36px;
+    max-width: 420px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--dim);
+  }
+  .xp-head { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .xp-head .val { color: var(--lime); }
+  .xp-track {
+    height: 10px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.12);
+    clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+    overflow: hidden;
+  }
+  .xp-fill {
+    height: 100%;
+    width: 59%;
+    background: linear-gradient(90deg, var(--magenta), var(--cyan), var(--lime));
+    background-size: 300% 100%;
+    animation: xpflow 3s linear infinite;
+  }
+  @keyframes xpflow { to { background-position: -300% 0; } }
+  .combo {
+    position: fixed;
+    z-index: 5;
+    font-family: "Unbounded", sans-serif;
+    font-weight: 900;
+    color: var(--lime);
+    text-shadow: 0 0 18px rgba(183,255,46,.8);
+    pointer-events: none;
+    animation: rise 1s cubic-bezier(.2,0,0,1) forwards;
+    font-size: 24px;
+  }
+  @keyframes rise {
+    0% { opacity: 0; translate: 0 10px; scale: .6; }
+    20% { opacity: 1; scale: 1.15; }
+    100% { opacity: 0; translate: 0 -70px; scale: 1; }
+  }
+  .features {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 32px 90px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
+  .feature {
+    background: var(--panel);
+    border: 1px solid rgba(255,255,255,.08);
+    border-top: 2px solid var(--magenta);
+    padding: 24px;
+    clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+  }
+  .feature:nth-child(2) { border-top-color: var(--cyan); }
+  .feature:nth-child(3) { border-top-color: var(--lime); }
+  .feature .tag {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: .16em;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+  .feature h3 {
+    font-family: "Unbounded", sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    margin: 10px 0 8px;
+  }
+  .feature p { margin: 0; color: var(--dim); font-size: 14px; line-height: 1.6; }
+  .scanlines {
+    position: fixed; inset: 0; z-index: 4; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px);
+    mix-blend-mode: overlay;
+  }
+  @media (max-width: 700px) { .hud { padding-top: 40vh; justify-content: flex-start; } }
+  @media (prefers-reduced-motion: reduce) { .xp-fill { animation: none; } }
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+<section class="hero">
+  <div id="scene"></div>
+  <div class="hud">
+    <div class="level-chip">▸ INSERT HABIT — LEVEL 1</div>
+    <h1><span class="stroke">Grinding</span> kebiasaan,<br /><span class="glow">rasa main game.</span></h1>
+    <p class="lede">
+      Tiap repetisi = <strong>+1 koin</strong>. Tiap hari = <strong>satu coretan combo</strong>.
+      100 koin memenuhi satu toples dan membuka toples berikutnya. Streak-mu adalah skormu.
+    </p>
+    <div class="cta-row">
+      <button class="cta" id="coin-cta">▶ Mulai Main</button>
+      <button class="cta cta-alt">Lihat Papan Skor</button>
+    </div>
+    <div class="xp-wrap">
+      <div class="xp-head"><span>TOPLES 02 — PROGRESS</span><span class="val">59/100 KOIN</span></div>
+      <div class="xp-track"><div class="xp-fill"></div></div>
+    </div>
+  </div>
+</section>
+<section class="features">
+  <div class="feature"><div class="tag">Mode 01</div><h3>Combo Kalender</h3><p>Coret hari ini, jaga rantainya. Putus = combo reset. Berani?</p></div>
+  <div class="feature"><div class="tag">Mode 02</div><h3>Coin Rush</h3><p>Satu aksi, satu koin masuk toples. Dengar clink-nya, lihat tumpukannya naik.</p></div>
+  <div class="feature"><div class="tag">Stats</div><h3>Papan Skor</h3><p>Streak terbaik, konsistensi 30 hari, grafik harian. Angka tidak bohong.</p></div>
+</section>
+
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.169.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from "three";
+
+const mount = document.getElementById("scene");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+mount.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x0a0618, 0.055);
+const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+camera.position.set(0, 2.4, 10);
+
+scene.add(new THREE.AmbientLight(0x2a1f55, 2));
+const key = new THREE.DirectionalLight(0xff3df5, 2.2);
+key.position.set(-5, 6, 4);
+scene.add(key);
+const rimL = new THREE.DirectionalLight(0x41f0ff, 2.6);
+rimL.position.set(6, 3, -4);
+scene.add(rimL);
+
+// --- neon grid floor (two layers scrolling) ---
+const grid1 = new THREE.GridHelper(80, 80, 0xff3df5, 0x2a1f55);
+grid1.position.y = -1.6;
+scene.add(grid1);
+const grid2 = new THREE.GridHelper(80, 20, 0x41f0ff, 0x41f0ff);
+grid2.position.y = -1.59;
+grid2.material.transparent = true;
+grid2.material.opacity = 0.25;
+scene.add(grid2);
+
+// horizon sun
+const sun = new THREE.Mesh(
+  new THREE.CircleGeometry(6, 48),
+  new THREE.MeshBasicMaterial({ color: 0xff3df5, transparent: true, opacity: 0.18 })
+);
+sun.position.set(0, 2.2, -28);
+scene.add(sun);
+
+// --- spinning pickup coins, floating in formation ---
+const coinGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.12, 28);
+const coinEdge = new THREE.TorusGeometry(0.42, 0.045, 10, 28);
+const coins = [];
+function makePickup(x, y, z, phase) {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(coinGeo, new THREE.MeshStandardMaterial({
+    color: 0xffe16b, metalness: 0.7, roughness: 0.2, emissive: 0xcf9a10, emissiveIntensity: 0.9,
+  }));
+  body.rotation.x = Math.PI / 2;
+  const edge = new THREE.Mesh(coinEdge, new THREE.MeshBasicMaterial({ color: 0xfff3b0 }));
+  g.add(body, edge);
+  g.position.set(x, y, z);
+  g.userData = { phase, baseY: y, collected: 0 };
+  scene.add(g);
+  coins.push(g);
+  return g;
+}
+const formation = [
+  [-4.4, 1.8, -2], [-2.6, 2.6, -4], [-0.4, 1.4, -1.5], [1.8, 2.9, -3.5],
+  [3.8, 1.7, -1], [5.2, 2.5, -4.5], [-5.6, 3.2, -5.5], [0.8, 3.8, -6],
+];
+formation.forEach(([x, y, z], i) => makePickup(x, y, z, i * 0.9));
+
+// --- wireframe jar hologram, center stage ---
+const jarGroup = new THREE.Group();
+jarGroup.position.set(2.8, -1.5, 1.4);
+scene.add(jarGroup);
+const holo = new THREE.Mesh(
+  new THREE.CylinderGeometry(1.3, 1.15, 2.6, 24, 6, true),
+  new THREE.MeshBasicMaterial({ color: 0x41f0ff, wireframe: true, transparent: true, opacity: 0.4 })
+);
+holo.position.y = 1.3;
+jarGroup.add(holo);
+// stacked coins inside as glowing discs
+const stackMat = new THREE.MeshBasicMaterial({ color: 0xb7ff2e, transparent: true, opacity: 0.75 });
+for (let i = 0; i < 12; i++) {
+  const d = new THREE.Mesh(new THREE.CylinderGeometry(0.95 - (i % 3) * 0.06, 0.95, 0.07, 24), stackMat);
+  d.position.y = 0.12 + i * 0.12;
+  jarGroup.add(d);
+}
+const ring = new THREE.Mesh(
+  new THREE.TorusGeometry(1.32, 0.03, 8, 40),
+  new THREE.MeshBasicMaterial({ color: 0xff3df5 })
+);
+ring.rotation.x = Math.PI / 2;
+ring.position.y = 2.62;
+jarGroup.add(ring);
+
+// particle starfield
+const starGeo = new THREE.BufferGeometry();
+const starN = 300;
+const sp = new Float32Array(starN * 3);
+for (let i = 0; i < starN; i++) {
+  sp[i*3] = (Math.random()-0.5)*60; sp[i*3+1] = Math.random()*20; sp[i*3+2] = -Math.random()*40;
+}
+starGeo.setAttribute("position", new THREE.BufferAttribute(sp, 3));
+scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0x8f85b8, size: 0.06 })));
+
+// --- interactions: hover/click pickups, combo popups ---
+const raycaster = new THREE.Raycaster();
+const pointerNdc = new THREE.Vector2();
+const pointer = { x: 0, y: 0 };
+let combo = 0;
+function popCombo(clientX, clientY) {
+  combo++;
+  const el = document.createElement("div");
+  el.className = "combo";
+  el.textContent = combo > 1 ? `+1 ×${combo}` : "+1";
+  el.style.left = clientX + "px";
+  el.style.top = clientY + "px";
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+addEventListener("pointermove", (e) => {
+  pointer.x = (e.clientX / innerWidth) * 2 - 1;
+  pointer.y = (e.clientY / innerHeight) * 2 - 1;
+  pointerNdc.set(pointer.x, -pointer.y);
+});
+addEventListener("click", (e) => {
+  raycaster.setFromCamera(pointerNdc, camera);
+  const hits = raycaster.intersectObjects(coins.map(c => c.children[0]));
+  if (hits.length) {
+    const g = hits[0].object.parent;
+    g.userData.collected = 1;
+    popCombo(e.clientX, e.clientY);
+  }
+});
+document.getElementById("coin-cta").addEventListener("click", (e) => popCombo(e.clientX, e.clientY));
+
+const clock = new THREE.Clock();
+function resize() {
+  renderer.setSize(mount.clientWidth, mount.clientHeight);
+  camera.aspect = mount.clientWidth / mount.clientHeight;
+  camera.updateProjectionMatrix();
+}
+addEventListener("resize", resize);
+resize();
+
+function tick() {
+  requestAnimationFrame(tick);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const t = clock.elapsedTime;
+
+  // grid scroll toward camera
+  grid1.position.z = (t * 2.2) % 2;
+  grid2.position.z = (t * 2.2) % 8;
+
+  // pickups: spin + bob; collected ones shrink then respawn
+  for (const g of coins) {
+    g.rotation.y += dt * 2.4;
+    g.position.y = g.userData.baseY + Math.sin(t * 1.8 + g.userData.phase) * 0.22;
+    if (g.userData.collected) {
+      g.scale.multiplyScalar(1 - dt * 10);
+      if (g.scale.x < 0.03) { g.userData.collected = 0; g.scale.setScalar(0.001); }
+    } else if (g.scale.x < 1) {
+      g.scale.setScalar(Math.min(g.scale.x + dt * 2.5, 1));
+    }
+  }
+
+  // hologram jar breathes
+  holo.material.opacity = 0.32 + Math.sin(t * 2.4) * 0.1;
+  jarGroup.rotation.y = t * 0.35;
+  ring.scale.setScalar(1 + Math.sin(t * 2.4) * 0.03);
+
+  // camera drift
+  camera.position.x += ((pointer.x * 1.6) - camera.position.x) * Math.min(dt * 3, 1);
+  camera.position.y += ((2.4 - pointer.y * 1.0) - camera.position.y) * Math.min(dt * 3, 1);
+  camera.lookAt(0, 1.2, -2);
+
+  renderer.render(scene, camera);
+}
+tick();
+</script>
+</body>
+</html>

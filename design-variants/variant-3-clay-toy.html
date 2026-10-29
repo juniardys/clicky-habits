@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Clicky Habits — Varian 3: Clay Toy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --sky-top: #ffe8d6;
+    --sky-bot: #d6e9ff;
+    --cream: #fff8ef;
+    --peach: #ff9a76;
+    --peach-deep: #f06d4f;
+    --mint: #7fd8a6;
+    --lavender: #b9a6f2;
+    --char: #46364a;
+    --char-dim: #8a7a90;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, var(--sky-top), var(--sky-bot) 70%);
+    min-height: 100vh;
+    color: var(--char);
+    font-family: "Nunito", system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+  .hero { position: relative; min-height: 100vh; }
+  #scene { position: absolute; inset: 0; }
+  .copy {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 9vh 36px 0;
+    text-align: center;
+    pointer-events: none;
+  }
+  .copy > * { pointer-events: auto; }
+  .pill {
+    display: inline-block;
+    background: #ffffffcc;
+    border: 2px solid var(--char);
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-weight: 700;
+    font-size: 13px;
+    box-shadow: 0 4px 0 var(--char);
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-family: "Baloo 2", sans-serif;
+    font-weight: 800;
+    font-size: clamp(42px, 6.4vw, 78px);
+    line-height: 1.02;
+    margin: 0 auto 16px;
+    max-width: 800px;
+    letter-spacing: -0.5px;
+  }
+  h1 .peach { color: var(--peach-deep); }
+  h1 .mint { color: #2ea06a; }
+  .lede {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--char-dim);
+    max-width: 520px;
+    margin: 0 auto 28px;
+    font-weight: 600;
+  }
+  .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .cta {
+    font-family: "Baloo 2", sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    padding: 15px 32px;
+    border-radius: 999px;
+    border: 3px solid var(--char);
+    cursor: pointer;
+    background: var(--peach);
+    color: var(--char);
+    box-shadow: 0 6px 0 var(--char);
+    transition: translate .1s cubic-bezier(.2,0,0,1), box-shadow .1s, scale .1s;
+  }
+  .cta:hover { translate: 0 -2px; box-shadow: 0 8px 0 var(--char); }
+  .cta:active { translate: 0 4px; box-shadow: 0 2px 0 var(--char); scale: .98; }
+  .cta-soft { background: #fff; }
+  .features {
+    position: relative;
+    z-index: 2;
+    max-width: 1100px;
+    margin: -30px auto 0;
+    padding: 0 32px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  .feature {
+    background: var(--cream);
+    border: 3px solid var(--char);
+    border-radius: 26px;
+    padding: 26px 24px;
+    box-shadow: 0 8px 0 rgba(70,54,74,.9);
+    rotate: -1deg;
+    transition: rotate .2s cubic-bezier(.2,0,0,1), translate .2s;
+  }
+  .feature:nth-child(2) { rotate: 1.2deg; background: #eefbf2; }
+  .feature:nth-child(3) { rotate: -0.6deg; background: #f3eeff; }
+  .feature:hover { rotate: 0deg; translate: 0 -4px; }
+  .feature .emoji { font-size: 40px; }
+  .feature h3 {
+    font-family: "Baloo 2", sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    margin: 10px 0 6px;
+  }
+  .feature p { margin: 0; color: var(--char-dim); font-weight: 600; font-size: 14.5px; line-height: 1.55; }
+  .hint-float {
+    position: absolute;
+    bottom: 26px; left: 50%;
+    translate: -50% 0;
+    z-index: 2;
+    background: #ffffffd9;
+    border: 2px solid var(--char);
+    border-radius: 999px;
+    padding: 9px 18px;
+    font-weight: 700;
+    font-size: 13.5px;
+    box-shadow: 0 4px 0 var(--char);
+    animation: bob 2.6s ease-in-out infinite;
+  }
+  @keyframes bob { 50% { translate: -50% -6px; } }
+  @media (prefers-reduced-motion: reduce) { .hint-float { animation: none; } }
+</style>
+</head>
+<body>
+<section class="hero">
+  <div id="scene"></div>
+  <div class="copy">
+    <div class="pill">🧸 Varian 3 — Clay Toy</div>
+    <h1>Kebiasaan itu <span class="peach">mainan</span>,<br />bukan <span class="mint">beban.</span></h1>
+    <p class="lede">
+      Coret kalendernya. Jatuhkan koinnya. Toples gendut ini cuma muat 100 koin —
+      sisanya? Ambil toples baru. Main terus, menang terus.
+    </p>
+    <div class="cta-row">
+      <button class="cta" id="drop-cta">Jatuhkan koin! 🪙</button>
+      <button class="cta cta-soft">Intip statistik</button>
+    </div>
+  </div>
+  <div class="hint-float">👆 Klik toplesnya — dia suka digelitik</div>
+</section>
+<section class="features">
+  <div class="feature"><div class="emoji">🗓️</div><h3>Coret kalender</h3><p>Cross merah gendut tiap hari berhasil. Rantainya lucu, mutusinnya sayang.</p></div>
+  <div class="feature"><div class="emoji">🫙</div><h3>Toples koin</h3><p>Koin chunky jatuh plok-plok ke toples clay. Penuh 100? Toples baru muncul!</p></div>
+  <div class="feature"><div class="emoji">📊</div><h3>Statistik manis</h3><p>Streak, konsistensi, grafik — disajikan seperti kartu skor permainan.</p></div>
+</section>
+
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.169.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from "three";
+
+const mount = document.getElementById("scene");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+mount.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+camera.position.set(0, 2.2, 14.5);
+
+scene.add(new THREE.AmbientLight(0xfff1e0, 1.6));
+const sunL = new THREE.DirectionalLight(0xffffff, 2.2);
+sunL.position.set(4, 8, 6);
+sunL.castShadow = true;
+sunL.shadow.mapSize.set(2048, 2048);
+scene.add(sunL);
+scene.add(new THREE.DirectionalLight(0xb9a6f2, 0.8)).position.set(-6, 2, -4);
+
+const clay = (color) => new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0 });
+
+// --- floating island: flattened squashed sphere ---
+const island = new THREE.Group();
+island.position.set(0, -4.6, 0);
+island.scale.setScalar(0.85);
+scene.add(island);
+const islandTop = new THREE.Mesh(new THREE.SphereGeometry(4.4, 40, 24), clay(0x9fe0b6));
+islandTop.scale.set(1, 0.32, 0.86);
+islandTop.receiveShadow = true;
+island.add(islandTop);
+const islandBase = new THREE.Mesh(new THREE.SphereGeometry(3.4, 32, 20), clay(0xd9a97c));
+islandBase.scale.set(0.92, 0.6, 0.78);
+islandBase.position.y = -1.1;
+island.add(islandBase);
+
+// --- chunky clay jar (lathe for belly shape) ---
+const jarPts = [];
+for (let i = 0; i <= 18; i++) {
+  const v = i / 18;
+  const r = 1.15 + Math.sin(v * Math.PI) * 0.45 - v * 0.12;
+  jarPts.push(new THREE.Vector2(r, v * 2.6));
+}
+const jarGroup = new THREE.Group();
+jarGroup.position.set(1.9, 1.15, 0.6);
+island.add(jarGroup);
+const jarBody = new THREE.Mesh(
+  new THREE.LatheGeometry(jarPts, 40),
+  new THREE.MeshPhysicalMaterial({
+    color: 0xcfeaff, transparent: true, opacity: 0.45, roughness: 0.35,
+    clearcoat: 0.6, side: THREE.DoubleSide,
+  })
+);
+jarBody.castShadow = true;
+jarGroup.add(jarBody);
+const jarLip = new THREE.Mesh(new THREE.TorusGeometry(1.06, 0.16, 14, 36), clay(0xff9a76));
+jarLip.rotation.x = Math.PI / 2;
+jarLip.position.y = 2.62;
+jarGroup.add(jarLip);
+// kawaii face on the jar
+const eyeMat = new THREE.MeshBasicMaterial({ color: 0x46364a });
+const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 12), eyeMat);
+eyeL.position.set(-0.4, 1.5, 1.45); jarGroup.add(eyeL);
+const eyeR = eyeL.clone(); eyeR.position.x = 0.4; jarGroup.add(eyeR);
+const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.045, 8, 16, Math.PI), eyeMat);
+mouth.position.set(0, 1.3, 1.47);
+mouth.rotation.z = Math.PI;
+jarGroup.add(mouth);
+const blushMat = new THREE.MeshBasicMaterial({ color: 0xffb3a0 });
+const blushL = new THREE.Mesh(new THREE.CircleGeometry(0.11, 12), blushMat);
+blushL.position.set(-0.68, 1.3, 1.38); blushL.rotation.y = -0.4; jarGroup.add(blushL);
+const blushR = blushL.clone(); blushR.position.x = 0.68; blushR.rotation.y = 0.4; jarGroup.add(blushR);
+
+// coins in jar
+const coinGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.14, 20);
+const coinMat = clay(0xffd45e);
+coinMat.roughness = 0.5;
+const coins = [];
+function addCoin(animate = true) {
+  const i = coins.length;
+  const a = i * 2.4;
+  const r = 0.55 * Math.sqrt(((i * 37) % 10) / 10);
+  const ty = 0.35 + Math.floor(i / 6) * 0.17;
+  const c = new THREE.Mesh(coinGeo, coinMat);
+  c.castShadow = true;
+  c.position.set(Math.cos(a) * r, animate ? 4.4 : ty, Math.sin(a) * r);
+  c.rotation.set((Math.random()-0.5)*0.6, Math.random()*3, (Math.random()-0.5)*0.6);
+  c.userData = { ty, v: 0, done: !animate };
+  jarGroup.add(c);
+  coins.push(c);
+}
+for (let i = 0; i < 14; i++) addCoin(false);
+
+// --- calendar: chunky tile stack on island ---
+const calGroup = new THREE.Group();
+calGroup.position.set(-2.1, 1.18, 0.4);
+calGroup.rotation.y = 0.35;
+island.add(calGroup);
+const board = new THREE.Mesh(new THREE.BoxGeometry(2.9, 0.3, 2.3), clay(0xfff8ef));
+board.castShadow = true;
+calGroup.add(board);
+const tiles = [];
+const tileGeo = new THREE.BoxGeometry(0.52, 0.14, 0.42);
+for (let r = 0; r < 4; r++) for (let c = 0; c < 5; c++) {
+  const t = new THREE.Mesh(tileGeo, clay(0xffffff));
+  t.position.set(-1.1 + c * 0.55, 0.22, -0.78 + r * 0.52);
+  t.castShadow = true;
+  t.userData = { baseY: 0.22, phase: (r * 5 + c) * 0.4 };
+  calGroup.add(t);
+  tiles.push(t);
+}
+// fat crosses on some tiles
+const crossMat = clay(0xf06d4f);
+function fatCross(tile) {
+  const g = new THREE.Group();
+  const b1 = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.08, 0.12), crossMat);
+  b1.rotation.y = Math.PI / 4;
+  const b2 = b1.clone(); b2.rotation.y = -Math.PI / 4;
+  g.add(b1, b2);
+  g.position.copy(tile.position).add(new THREE.Vector3(0, 0.12, 0));
+  g.userData = { s: 0.001, target: 1 };
+  calGroup.add(g);
+  return g;
+}
+const crossList = [];
+[0, 1, 2, 5, 6, 7, 10].forEach((i, k) => {
+  setTimeout(() => crossList.push(fatCross(tiles[i])), 600 + k * 500);
+});
+
+// --- clouds (clay blobs drifting) ---
+const clouds = [];
+function cloud(x, y, z, s) {
+  const g = new THREE.Group();
+  const m = clay(0xffffff);
+  [[0,0,0,0.7],[0.6,0.1,0,0.5],[-0.6,0.05,0,0.5],[0.2,0.3,0,0.45]].forEach(([cx,cy,cz,cr]) => {
+    const b = new THREE.Mesh(new THREE.SphereGeometry(cr, 18, 14), m);
+    b.position.set(cx, cy, cz);
+    g.add(b);
+  });
+  g.position.set(x, y, z);
+  g.scale.setScalar(s);
+  g.userData = { speed: 0.12 + Math.random() * 0.15, x0: x };
+  scene.add(g);
+  clouds.push(g);
+}
+cloud(-6, 3.4, -6, 1.1); cloud(5.5, 4.2, -8, 1.4); cloud(-3, 5, -10, 0.9); cloud(7, 2.2, -5, 0.8);
+
+// raining toy coins in background
+const rainCoins = [];
+for (let i = 0; i < 10; i++) {
+  const c = new THREE.Mesh(coinGeo, coinMat);
+  c.position.set((Math.random()-0.5)*16, Math.random()*10, -4 - Math.random()*6);
+  c.userData = { v: 0.6 + Math.random() * 0.8, spin: 1 + Math.random() * 2 };
+  scene.add(c);
+  rainCoins.push(c);
+}
+
+// --- interactions ---
+const pointer = { x: 0, y: 0 };
+addEventListener("pointermove", (e) => {
+  pointer.x = (e.clientX / innerWidth) * 2 - 1;
+  pointer.y = (e.clientY / innerHeight) * 2 - 1;
+});
+let wobble = 0;
+const raycaster = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+addEventListener("click", (e) => {
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -((e.clientY / innerHeight) * 2 - 1));
+  raycaster.setFromCamera(ndc, camera);
+  if (raycaster.intersectObject(jarBody).length) { wobble = 1; addCoin(true); }
+});
+document.getElementById("drop-cta").addEventListener("click", () => { wobble = 1; addCoin(true); });
+
+const clock = new THREE.Clock();
+function resize() {
+  renderer.setSize(mount.clientWidth, mount.clientHeight);
+  camera.aspect = mount.clientWidth / mount.clientHeight;
+  camera.updateProjectionMatrix();
+}
+addEventListener("resize", resize);
+resize();
+
+function tick() {
+  requestAnimationFrame(tick);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const t = clock.elapsedTime;
+
+  // island floats
+  island.position.y = -4.6 + Math.sin(t * 0.8) * 0.12;
+  island.rotation.y = Math.sin(t * 0.25) * 0.04;
+
+  // jar squash & wobble (squash-stretch on wobble trigger)
+  if (wobble > 0) {
+    wobble = Math.max(0, wobble - dt * 1.6);
+    const w = Math.sin(wobble * Math.PI * 4) * wobble * 0.12;
+    jarGroup.scale.set(1 + w, 1 - w, 1 + w);
+  } else {
+    const breathe = Math.sin(t * 1.6) * 0.015;
+    jarGroup.scale.set(1 + breathe, 1 - breathe, 1 + breathe);
+  }
+
+  // coins fall with plop
+  for (const c of coins) {
+    if (c.userData.done) continue;
+    c.userData.v += 13 * dt;
+    c.position.y -= c.userData.v * dt;
+    c.rotation.z += 4 * dt;
+    if (c.position.y <= c.userData.ty) {
+      if (c.userData.v > 2.5) { c.userData.v *= -0.35; c.position.y = c.userData.ty; wobble = Math.max(wobble, 0.5); }
+      else { c.position.y = c.userData.ty; c.userData.done = true; }
+    }
+  }
+
+  // tiles gentle wave
+  for (const tile of tiles) {
+    tile.position.y = tile.userData.baseY + Math.sin(t * 1.4 + tile.userData.phase) * 0.02;
+  }
+  // crosses pop
+  for (const g of crossList) {
+    g.userData.s += (g.userData.target - g.userData.s) * Math.min(dt * 6, 1);
+    const over = g.userData.s * (1 + 0.3 * Math.sin(g.userData.s * Math.PI));
+    g.scale.setScalar(Math.max(over, 0.001));
+  }
+  // clouds drift
+  for (const cl of clouds) {
+    cl.position.x += cl.userData.speed * dt;
+    if (cl.position.x > 11) cl.position.x = -11;
+  }
+  // background coin rain
+  for (const c of rainCoins) {
+    c.position.y -= c.userData.v * dt;
+    c.rotation.x += c.userData.spin * dt;
+    if (c.position.y < -4) { c.position.y = 9; c.position.x = (Math.random()-0.5)*16; }
+  }
+
+  // camera parallax
+  camera.position.x += ((pointer.x * 1.4) - camera.position.x) * Math.min(dt * 3, 1);
+  camera.position.y += ((2.2 - pointer.y * 0.9) - camera.position.y) * Math.min(dt * 3, 1);
+  camera.lookAt(0, 1.6, 0);
+
+  renderer.render(scene, camera);
+}
+tick();
+</script>
+</body>
+</html>
