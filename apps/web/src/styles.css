@@ -140,20 +140,62 @@ a.brand {
   align-items: center;
 }
 
+/* Account chip: initials avatar + name, styled like the language toggle so it
+   reads as an account shortcut rather than a plain label. */
 .topbar-user {
-  color: var(--char-dim);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 200px;
+  padding: 3px 14px 3px 3px;
+  border-radius: 999px;
+  border: 2.5px solid var(--char);
+  background: #ffffff;
+  box-shadow: 0 3px 0 rgba(70, 54, 74, 0.9);
+  color: var(--char);
+  font-family: "Baloo 2", sans-serif;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
-  max-width: 180px;
+  transition-property: translate, box-shadow, background-color;
+  transition-duration: 0.12s;
+  transition-timing-function: var(--ease-swift);
+}
+
+.topbar-avatar {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--lavender);
+  border: 2px solid var(--char);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.topbar-user-name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 a.topbar-user:hover {
-  color: var(--char);
-  text-decoration: underline;
+  translate: 0 -1px;
+  box-shadow: 0 4px 0 var(--char);
+  background: #fffaf3;
+}
+
+a.topbar-user:active {
+  translate: 0 2px;
+  box-shadow: 0 1px 0 var(--char);
+}
+
+a.topbar-user:focus-visible {
+  outline: 3px solid var(--peach);
+  outline-offset: 2px;
 }
 
 /* ---------- verify email banner + notices ---------- */
