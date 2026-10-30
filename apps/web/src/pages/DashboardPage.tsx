@@ -86,7 +86,7 @@ export default function DashboardPage() {
         </motion.div>
       ) : (
         <>
-          <div className="stat-tiles">
+          <div className="stat-tiles stat-tiles-3">
             <div className="stat-tile">
               <div className="value">{data.totalHabits}</div>
               <div className="label">{t("dash.totalHabits")}</div>

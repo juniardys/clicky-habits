@@ -796,6 +796,11 @@ input:focus {
   margin-bottom: 26px;
 }
 
+/* Fixed 3-column grid for a known count of 6 tiles: always a clean 3 x 2. */
+.stat-tiles.stat-tiles-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .stat-tile {
   background: var(--cream);
   border: 3px solid var(--char);
@@ -848,7 +853,8 @@ input:focus {
 }
 
 @media (max-width: 600px) {
-  .stat-tiles {
+  .stat-tiles,
+  .stat-tiles.stat-tiles-3 {
     grid-template-columns: 1fr 1fr;
     gap: 12px;
   }
