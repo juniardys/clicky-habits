@@ -78,6 +78,11 @@ export const api = {
       `/habits/${id}/coin`,
       { method: "POST", body: JSON.stringify({ date: todayKey() }) }
     ),
+  removeCoin: (id: string) =>
+    request<{ date: string | null; removed: number; countToday: number; totalCount: number }>(
+      `/habits/${id}/coin/remove`,
+      { method: "POST", body: JSON.stringify({}) }
+    ),
   getStats: (id: string) => request<HabitStats>(`/habits/${id}/stats`),
   getDashboard: () => request<DashboardData>("/habits-dashboard"),
 };

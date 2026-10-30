@@ -55,8 +55,9 @@ const translations = {
     "habit.prevJar": "Previous jar",
     "habit.nextJar": "Next jar",
     "habit.addCoin": "🪙 Drop a Coin",
+    "habit.removeCoin": "Remove 1 Coin",
     "habit.jarHint":
-      "Drag the jar to rotate. One jar holds {cap} coins. When it fills up, you move on to the next jar.",
+      "Drag the jar to rotate. One jar holds {cap} coins. When it fills up, you move on to the next jar. Remove 1 Coin takes the last coin back out.",
     // stats page
     "stats.title": "Stats: {name}",
     "stats.currentStreak": "Current streak (days)",
@@ -296,8 +297,9 @@ const translations = {
     "habit.prevJar": "Toples sebelumnya",
     "habit.nextJar": "Toples berikutnya",
     "habit.addCoin": "🪙 Masukkan Koin",
+    "habit.removeCoin": "Keluarkan 1 Koin",
     "habit.jarHint":
-      "Tarik toples untuk memutar. Satu toples muat {cap} koin. Kalau penuh, otomatis lanjut ke toples berikutnya.",
+      "Tarik toples untuk memutar. Satu toples muat {cap} koin. Kalau penuh, otomatis lanjut ke toples berikutnya. Keluarkan 1 Koin mengambil koin terakhir kembali.",
     // stats page
     "stats.title": "Statistik: {name}",
     "stats.currentStreak": "Streak saat ini (hari)",

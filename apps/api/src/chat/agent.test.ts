@@ -322,4 +322,13 @@ describe("buildInstructions", () => {
     expect(text).toMatch(/ambiguous/i);
     expect(text).toContain("2026-10-30");
   });
+
+  test("contains off-topic guardrail with redirect", () => {
+    const text = buildInstructions({ today: "2026-10-30", lang: "en" });
+    expect(text).toMatch(/only help with/i);
+    expect(text).toMatch(/habit-building tips/i);
+    expect(text).toMatch(/off-topic/i);
+    expect(text).toMatch(/do not answer the off-topic question/i);
+    expect(text).toMatch(/redirect/i);
+  });
 });
