@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { api, todayKey, type HabitDetail } from "../lib/api";
+import { onHabitsChanged } from "../lib/chat";
 import { useI18n } from "../lib/i18n";
 import { playChime, playPop, playScratch } from "../lib/sound";
 import Calendar3D from "../components/Calendar3D";
@@ -49,6 +50,13 @@ export default function HabitPage() {
       .getHabit(id)
       .then(setHabit)
       .catch((e) => setError(e.message));
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    return onHabitsChanged(() => {
+      api.getHabit(id).then(setHabit).catch(() => {});
+    });
   }, [id]);
 
   const markedDates = useMemo(

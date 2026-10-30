@@ -20,6 +20,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   habits        Habit[]
+  chatThreads   ChatThread[]
 
   @@map("user")
 }
@@ -97,4 +98,58 @@ model Entry {
 
   @@unique([habitId, date])
   @@map("entry")
+}
+
+// ---------- chat agent models ----------
+
+model ChatThread {
+  id        String              @id @default(cuid())
+  userId    String
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  ChatMessage[]
+  actions   ChatAction[]
+  pending   ChatPendingAction[]
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  @@map("chat_thread")
+}
+
+model ChatMessage {
+  id        String     @id @default(cuid())
+  threadId  String
+  thread    ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  role      String // "user" | "assistant" | "tool"
+  content   String
+  toolName  String?
+  toolMeta  Json?
+  createdAt DateTime   @default(now())
+
+  @@map("chat_message")
+}
+
+model ChatAction {
+  id        String     @id @default(cuid())
+  userId    String
+  threadId  String
+  thread    ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  kind      String // "create" | "mark" | "coins"
+  payload   Json // inverse data: habitId, date, count, ...
+  undoneAt  DateTime?
+  createdAt DateTime   @default(now())
+
+  @@map("chat_action")
+}
+
+model ChatPendingAction {
+  id        String     @id @default(cuid())
+  userId    String
+  threadId  String
+  thread    ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  toolName  String
+  args      Json
+  expiresAt DateTime
+  createdAt DateTime   @default(now())
+
+  @@map("chat_pending_action")
 }
