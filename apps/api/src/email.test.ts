@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { createEmailSender, verificationEmail, type MailTransport } from "./email";
+import { changeEmailEmail, createEmailSender, verificationEmail, type MailTransport } from "./email";
 
 const msg = {
   to: "user@example.com",
@@ -61,5 +61,27 @@ describe("templates", () => {
     expect(m.subject).toBe("Verify your Clicky Habits email");
     expect(m.text).toContain(url);
     expect(m.html).toContain(url);
+  });
+
+  test("html uses the branded layout with heading and button", () => {
+    const m = verificationEmail("a@b.com", "https://api.test/v?token=t1");
+    expect(m.html).toStartWith("<!doctype html>");
+    expect(m.html).toContain("Confirm your email");
+    expect(m.html).toContain("Verify email");
+    expect(m.html).toContain("#ff9a76");
+  });
+
+  test("changeEmailEmail has its own heading and action", () => {
+    const m = changeEmailEmail("a@b.com", "https://api.test/c?token=t2");
+    expect(m.subject).toBe("Confirm your new Clicky Habits email");
+    expect(m.html).toContain("Confirm your new email");
+    expect(m.html).toContain("Confirm new email");
+    expect(m.html).toContain("https://api.test/c?token=t2");
+  });
+
+  test("escapes html in the url", () => {
+    const m = verificationEmail("a@b.com", 'https://api.test/v?a=1&b="x"<y>');
+    expect(m.html).toContain("https://api.test/v?a=1&amp;b=&quot;x&quot;&lt;y&gt;");
+    expect(m.html).not.toContain('"x"<y>');
   });
 });
