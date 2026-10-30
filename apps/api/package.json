@@ -4,9 +4,10 @@
   "type": "module",
   "scripts": {
     "dev": "bun --env-file=../../.env --hot src/index.ts",
-    "start": "bun --env-file=../../.env src/index.ts",
+    "start": "bun src/index.ts",
     "test": "bun test",
     "db:migrate": "dotenv -e ../../.env -- bunx prisma migrate dev",
+    "db:migrate:deploy": "bunx prisma migrate deploy",
     "db:generate": "bunx prisma generate"
   },
   "dependencies": {

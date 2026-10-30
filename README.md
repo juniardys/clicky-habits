@@ -73,29 +73,32 @@ apps/
   api/   Hono + better-auth + Prisma (port 3001)
   web/   Vite + React + R3F (port 5173, proxy /api -> 3001)
 docker/
-  nginx.conf           SPA + /api reverse proxy
-  supervisord.conf     runs api (bun) + nginx in one container
-  api-db.Dockerfile    migration / db-ops image
+  api.Dockerfile        api image (Bun runtime)
+  web.Dockerfile        web image (Vite build served by nginx)
+  nginx.conf.template   SPA + /api reverse proxy to the api container
+  api-db.Dockerfile     migration / db-ops image
   db-entrypoint.sh
-Dockerfile             app image (web build + api runtime)
 docker-compose.yml
 ```
 
 ## Deploy (Docker Compose / Dokploy)
 
-Two containers:
+Three containers, one process each:
 
-| Service | Purpose |
-|---|---|
-| `prisma-migration` | runs `prisma migrate deploy` on start, then stays alive for manual ops (`bunx prisma studio`, `migrate status`, ...) |
-| `app` | nginx serving the Vite build + Bun API on `127.0.0.1:3001`, nginx proxies `/api` to it. Starts only after `prisma-migration` is healthy |
+| Service | Image | Purpose |
+|---|---|---|
+| `prisma-migration` | `docker/api-db.Dockerfile` | runs `prisma migrate deploy` on start, then stays alive for manual ops (`bunx prisma studio`, `migrate status`, ...) |
+| `api` | `docker/api.Dockerfile` | Bun API on port `3001`. Starts only after `prisma-migration` is healthy |
+| `web` | `docker/web.Dockerfile` | nginx serving the Vite build; proxies `/api` to `api:3001` for single-domain mode |
 
-Because the SPA and the API share one origin, auth cookies work without CORS.
+Two ways to route traffic: **single domain** (the SPA calls `/api` on its own
+origin, nginx forwards it) or **API on a subdomain** (the SPA calls
+`https://api.<domain>` directly).
 
-### Dokploy
+### Dokploy - single domain
 
 1. Create a **Compose** app pointing at this repo, source path `docker-compose.yml`.
-2. Fill in the environment variables (Dokploy env editor):
+2. Environment variables (Dokploy env editor):
 
    ```
    DATABASE_URL=postgresql://user:pass@host:5432/clicky_habits
@@ -103,14 +106,41 @@ Because the SPA and the API share one origin, auth cookies work without CORS.
    BETTER_AUTH_URL=https://your-domain.tld
    GOOGLE_CLIENT_ID=
    GOOGLE_CLIENT_SECRET=
-   PORT=3001
-   APP_PORT=3000
    ```
 
-3. Set the domain to route to the `app` service's published port (`APP_PORT`, default `3000`).
+3. Domain `your-domain.tld` -> service `web`, port `80`.
 4. Google SSO redirect URI: `https://your-domain.tld/api/auth/callback/google`.
 
-If Postgres runs as another Dokploy service in the same compose project, use its
+### Dokploy - API on a subdomain (e.g. `api.clickyhabits.com`)
+
+1. Same Compose app. Environment variables:
+
+   ```
+   DATABASE_URL=postgresql://user:pass@host:5432/clicky_habits
+   BETTER_AUTH_SECRET=<openssl rand -base64 32>
+   BETTER_AUTH_URL=https://api.clickyhabits.com
+   TRUSTED_ORIGINS=https://clickyhabits.com
+   VITE_API_URL=https://api.clickyhabits.com
+   GOOGLE_CLIENT_ID=
+   GOOGLE_CLIENT_SECRET=
+   ```
+
+2. Domains:
+   - `clickyhabits.com` -> service `web`, port `80`
+   - `api.clickyhabits.com` -> service `api`, port `3001`
+3. Google SSO redirect URI: `https://api.clickyhabits.com/api/auth/callback/google`.
+
+Notes:
+
+- `VITE_API_URL` is a **build arg** of `web`: changing it requires a rebuild.
+- `TRUSTED_ORIGINS` enables credentialed CORS for the web origin and adds it
+  to better-auth's trusted origins.
+- `clickyhabits.com` and `api.clickyhabits.com` are the same site, so
+  better-auth's default `SameSite=Lax` cookies work without extra config.
+
+### Database
+
+If Postgres runs as another service in the same Dokploy project, use its
 service name as the host (`postgresql://user:pass@postgres:5432/clicky_habits`).
 
 Manual db ops:
@@ -125,6 +155,6 @@ docker exec -it clicky-habits-migration bunx prisma studio
 ```bash
 cp .env.example .env   # point DATABASE_URL at a reachable Postgres
 docker compose up -d --build
-# http://localhost:3000 (or APP_PORT)
+# web: http://localhost:3000 (APP_PORT), api: http://localhost:3001 (API_PORT)
 ```
 

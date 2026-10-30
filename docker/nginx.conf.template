@@ -1,7 +1,5 @@
-upstream clicky_api {
-    server 127.0.0.1:3001;
-    keepalive 16;
-}
+# Rendered by the nginx image's envsubst step. Only ${API_UPSTREAM} is
+# substituted; nginx's own $variables are left untouched.
 
 server {
     listen 80;
@@ -16,9 +14,15 @@ server {
     gzip_types text/plain text/css application/json application/javascript image/svg+xml;
     gzip_min_length 1024;
 
-    # ---------- API (same-origin, so cookies work) ----------
+    # Docker's embedded DNS. Resolving at request time (via the variable below)
+    # lets nginx start even when the api container is not up yet.
+    resolver 127.0.0.11 valid=10s ipv6=off;
+
+    # ---------- API (same-origin mode, so cookies work without CORS) ----------
+    # Unused when the SPA is built with VITE_API_URL pointing at a subdomain.
     location /api/ {
-        proxy_pass http://clicky_api;
+        set $api_upstream ${API_UPSTREAM};
+        proxy_pass $api_upstream;
         proxy_http_version 1.1;
 
         proxy_set_header Host              $host;

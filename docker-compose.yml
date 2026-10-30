@@ -18,12 +18,13 @@ services:
       retries: 30
       start_period: 120s
 
-  app:
+  api:
     build:
       context: .
-      dockerfile: Dockerfile
-    image: clicky-habits-app:latest
-    container_name: clicky-habits-app
+      dockerfile: docker/api.Dockerfile
+    image: clicky-habits-api:latest
+    # Also the hostname the web container proxies /api to (API_UPSTREAM).
+    container_name: clicky-habits-api
     restart: unless-stopped
     env_file:
       - .env
@@ -34,5 +35,21 @@ services:
       prisma-migration:
         condition: service_healthy
     ports:
-      # Host port that Dokploy routes the domain to
+      # Host port for api.<domain> (subdomain mode). Optional in single-domain mode.
+      - "${API_PORT:-3001}:3001"
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+      args:
+        # Baked into the SPA at build time. Empty = same-origin /api via nginx.
+        VITE_API_URL: ${VITE_API_URL:-}
+    image: clicky-habits-web:latest
+    container_name: clicky-habits-web
+    restart: unless-stopped
+    environment:
+      API_UPSTREAM: http://clicky-habits-api:3001
+    ports:
+      # Host port for the main domain
       - "${APP_PORT:-3000}:80"
