@@ -1,0 +1,41 @@
+services:
+  prisma-migration:
+    build:
+      context: .
+      dockerfile: docker/api-db.Dockerfile
+    image: clicky-habits-migration:latest
+    container_name: clicky-habits-migration
+    restart: unless-stopped
+    env_file:
+      - .env
+    # Applies migrations on start, then stays alive for manual db operations
+    # (e.g. `docker exec -it clicky-habits-migration bunx prisma studio`).
+    command: ["migrate"]
+    healthcheck:
+      test: ["CMD", "test", "-f", "/tmp/migrations-complete"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 120s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Baked into the SPA at build time. Empty = same-origin /api.
+        VITE_API_URL: ${VITE_API_URL:-}
+    image: clicky-habits-app:latest
+    container_name: clicky-habits-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+    depends_on:
+      prisma-migration:
+        condition: service_healthy
+    ports:
+      # Host port that Dokploy routes the domain to
+      - "${APP_PORT:-3000}:80"

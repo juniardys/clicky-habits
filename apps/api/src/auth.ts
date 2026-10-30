@@ -3,20 +3,34 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./db";
 
 // Public base URL of the auth/API endpoints.
-// - Dev: leave the default; the Vite dev server proxies /api to this server.
-// - Prod (subdomain setup): https://api.clickyhabits.com
+// - Local dev:        http://localhost:5173 (Vite proxies /api to this server)
+// - Single domain:    https://clickyhabits.com
+// - API on subdomain: https://api.clickyhabits.com
 const baseURL = process.env.BETTER_AUTH_URL ?? "http://localhost:5173";
 
-// Origins allowed to call the auth endpoints (better-auth CSRF check).
-// - Dev: the localhost defaults below are enough.
-// - Prod: set BETTER_AUTH_TRUSTED_ORIGINS="https://clickyhabits.com"
-const trustedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3001",
-  ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",") ?? []).map((s) =>
-    s.trim()
-  ),
-].filter(Boolean);
+// Local dev origins are always allowed. In production, BETTER_AUTH_URL (and
+// any comma-separated extras in TRUSTED_ORIGINS) are added so the deployed
+// domain can sign in. With the API on a subdomain, TRUSTED_ORIGINS must list
+// the web origin (e.g. https://clickyhabits.com).
+export function buildTrustedOrigins(): string[] {
+  const origins = new Set(["http://localhost:5173", "http://localhost:3001"]);
+
+  const envBaseURL = process.env.BETTER_AUTH_URL;
+  if (envBaseURL) {
+    try {
+      origins.add(new URL(envBaseURL).origin);
+    } catch {
+      // ignore malformed value
+    }
+  }
+
+  for (const extra of (process.env.TRUSTED_ORIGINS ?? "").split(",")) {
+    const trimmed = extra.trim();
+    if (trimmed) origins.add(trimmed);
+  }
+
+  return [...origins];
+}
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "postgresql" }),
@@ -36,7 +50,7 @@ export const auth = betterAuth({
           },
         }
       : {},
-  trustedOrigins,
+  trustedOrigins: buildTrustedOrigins(),
 });
 
 export type Auth = typeof auth;

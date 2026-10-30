@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
-import { auth } from "./auth";
+import { auth, buildTrustedOrigins } from "./auth";
 import { prisma } from "./db";
 import { computeStats } from "./stats";
 
@@ -14,18 +14,15 @@ type Env = {
 const app = new Hono<Env>();
 app.use(logger());
 
-// CORS: needed when the web app runs on a different origin, e.g.
+// CORS: needed when the web app runs on a different origin than the API, e.g.
 // https://clickyhabits.com calling https://api.clickyhabits.com.
-// Dev leaves CORS_ORIGINS empty -> same-origin via the Vite proxy, no CORS.
-const corsOrigins = (process.env.CORS_ORIGINS ?? "")
-  .split(",")
-  .map((s) => s.trim())
-  .filter(Boolean);
-if (corsOrigins.length > 0) {
+// Enabled only when TRUSTED_ORIGINS is set; same-origin setups (Vite proxy,
+// single-domain nginx) don't need it.
+if (process.env.TRUSTED_ORIGINS?.trim()) {
   app.use(
     "/api/*",
     cors({
-      origin: corsOrigins,
+      origin: buildTrustedOrigins(),
       credentials: true,
       allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowHeaders: ["Content-Type", "Authorization"],
