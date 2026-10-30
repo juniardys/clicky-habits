@@ -33,9 +33,9 @@ services:
     depends_on:
       prisma-migration:
         condition: service_healthy
-    ports:
-      # Host port for api.<domain>. Reverse-proxy this to the API subdomain.
-      - "${API_PORT:-3001}:3001"
+    # No host ports: the reverse proxy (Dokploy's Traefik) reaches this
+    # container over the Docker network. Route api.<domain> -> api:3001.
+    # For local Docker testing use docker-compose.local.yml.
 
   web:
     build:
@@ -48,6 +48,4 @@ services:
     image: clicky-habits-web:latest
     container_name: clicky-habits-web
     restart: unless-stopped
-    ports:
-      # Host port for the main domain
-      - "${APP_PORT:-3000}:80"
+    # No host ports: route <domain> -> web:80 in the reverse proxy.
