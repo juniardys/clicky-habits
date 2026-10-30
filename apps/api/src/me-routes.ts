@@ -1,5 +1,15 @@
 import type { Hono } from "hono";
-import { validatePassword } from "./password";
+import { validatePassword, type PasswordError } from "./password";
+
+export type SetPasswordCode = PasswordError | "already_has_password";
+
+// Thrown by MeDeps.setPassword for failures the client can explain, e.g.
+// a second tab setting the password after both passed the hasPassword check.
+export class SetPasswordError extends Error {
+  constructor(readonly code: SetPasswordCode) {
+    super(code);
+  }
+}
 
 export type MeDeps = {
   hasPassword(userId: string): Promise<boolean>;
@@ -23,7 +33,12 @@ export function registerMeRoutes(app: Hono<{ Variables: { userId: string } }>, d
     if (await deps.hasPassword(c.get("userId"))) {
       return c.json({ error: "already_has_password" }, 400);
     }
-    await deps.setPassword(body.newPassword as string, c.req.raw.headers);
+    try {
+      await deps.setPassword(body.newPassword as string, c.req.raw.headers);
+    } catch (err) {
+      if (err instanceof SetPasswordError) return c.json({ error: err.code }, 400);
+      throw err;
+    }
     return c.json({ ok: true });
   });
 }

@@ -275,6 +275,8 @@ const translations = {
       "Email updated. Check your inbox to verify the new address.",
     "profile.emailChanged": "Your email has been changed and verified.",
     "profile.emailInUse": "That email is already used by another account.",
+    "profile.emailLinkInvalid":
+      "That confirmation link is invalid or expired. Request the email change again.",
     "profile.passwordSection": "Password",
     "profile.currentPassword": "Current password",
     "profile.newPassword": "New password (min. 8 characters)",
@@ -296,6 +298,7 @@ const translations = {
     "verify.sent": "Link sent!",
     "verify.done": "Your email is verified. Thanks!",
     "verify.failed": "Could not send the link. Please try again.",
+    "verify.linkInvalid": "That verification link is invalid or expired. Use Resend link to get a new one.",
   },
   id: {
     // nav
@@ -561,6 +564,8 @@ const translations = {
       "Email diperbarui. Cek inbox untuk verifikasi alamat baru.",
     "profile.emailChanged": "Email kamu sudah diganti dan terverifikasi.",
     "profile.emailInUse": "Email itu sudah dipakai akun lain.",
+    "profile.emailLinkInvalid":
+      "Link konfirmasi tidak valid atau sudah kedaluwarsa. Ajukan ganti email lagi.",
     "profile.passwordSection": "Password",
     "profile.currentPassword": "Password sekarang",
     "profile.newPassword": "Password baru (min. 8 karakter)",
@@ -582,6 +587,7 @@ const translations = {
     "verify.sent": "Link terkirim!",
     "verify.done": "Email kamu sudah terverifikasi. Makasih!",
     "verify.failed": "Gagal mengirim link. Coba lagi.",
+    "verify.linkInvalid": "Link verifikasi tidak valid atau sudah kedaluwarsa. Pakai Kirim ulang link untuk dapat yang baru.",
   },
 } as const;
 

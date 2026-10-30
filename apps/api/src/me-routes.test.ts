@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { Hono } from "hono";
-import { registerMeRoutes, type MeDeps } from "./me-routes";
+import { registerMeRoutes, SetPasswordError, type MeDeps } from "./me-routes";
 
 function makeApp(hasPassword: boolean) {
   const setCalls: string[] = [];
@@ -58,6 +58,31 @@ describe("POST /me/password", () => {
     const res = await post(app, { newPassword: "longenough1" });
     expect(res.status).toBe(400);
     expect(await res.json()).toEqual({ error: "already_has_password" });
+    expect(setCalls).toEqual([]);
+  });
+
+  test("maps a known setPassword error code to a 400", async () => {
+    // Two tabs: both pass hasPassword, the second setPassword then fails.
+    const app = new Hono<{ Variables: { userId: string } }>();
+    app.use("/me/*", async (c, next) => {
+      c.set("userId", "u1");
+      await next();
+    });
+    registerMeRoutes(app, {
+      hasPassword: async () => false,
+      setPassword: async () => {
+        throw new SetPasswordError("already_has_password");
+      },
+    });
+    const res = await post(app, { newPassword: "longenough1" });
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: "already_has_password" });
+  });
+
+  test("rejects a non-string password", async () => {
+    const { app, setCalls } = makeApp(false);
+    const res = await post(app, { newPassword: 12345678 });
+    expect(res.status).toBe(400);
     expect(setCalls).toEqual([]);
   });
 

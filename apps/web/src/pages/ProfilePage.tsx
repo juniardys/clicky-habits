@@ -77,7 +77,8 @@ function NameCard({ session, refetch }: { session: Session; refetch: () => Promi
 
 function EmailCard({ session, refetch }: { session: Session; refetch: () => Promise<unknown> }) {
   const { t } = useT();
-  const justChanged = useOnceParam("emailChanged");
+  const changeLink = useOnceParam("emailChanged");
+  const justChanged = changeLink === "ok";
   const [newEmail, setNewEmail] = useState("");
   const [status, setStatus] = useState<Status>(idle);
   const verified = session.user.emailVerified;
@@ -113,8 +114,14 @@ function EmailCard({ session, refetch }: { session: Session; refetch: () => Prom
     // verification link and the banner keeps showing until it is clicked.
     // better-auth answers 200 without changing anything when the address
     // belongs to another account, so confirm the switch from the session.
-    const { data: fresh } = await authClient.getSession({ query: { disableCookieCache: true } });
-    if (fresh?.user.email !== newEmail.trim().toLowerCase()) {
+    const { data: fresh, error: sessionError } = await authClient.getSession({
+      query: { disableCookieCache: true },
+    });
+    if (sessionError || !fresh) {
+      setStatus({ ...idle, error: t("profile.saveFailed") });
+      return;
+    }
+    if (fresh.user.email !== newEmail.trim().toLowerCase()) {
       setStatus({ ...idle, error: t("profile.emailInUse") });
       return;
     }
@@ -128,6 +135,7 @@ function EmailCard({ session, refetch }: { session: Session; refetch: () => Prom
     <form className="profile-card" onSubmit={submit}>
       <h2>{t("profile.emailSection")}</h2>
       {justChanged && <p className="success-text">{t("profile.emailChanged")}</p>}
+      {changeLink === "error" && <p className="error-text">{t("profile.emailLinkInvalid")}</p>}
       <div className="profile-current">
         <span className="profile-label">{t("profile.currentEmail")}</span>
         <span className="profile-email">{session.user.email}</span>

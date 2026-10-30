@@ -12,7 +12,7 @@ const spring = { type: "spring" as const, duration: 0.45, bounce: 0 };
 
 export default function HomePage() {
   const { t } = useI18n();
-  const justVerified = useOnceParam("verified");
+  const verifyLink = useOnceParam("verified");
   const [habits, setHabits] = useState<HabitSummary[] | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [name, setName] = useState("");
@@ -56,7 +56,8 @@ export default function HomePage() {
   return (
     <div className="container">
       <Navbar />
-      {justVerified && <p className="notice-success">{t("verify.done")}</p>}
+      {verifyLink === "ok" && <p className="notice-success">{t("verify.done")}</p>}
+      {verifyLink === "error" && <p className="notice-error">{t("verify.linkInvalid")}</p>}
 
       <div className="page-head">
         <h1>{t("home.myHabits")}</h1>
