@@ -59,27 +59,27 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  listHabits: () => request<HabitSummary[]>("/api/habits"),
+  listHabits: () => request<HabitSummary[]>("/habits"),
   createHabit: (name: string, type: TrackerType) =>
-    request<HabitSummary>("/api/habits", {
+    request<HabitSummary>("/habits", {
       method: "POST",
       body: JSON.stringify({ name, type }),
     }),
   deleteHabit: (id: string) =>
-    request<{ ok: boolean }>(`/api/habits/${id}`, { method: "DELETE" }),
-  getHabit: (id: string) => request<HabitDetail>(`/api/habits/${id}`),
+    request<{ ok: boolean }>(`/habits/${id}`, { method: "DELETE" }),
+  getHabit: (id: string) => request<HabitDetail>(`/habits/${id}`),
   toggleDay: (id: string, date: string) =>
-    request<{ marked: boolean; date: string }>(`/api/habits/${id}/toggle`, {
+    request<{ marked: boolean; date: string }>(`/habits/${id}/toggle`, {
       method: "POST",
       body: JSON.stringify({ date }),
     }),
   addCoin: (id: string) =>
     request<{ date: string; countToday: number; totalCount: number }>(
-      `/api/habits/${id}/coin`,
+      `/habits/${id}/coin`,
       { method: "POST", body: JSON.stringify({ date: todayKey() }) }
     ),
-  getStats: (id: string) => request<HabitStats>(`/api/habits/${id}/stats`),
-  getDashboard: () => request<DashboardData>("/api/habits-dashboard"),
+  getStats: (id: string) => request<HabitStats>(`/habits/${id}/stats`),
+  getDashboard: () => request<DashboardData>("/habits-dashboard"),
 };
 
 export function todayKey(): string {

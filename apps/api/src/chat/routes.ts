@@ -42,20 +42,20 @@ export function createChatRoutes(deps: ChatRouteDeps = {}) {
 
   const app = new Hono<ChatEnv>();
 
-  app.use("/api/chat/*", async (c, next) => {
+  app.use("/chat/*", async (c, next) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
     if (!session) return c.json({ error: "Unauthorized" }, 401);
     c.set("userId", session.user.id);
     await next();
   });
-  app.use("/api/chat", async (c, next) => {
+  app.use("/chat", async (c, next) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
     if (!session) return c.json({ error: "Unauthorized" }, 401);
     c.set("userId", session.user.id);
     await next();
   });
 
-  app.get("/api/chat/thread", async (c) => {
+  app.get("/chat/thread", async (c) => {
     const userId = c.get("userId");
     const thread = await store.getLatestThread(userId);
     if (!thread) return c.json({ threadId: null, messages: [], actions: [] });
@@ -70,7 +70,7 @@ export function createChatRoutes(deps: ChatRouteDeps = {}) {
     });
   });
 
-  app.post("/api/chat/threads", async (c) => {
+  app.post("/chat/threads", async (c) => {
     const userId = c.get("userId");
     // Starting a new thread invalidates confirmations left open on the old one.
     const latest = await store.getLatestThread(userId);
@@ -79,7 +79,7 @@ export function createChatRoutes(deps: ChatRouteDeps = {}) {
     return c.json({ threadId: thread.id }, 201);
   });
 
-  app.post("/api/chat", async (c) => {
+  app.post("/chat", async (c) => {
     const userId = c.get("userId");
     const llm = resolveLlm();
     if (!llm) return c.json({ error: "assistant_not_configured" }, 503);
@@ -150,7 +150,7 @@ export function createChatRoutes(deps: ChatRouteDeps = {}) {
     });
   });
 
-  app.post("/api/chat/confirm", async (c) => {
+  app.post("/chat/confirm", async (c) => {
     const userId = c.get("userId");
     const llm = resolveLlm();
     if (!llm) return c.json({ error: "assistant_not_configured" }, 503);
@@ -214,7 +214,7 @@ export function createChatRoutes(deps: ChatRouteDeps = {}) {
     });
   });
 
-  app.post("/api/chat/actions/:id/undo", async (c) => {
+  app.post("/chat/actions/:id/undo", async (c) => {
     const userId = c.get("userId");
     const action = await store.getAction(userId, c.req.param("id"));
     if (!action) return c.json({ error: "Not found" }, 404);

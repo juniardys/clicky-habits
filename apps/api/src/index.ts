@@ -14,13 +14,12 @@ type Env = {
 const app = new Hono<Env>();
 app.use(logger());
 
-// CORS: needed when the web app runs on a different origin than the API, e.g.
-// https://clickyhabits.com calling https://api.clickyhabits.com.
-// Enabled only when TRUSTED_ORIGINS is set; same-origin setups (Vite proxy,
-// single-domain nginx) don't need it.
+// CORS: the web app always runs on a different origin than the API
+// (https://clickyhabits.com calling https://api.clickyhabits.com).
+// Enabled only when TRUSTED_ORIGINS is set, which every deployment needs.
 if (process.env.TRUSTED_ORIGINS?.trim()) {
   app.use(
-    "/api/*",
+    "*",
     cors({
       origin: buildTrustedOrigins(),
       credentials: true,
@@ -30,25 +29,25 @@ if (process.env.TRUSTED_ORIGINS?.trim()) {
   );
 }
 
-// better-auth handles everything under /api/auth/*
-app.on(["GET", "POST"], "/api/auth/*", (c) => auth.handler(c.req.raw));
+// better-auth handles everything under /auth/* (basePath in auth.ts).
+app.on(["GET", "POST"], "/auth/*", (c) => auth.handler(c.req.raw));
 
-app.get("/api/health", (c) => c.json({ ok: true }));
+app.get("/health", (c) => c.json({ ok: true }));
 
 // ---------- auth guard ----------
-app.use("/api/habits/*", async (c, next) => {
+app.use("/habits/*", async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
   if (!session) return c.json({ error: "Unauthorized" }, 401);
   c.set("userId", session.user.id);
   await next();
 });
-app.use("/api/habits-dashboard", async (c, next) => {
+app.use("/habits-dashboard", async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
   if (!session) return c.json({ error: "Unauthorized" }, 401);
   c.set("userId", session.user.id);
   await next();
 });
-app.use("/api/habits", async (c, next) => {
+app.use("/habits", async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
   if (!session) return c.json({ error: "Unauthorized" }, 401);
   c.set("userId", session.user.id);
@@ -56,11 +55,11 @@ app.use("/api/habits", async (c, next) => {
 });
 
 // ---------- habits ----------
-app.get("/api/habits", async (c) => {
+app.get("/habits", async (c) => {
   return c.json(await habitService.listHabits(c.get("userId")));
 });
 
-app.post("/api/habits", async (c) => {
+app.post("/habits", async (c) => {
   const body = await c.req.json<{ name?: string; type?: string }>();
   const name = body.name?.trim();
   if (!name) return c.json({ error: "Habit name is required" }, 400);
@@ -71,13 +70,13 @@ app.post("/api/habits", async (c) => {
   return c.json(habit, 201);
 });
 
-app.delete("/api/habits/:id", async (c) => {
+app.delete("/habits/:id", async (c) => {
   const deleted = await habitService.deleteHabit(c.get("userId"), c.req.param("id"));
   if (!deleted) return c.json({ error: "Not found" }, 404);
   return c.json({ ok: true });
 });
 
-app.get("/api/habits/:id", async (c) => {
+app.get("/habits/:id", async (c) => {
   const habit = await habitService.getHabit(c.get("userId"), c.req.param("id"));
   if (!habit) return c.json({ error: "Not found" }, 404);
   return c.json(habit);
@@ -91,7 +90,7 @@ function parseDate(value: string | undefined): string | null {
 }
 
 // Calendar tracker: toggle a day on/off.
-app.post("/api/habits/:id/toggle", async (c) => {
+app.post("/habits/:id/toggle", async (c) => {
   const body = await c.req.json<{ date?: string }>().catch(() => ({}) as { date?: string });
   const date = parseDate(body.date);
   if (!date) return c.json({ error: "Invalid date" }, 400);
@@ -101,7 +100,7 @@ app.post("/api/habits/:id/toggle", async (c) => {
 });
 
 // Jar tracker: add one coin (today by default).
-app.post("/api/habits/:id/coin", async (c) => {
+app.post("/habits/:id/coin", async (c) => {
   const body = await c.req.json<{ date?: string }>().catch(() => ({}) as { date?: string });
   const date = parseDate(body.date);
   if (!date) return c.json({ error: "Invalid date" }, 400);
@@ -111,11 +110,11 @@ app.post("/api/habits/:id/coin", async (c) => {
 });
 
 // Aggregated dashboard across all habits of the user.
-app.get("/api/habits-dashboard", async (c) => {
+app.get("/habits-dashboard", async (c) => {
   return c.json(await habitService.getDashboard(c.get("userId")));
 });
 
-app.get("/api/habits/:id/stats", async (c) => {
+app.get("/habits/:id/stats", async (c) => {
   const stats = await habitService.getHabitStats(c.get("userId"), c.req.param("id"));
   if (!stats) return c.json({ error: "Not found" }, 404);
   return c.json(stats);

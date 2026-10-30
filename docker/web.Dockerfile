@@ -13,19 +13,15 @@ COPY apps/web/package.json apps/web/package.json
 RUN bun install --frozen-lockfile
 COPY apps/web apps/web
 
-# Public API URL baked into the SPA.
-# Empty = same origin (nginx below proxies /api to the api service).
-# Set to e.g. https://api.clickyhabits.com when the API is served on a subdomain.
+# Public API URL baked into the SPA. The API lives on its own subdomain and the
+# web container never proxies to it, so this is required in production
+# (e.g. https://api.clickyhabits.com). Empty = dev only (Vite proxy).
 ARG VITE_API_URL=""
 ENV VITE_API_URL=$VITE_API_URL
 RUN cd apps/web && bun run build
 
 # ---------- runner ----------
 FROM nginx:1.27-alpine AS runner
-
-# Where nginx proxies /api (same-origin mode). Rendered into the config by the
-# official image's envsubst step (/etc/nginx/templates/*.template).
-ENV API_UPSTREAM=http://clicky-habits-api:3001
 
 COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/apps/web/dist /usr/share/nginx/html
