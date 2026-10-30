@@ -35,6 +35,22 @@ bun run dev:api   # http://localhost:3001
 bun run dev:web   # http://localhost:5173
 ```
 
+### Reset and seed the local database
+
+```bash
+bun run db:seed          # add a verified demo user (demo@clickyhabits.local / demo12345) with sample habits
+bun run db:reset         # drop the DB and re-run all migrations, no seed (asks for confirmation)
+bun run db:reset:force   # same as db:reset, without the confirmation prompt
+```
+
+`db:migrate` and `db:reset` never seed. To get a fresh DB with demo data, run
+`bun run db:reset` then `bun run db:seed`.
+
+`db:reset` and `db:reset:force` delete all data in the database pointed to by
+`DATABASE_URL`. Only use them against a local database. The seed lives in
+`apps/api/prisma/seed.ts`, is safe to re-run (it recreates only the demo user),
+and refuses to run when `NODE_ENV=production`.
+
 Open http://localhost:5173. The web dev server proxies the API paths (`/auth`, `/health`, `/habits`, `/chat`, `/me`) to the API on :3001, so auth cookies stay on a single origin while developing.
 
 ## Chat assistant (Mochi)
