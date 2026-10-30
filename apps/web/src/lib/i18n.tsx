@@ -48,14 +48,16 @@ const translations = {
     "habit.jarSub": "🪙 Total {total} coins · {jars} jars full",
     "habit.prevMonth": "Previous month",
     "habit.nextMonth": "Next month",
-    "habit.todayCrossed": "✓ Today crossed off (tap to undo)",
+    "habit.todayCrossed": "✓ Today crossed off",
     "habit.crossToday": "✗ Cross Off Today",
-    "habit.calendarHint": "Click any date to cross it off / undo.",
+    "habit.calendarHint": "Click any date to cross it off / undo. Tap the button again to undo today.",
     "habit.jarLabel": "Jar {cur}/{total} · {coins}/{cap} coins",
+    "habit.jarLabelShort": "{cur}/{total} · {coins}/{cap}",
     "habit.prevJar": "Previous jar",
     "habit.nextJar": "Next jar",
     "habit.addCoin": "🪙 Drop a Coin",
     "habit.removeCoin": "Remove 1 Coin",
+    "habit.removeCoinShort": "-1 Coin",
     "habit.jarHint":
       "Drag the jar to rotate. One jar holds {cap} coins. When it fills up, you move on to the next jar. Remove 1 Coin takes the last coin back out.",
     // stats page
@@ -90,6 +92,7 @@ const translations = {
     "dash.colConsistency": "30d",
     "dash.empty": "No habits yet. Add one from Home to see your dashboard come alive.",
     "dash.unitActivity": "activity",
+    "chart.sparse": "Your chart fills in after a few active days. Keep going!",
     // chat
     "chat.fab": "Ask Mochi",
     "chat.title": "Mochi",
@@ -290,14 +293,16 @@ const translations = {
     "habit.jarSub": "🪙 Total {total} koin · {jars} toples penuh",
     "habit.prevMonth": "Bulan sebelumnya",
     "habit.nextMonth": "Bulan berikutnya",
-    "habit.todayCrossed": "✓ Hari ini tercoret (klik untuk batalkan)",
+    "habit.todayCrossed": "✓ Hari ini tercoret",
     "habit.crossToday": "✗ Coret Hari Ini",
-    "habit.calendarHint": "Klik tanggal mana pun untuk mencoret / membatalkan.",
+    "habit.calendarHint": "Klik tanggal mana pun untuk mencoret / membatalkan. Klik tombol lagi untuk membatalkan hari ini.",
     "habit.jarLabel": "Toples {cur}/{total} · {coins}/{cap} koin",
+    "habit.jarLabelShort": "{cur}/{total} · {coins}/{cap}",
     "habit.prevJar": "Toples sebelumnya",
     "habit.nextJar": "Toples berikutnya",
     "habit.addCoin": "🪙 Masukkan Koin",
     "habit.removeCoin": "Keluarkan 1 Koin",
+    "habit.removeCoinShort": "-1 Koin",
     "habit.jarHint":
       "Tarik toples untuk memutar. Satu toples muat {cap} koin. Kalau penuh, otomatis lanjut ke toples berikutnya. Keluarkan 1 Koin mengambil koin terakhir kembali.",
     // stats page
@@ -333,6 +338,7 @@ const translations = {
     "dash.empty":
       "Belum ada kebiasaan. Tambah dulu dari Beranda biar dashboard-nya hidup.",
     "dash.unitActivity": "aktivitas",
+    "chart.sparse": "Grafik mulai terisi setelah beberapa hari aktif. Lanjutkan!",
     // chat
     "chat.fab": "Tanya Mochi",
     "chat.title": "Mochi",

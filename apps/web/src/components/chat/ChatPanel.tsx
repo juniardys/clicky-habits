@@ -888,7 +888,7 @@ export default function ChatPanel() {
           whileTap={{ scale: 0.94 }}
         >
           <MochiFace size={32} />
-          <span>{t("chat.fab")}</span>
+          <span className="chat-fab-label">{t("chat.fab")}</span>
         </motion.button>
       )}
     </>

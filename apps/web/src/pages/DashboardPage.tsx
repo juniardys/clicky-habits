@@ -14,6 +14,7 @@ import { api, type DashboardData } from "../lib/api";
 import { onHabitsChanged } from "../lib/chat";
 import { useI18n } from "../lib/i18n";
 import Navbar from "../components/Navbar";
+import { isSparse } from "../lib/chart";
 
 const spring = { type: "spring" as const, duration: 0.45, bounce: 0 };
 
@@ -104,10 +105,10 @@ export default function DashboardPage() {
             </div>
             <div className="stat-tile">
               <div className="value">{data.bestStreak.value}</div>
-              <div className="label">
-                {t("dash.bestStreak")}
-                {data.bestStreak.name ? ` · ${data.bestStreak.name}` : ""}
-              </div>
+              <div className="label">{t("dash.bestStreak")}</div>
+              {data.bestStreak.name && (
+                <div className="label-sub">{data.bestStreak.name}</div>
+              )}
             </div>
             <div className="stat-tile">
               <div className="value">{data.completionRate30}%</div>
@@ -117,6 +118,7 @@ export default function DashboardPage() {
 
           <div className="chart-card">
             <h3>{t("dash.chartTitle")}</h3>
+            {isSparse(chartData) && <p className="chart-sparse">{t("chart.sparse")}</p>}
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={chartData}>
                 <CartesianGrid stroke="#e4d8cc" strokeDasharray="3 3" vertical={false} />
@@ -145,7 +147,7 @@ export default function DashboardPage() {
                 <thead>
                   <tr>
                     <th>{t("dash.colHabit")}</th>
-                    <th>{t("dash.colType")}</th>
+                    <th className="col-type">{t("dash.colType")}</th>
                     <th>{t("dash.colTotal")}</th>
                     <th>{t("dash.colStreak")}</th>
                     <th>{t("dash.colBest")}</th>
@@ -155,12 +157,15 @@ export default function DashboardPage() {
                 <tbody>
                   {data.habits.map((h) => (
                     <tr key={h.id}>
-                      <td>
+                      <td className="col-name">
+                        <span className="type-icon-inline" aria-hidden="true">
+                          {h.type === "CALENDAR" ? "🗓️" : "🪙"}
+                        </span>
                         <Link to={`/habits/${h.id}/stats`} className="table-link">
                           {h.name}
                         </Link>
                       </td>
-                      <td>{h.type === "CALENDAR" ? "🗓️" : "🪙"}</td>
+                      <td className="col-type">{h.type === "CALENDAR" ? "🗓️" : "🪙"}</td>
                       <td>{h.type === "JAR" ? h.totalCount : h.totalDays}</td>
                       <td>{h.currentStreak}</td>
                       <td>{h.bestStreak}</td>

@@ -19,8 +19,11 @@ export default function LoginPage() {
   // dismissal, cooldown, or an unregistered origin must never surface as an
   // error here, the buttons below keep working either way. On success the
   // plugin redirects to callbackURL (absolute, same reason as handleGoogle).
+  // Skipped on phones: the One Tap bottom sheet covers the sign-in button and
+  // the sign-up toggle, and the regular Google button is one tap away anyway.
   useEffect(() => {
     if (!GOOGLE_CLIENT_ID || oneTapPrompted.current) return;
+    if (window.matchMedia("(max-width: 640px)").matches) return;
     oneTapPrompted.current = true;
     authClient
       .oneTap({ callbackURL: `${window.location.origin}/app` })
