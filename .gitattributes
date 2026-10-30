@@ -1,0 +1,8 @@
+# Shell scripts and Docker files must keep LF even on Windows checkouts,
+# otherwise `#!/bin/sh` breaks inside Linux containers.
+*.sh            text eol=lf
+Dockerfile      text eol=lf
+*.Dockerfile    text eol=lf
+docker-compose.yml text eol=lf
+
+* text=auto

@@ -1,0 +1,12 @@
+# Filled in by Dockerfile copies; node_modules are installed in the image.
+node_modules/
+**/node_modules/
+**/dist/
+.git/
+*.log
+.tmp/
+.superpowers/
+design-variants/
+.env
+.env.*
+README.md

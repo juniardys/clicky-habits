@@ -72,4 +72,59 @@ PostgreSQL (see the `chat_agent` migration).
 apps/
   api/   Hono + better-auth + Prisma (port 3001)
   web/   Vite + React + R3F (port 5173, proxy /api -> 3001)
+docker/
+  nginx.conf           SPA + /api reverse proxy
+  supervisord.conf     runs api (bun) + nginx in one container
+  api-db.Dockerfile    migration / db-ops image
+  db-entrypoint.sh
+Dockerfile             app image (web build + api runtime)
+docker-compose.yml
 ```
+
+## Deploy (Docker Compose / Dokploy)
+
+Two containers:
+
+| Service | Purpose |
+|---|---|
+| `prisma-migration` | runs `prisma migrate deploy` on start, then stays alive for manual ops (`bunx prisma studio`, `migrate status`, ...) |
+| `app` | nginx serving the Vite build + Bun API on `127.0.0.1:3001`, nginx proxies `/api` to it. Starts only after `prisma-migration` is healthy |
+
+Because the SPA and the API share one origin, auth cookies work without CORS.
+
+### Dokploy
+
+1. Create a **Compose** app pointing at this repo, source path `docker-compose.yml`.
+2. Fill in the environment variables (Dokploy env editor):
+
+   ```
+   DATABASE_URL=postgresql://user:pass@host:5432/clicky_habits
+   BETTER_AUTH_SECRET=<openssl rand -base64 32>
+   BETTER_AUTH_URL=https://your-domain.tld
+   GOOGLE_CLIENT_ID=
+   GOOGLE_CLIENT_SECRET=
+   PORT=3001
+   APP_PORT=3000
+   ```
+
+3. Set the domain to route to the `app` service's published port (`APP_PORT`, default `3000`).
+4. Google SSO redirect URI: `https://your-domain.tld/api/auth/callback/google`.
+
+If Postgres runs as another Dokploy service in the same compose project, use its
+service name as the host (`postgresql://user:pass@postgres:5432/clicky_habits`).
+
+Manual db ops:
+
+```bash
+docker exec -it clicky-habits-migration bunx prisma migrate status
+docker exec -it clicky-habits-migration bunx prisma studio
+```
+
+### Local
+
+```bash
+cp .env.example .env   # point DATABASE_URL at a reachable Postgres
+docker compose up -d --build
+# http://localhost:3000 (or APP_PORT)
+```
+
