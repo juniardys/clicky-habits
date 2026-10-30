@@ -78,7 +78,8 @@ docker/
   nginx.conf.template   SPA only, no API proxy (the API lives on its subdomain)
   api-db.Dockerfile     migration / db-ops image
   db-entrypoint.sh
-docker-compose.yml
+docker-compose.yml        production (no host ports)
+docker-compose.local.yml  local Docker testing (publishes host ports)
 ```
 
 ## Deploy (Docker Compose / Dokploy)
@@ -110,13 +111,22 @@ route to it, so `<domain>/auth`, `/health`, `/habits` and `/chat` all 404.
    GOOGLE_CLIENT_SECRET=
    ```
 
-3. Domains:
+3. Domains (Dokploy **Domains** tab, container ports):
    - `clickyhabits.com` -> service `web`, port `80`
    - `api.clickyhabits.com` -> service `api`, port `3001`
 4. Google SSO redirect URI: `https://api.clickyhabits.com/auth/callback/google`.
 
 Notes:
 
+- The compose file publishes **no host ports**. Traefik reaches the
+  containers over the Docker network, so there is no clash with ports already
+  in use on the server (Dokploy itself listens on 3000) and the API is not
+  reachable via `http://<server-ip>:3001`. `APP_PORT` / `API_PORT` are not
+  needed in Dokploy.
+- Behind a Cloudflare Tunnel, TLS ends at Cloudflare: route both hostnames in
+  the tunnel to Traefik (e.g. `http://localhost:80`) and leave HTTPS /
+  Let's Encrypt off on the Dokploy domains. The public URLs in the env stay
+  `https://`.
 - `VITE_API_URL` is a **build arg** of `web`: changing it requires a rebuild.
   It is required in production; leaving it empty makes the SPA call its own
   origin, which has no API.
@@ -141,7 +151,11 @@ docker exec -it clicky-habits-migration bunx prisma studio
 
 ```bash
 cp .env.example .env   # point DATABASE_URL at a reachable Postgres
-docker compose up -d --build
+# The web container has no API proxy, so mimic the two-domain setup:
+#   BETTER_AUTH_URL="http://localhost:3001"
+#   VITE_API_URL="http://localhost:3001"
+#   TRUSTED_ORIGINS="http://localhost:3000"
+docker compose -f docker-compose.yml -f docker-compose.local.yml up -d --build
 # web: http://localhost:3000 (APP_PORT), api: http://localhost:3001 (API_PORT)
 ```
 
