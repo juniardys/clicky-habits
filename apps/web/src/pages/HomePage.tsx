@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { api, type HabitSummary, type TrackerType } from "../lib/api";
+import { onHabitsChanged } from "../lib/chat";
 import { useI18n } from "../lib/i18n";
 import { playPop } from "../lib/sound";
 import Navbar from "../components/Navbar";
@@ -24,6 +25,8 @@ export default function HomePage() {
   useEffect(() => {
     refresh().catch(() => setHabits([]));
   }, []);
+
+  useEffect(() => onHabitsChanged(() => void refresh().catch(() => {})), []);
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();

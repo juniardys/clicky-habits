@@ -11,6 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import { api, type DashboardData } from "../lib/api";
+import { onHabitsChanged } from "../lib/chat";
 import { useI18n } from "../lib/i18n";
 import Navbar from "../components/Navbar";
 
@@ -27,6 +28,14 @@ export default function DashboardPage() {
       .then(setData)
       .catch((e) => setError(e.message));
   }, []);
+
+  useEffect(
+    () =>
+      onHabitsChanged(() => {
+        api.getDashboard().then(setData).catch(() => {});
+      }),
+    []
+  );
 
   if (error) {
     return (

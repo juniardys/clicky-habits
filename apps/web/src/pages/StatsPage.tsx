@@ -10,6 +10,7 @@ import {
   YAxis,
 } from "recharts";
 import { api, type HabitStats } from "../lib/api";
+import { onHabitsChanged } from "../lib/chat";
 import { useI18n } from "../lib/i18n";
 import Navbar from "../components/Navbar";
 
@@ -25,6 +26,13 @@ export default function StatsPage() {
       .getStats(id)
       .then(setStats)
       .catch((e) => setError(e.message));
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    return onHabitsChanged(() => {
+      api.getStats(id).then(setStats).catch(() => {});
+    });
   }, [id]);
 
   if (error) {
