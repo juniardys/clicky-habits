@@ -31,6 +31,28 @@ export function buildTrustedOrigins(): string[] {
   return [...origins];
 }
 
+// A split-origin deployment (web on example.com, API on api.example.com) must
+// list the web origin in TRUSTED_ORIGINS. Without it, credentialed CORS is not
+// mounted and better-auth rejects the web origin's callbackURL with a 403,
+// which only shows up at sign-in. Fail loudly at boot instead.
+export function missingTrustedOrigin(baseURL: string): string | null {
+  const extras = (process.env.TRUSTED_ORIGINS ?? "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  if (extras.length > 0) return null;
+
+  let baseOrigin: string;
+  try {
+    baseOrigin = new URL(baseURL).origin;
+  } catch {
+    return null;
+  }
+
+  return `TRUSTED_ORIGINS is empty but the API is deployed at ${baseOrigin}. Set it to the web app origin (e.g. https://example.com) or split-origin sign-in will fail with 403 Invalid callbackURL.`;
+}
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "postgresql" }),
   baseURL,

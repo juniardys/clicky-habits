@@ -1,6 +1,7 @@
 # Rendered by the nginx image's envsubst step. No API proxy here: the API is
 # served only on its own subdomain (api.<domain>). This container serves the
-# SPA and nothing else, so <domain>/auth, /health, /habits and /chat 404.
+# SPA and nothing else: <domain>/auth, /health, /habits and /chat never reach
+# the API and fall through to the SPA's index.html like any unknown path.
 
 server {
     listen 80;
