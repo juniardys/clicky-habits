@@ -187,6 +187,9 @@ export default function HabitPage() {
   return (
     <div className="container">
       <Navbar />
+      <Link to="/app" className="back-link">
+        {t("common.back")}
+      </Link>
       <div className="page-head">
         <div>
           <h1>{habit.name}</h1>
@@ -199,14 +202,9 @@ export default function HabitPage() {
                 })}
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <Link to={`/habits/${id}/stats`}>
-            <button className="btn">{t("common.stats")}</button>
-          </Link>
-          <Link to="/app">
-            <button className="btn-ghost">{t("common.back")}</button>
-          </Link>
-        </div>
+        <Link to={`/habits/${id}/stats`} className="btn page-head-action">
+          {t("common.stats")}
+        </Link>
       </div>
 
       <motion.div
@@ -216,22 +214,24 @@ export default function HabitPage() {
       >
         {habit.type === "CALENDAR" ? (
           <>
-            <div className="canvas-wrap">
-              <div className="canvas-top">
-                <button className="nav-arrow" onClick={prevMonth} aria-label={t("habit.prevMonth")}>
-                  ←
-                </button>
-                <span className="month-label">{monthLabel}</span>
-                <button className="nav-arrow" onClick={nextMonth} aria-label={t("habit.nextMonth")}>
-                  →
-                </button>
+            <div className="canvas-stage">
+              <div className="canvas-wrap">
+                <div className="canvas-top">
+                  <button className="nav-arrow" onClick={prevMonth} aria-label={t("habit.prevMonth")}>
+                    ←
+                  </button>
+                  <span className="month-label">{monthLabel}</span>
+                  <button className="nav-arrow" onClick={nextMonth} aria-label={t("habit.nextMonth")}>
+                    →
+                  </button>
+                </div>
+                <Calendar3D
+                  year={viewYear}
+                  month={viewMonth}
+                  markedDates={markedDates}
+                  onToggle={handleToggle}
+                />
               </div>
-              <Calendar3D
-                year={viewYear}
-                month={viewMonth}
-                markedDates={markedDates}
-                onToggle={handleToggle}
-              />
               <div className="canvas-overlay">
                 <button
                   ref={markButtonRef}
@@ -248,44 +248,57 @@ export default function HabitPage() {
           </>
         ) : (
           <>
-            <div className="canvas-wrap">
-              <div className="canvas-top">
-                <button
-                  className="nav-arrow"
-                  disabled={shownJar === 0}
-                  onClick={() => {
-                    setJustAdded(false);
-                    setViewJar(shownJar - 1);
-                  }}
-                  aria-label={t("habit.prevJar")}
-                >
-                  ←
-                </button>
-                <span className="jar-label">
-                  {t("habit.jarLabel", {
-                    cur: shownJar + 1,
-                    total: jarCount,
-                    coins: coinsInShownJar,
-                    cap: JAR_CAPACITY,
-                  })}
-                </span>
-                <button
-                  className="nav-arrow"
-                  disabled={shownJar >= jarCount - 1}
-                  onClick={() => {
-                    setJustAdded(false);
-                    setViewJar(shownJar + 1);
-                  }}
-                  aria-label={t("habit.nextJar")}
-                >
-                  →
-                </button>
+            <div className="canvas-stage">
+              <div className="canvas-wrap">
+                <div className="canvas-top">
+                  <button
+                    className="nav-arrow"
+                    disabled={shownJar === 0}
+                    onClick={() => {
+                      setJustAdded(false);
+                      setViewJar(shownJar - 1);
+                    }}
+                    aria-label={t("habit.prevJar")}
+                  >
+                    ←
+                  </button>
+                  <span className="jar-label">
+                    <span className="label-long">
+                      {t("habit.jarLabel", {
+                        cur: shownJar + 1,
+                        total: jarCount,
+                        coins: coinsInShownJar,
+                        cap: JAR_CAPACITY,
+                      })}
+                    </span>
+                    <span className="label-short">
+                      🫙{" "}
+                      {t("habit.jarLabelShort", {
+                        cur: shownJar + 1,
+                        total: jarCount,
+                        coins: coinsInShownJar,
+                        cap: JAR_CAPACITY,
+                      })}
+                    </span>
+                  </span>
+                  <button
+                    className="nav-arrow"
+                    disabled={shownJar >= jarCount - 1}
+                    onClick={() => {
+                      setJustAdded(false);
+                      setViewJar(shownJar + 1);
+                    }}
+                    aria-label={t("habit.nextJar")}
+                  >
+                    →
+                  </button>
+                </div>
+                <Jar3D
+                  key={shownJar}
+                  coinsInJar={coinsInShownJar}
+                  animateLast={justAdded && shownJar === currentJar}
+                />
               </div>
-              <Jar3D
-                key={shownJar}
-                coinsInJar={coinsInShownJar}
-                animateLast={justAdded && shownJar === currentJar}
-              />
               <div className="canvas-overlay">
                 <button
                   ref={coinButtonRef}
@@ -299,8 +312,10 @@ export default function HabitPage() {
                   className="btn big-action"
                   onClick={handleRemoveCoin}
                   disabled={busy || total === 0}
+                  aria-label={t("habit.removeCoin")}
                 >
-                  {t("habit.removeCoin")}
+                  <span className="label-long">{t("habit.removeCoin")}</span>
+                  <span className="label-short">{t("habit.removeCoinShort")}</span>
                 </button>
               </div>
             </div>

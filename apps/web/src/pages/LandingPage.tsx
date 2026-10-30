@@ -74,6 +74,24 @@ export default function LandingPage() {
     { q: t("landing.q5"), a: t("landing.a5") },
   ];
 
+  // Rendered twice: in the navbar (desktop) and in the footer (phones, where
+  // the navbar keeps only the logo and the main CTA).
+  const langToggle = (className: string) => (
+    <div className={className} role="group" aria-label="Language">
+      {(["en", "id"] as Lang[]).map((code) => (
+        <button
+          key={code}
+          type="button"
+          className={`lang-option ${lang === code ? "active" : ""}`}
+          onClick={() => setLang(code)}
+          aria-pressed={lang === code}
+        >
+          {code.toUpperCase()}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <div className="landing">
       <header className="landing-nav">
@@ -88,19 +106,7 @@ export default function LandingPage() {
             <a href="#faq">{t("landing.navFaq")}</a>
           </nav>
           <div className="landing-nav-actions">
-            <div className="lang-toggle" role="group" aria-label="Language">
-              {(["en", "id"] as Lang[]).map((code) => (
-                <button
-                  key={code}
-                  type="button"
-                  className={`lang-option ${lang === code ? "active" : ""}`}
-                  onClick={() => setLang(code)}
-                  aria-pressed={lang === code}
-                >
-                  {code.toUpperCase()}
-                </button>
-              ))}
-            </div>
+            {langToggle("lang-toggle landing-nav-lang")}
             <Link to="/login" className="landing-signin">
               {t("landing.signIn")}
             </Link>
@@ -349,6 +355,7 @@ export default function LandingPage() {
       <footer className="landing-footer">
         <span className="brand">Clicky <span>Habits</span></span>
         <p>{t("landing.footer")}</p>
+        {langToggle("lang-toggle landing-footer-lang")}
         <Link to="/login">{t("landing.signIn")}</Link>
       </footer>
     </div>

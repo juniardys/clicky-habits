@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review UI Mobile - clickyhabits.com</title>
+<style>
+  :root { --char:#46364a; --dim:#7a6c7d; --peach:#e49d7a; --bg:#fff8ef; --line:#e6dccf; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--char); background:var(--bg); line-height:1.55; }
+  main { max-width: 1140px; margin: 0 auto; padding: 32px 20px 80px; }
+  h1 { margin: 0 0 4px; font-size: 30px; }
+  h2 { margin: 48px 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--char); }
+  h3 { margin: 28px 0 8px; }
+  .meta { color: var(--dim); margin: 0 0 24px; }
+  code { background:#f1e7da; padding: 1px 5px; border-radius: 4px; font-size: 0.92em; }
+  table { width:100%; border-collapse: collapse; background:#fff; font-size: 14px; }
+  th, td { border:1px solid var(--line); padding: 8px 10px; text-align:left; vertical-align: top; }
+  th { background:#f6eee3; }
+  .sev { display:inline-block; padding: 2px 8px; border-radius: 999px; font-weight: 700; font-size: 12px; white-space: nowrap; }
+  .high { background:#f6c9c0; } .med { background:#f8e2a8; } .low { background:#dbe7f7; } .ok { background:#cdeccf; }
+  .shots { display:flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+  figure { margin:0; background:#fff; border:1px solid var(--line); border-radius: 12px; padding: 10px; width: 250px; }
+  figure.wide { width: 100%; max-width: 520px; }
+  figure.tall { width: 250px; max-height: 900px; overflow-y: auto; }
+  figure img { width:100%; display:block; border-radius: 6px; border: 1px solid var(--line); }
+  figcaption { font-size: 13px; color: var(--dim); margin-top: 8px; }
+  .issue { background:#fff; border:1px solid var(--line); border-left: 6px solid var(--peach); border-radius: 10px; padding: 14px 18px; margin: 16px 0; }
+  .issue h3 { margin-top: 0; }
+  ul, ol { padding-left: 20px; }
+  .note { color: var(--dim); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+<h1>Review UI Mobile - clickyhabits.com</h1>
+<p class="meta">30 Oktober 2026 - production, Chrome DevTools device emulation. Hanya review, belum ada perubahan kode.</p>
+
+<h2>Ringkasan</h2>
+<p>Semua halaman dan semua bagian halaman sudah dicek di mobile, termasuk state logout (Landing, Login, Daftar), bahasa EN, dan kedua tipe tracker (Coret Kalender dan Koin dalam Toples). Tidak ada halaman yang rusak total, tapi ada tiga pola yang berulang:</p>
+<ol>
+  <li><strong>Tombol mengambang "Tanya Mochi" (FAB) menutupi konten</strong> di setiap halaman setelah login: angka stat tile, tombol Statistik, tombol Simpan di modal, kalender, dan toples.</li>
+  <li><strong>Header yang wrap tanpa rencana</strong> (navbar landing, navbar app, baris tombol page-head) jadi tampak timpang dan memakan tinggi layar.</li>
+  <li><strong>Overlay di atas canvas 3D terlalu besar untuk 375px</strong>: tombol aksi besar wrap jadi 2 baris dan menutupi kalender atau toples, label toples menutupi panah navigasi.</li>
+</ol>
+<p>Masalah lain lebih kecil: tabel dashboard terpotong, label stat tile tidak rata, grid tile ganjil di Statistik, dan grafik yang hampir kosong.</p>
+
+<h3>Perangkat yang dites</h3>
+<ul>
+  <li><strong>iPhone SE</strong> (375 x 667): semua halaman. Lebar paling sempit yang umum, jadi masalah wrap paling terlihat. Screenshot 09-25 dan zoom.</li>
+  <li><strong>iPhone 16</strong> (393 x 852): Dashboard, Beranda, Habit, Statistik di awal review (screenshot 01-08). Masalah yang sama muncul juga di sini.</li>
+</ul>
+
+<h3>Cakupan</h3>
+<table>
+  <thead><tr><th>Halaman</th><th>Yang dicek</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td><code>/</code> Landing</td><td>Seluruh halaman (navbar, hero, demo, alasan, cara kerja, dua mode, statistik, contoh, FAQ, CTA, footer), bahasa ID dan EN</td><td><span class="sev med">Ada masalah</span></td></tr>
+    <tr><td><code>/login</code> Login dan Daftar</td><td>Mode Masuk dan Daftar, ID dan EN, dengan dan tanpa Google One Tap</td><td><span class="sev low">Minor</span></td></tr>
+    <tr><td><code>/app</code> Beranda</td><td>Daftar kebiasaan sampai bawah, modal tambah kebiasaan</td><td><span class="sev high">Ada masalah</span></td></tr>
+    <tr><td><code>/dashboard</code></td><td>Seluruh halaman, panel chat Mochi</td><td><span class="sev high">Ada masalah</span></td></tr>
+    <tr><td><code>/habits/:id</code></td><td>Tracker Coret Kalender dan Koin dalam Toples, sampai bawah</td><td><span class="sev high">Ada masalah</span></td></tr>
+    <tr><td><code>/habits/:id/stats</code></td><td>Statistik kalender dan toples, sampai bawah</td><td><span class="sev med">Ada masalah</span></td></tr>
+  </tbody>
+</table>
+
+<h2>Daftar masalah</h2>
+<table>
+  <thead>
+    <tr><th>#</th><th>Severity</th><th>Halaman</th><th>Masalah</th><th>Penyebab (file:baris)</th><th>Saran perbaikan</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td><td><span class="sev high">High</span></td>
+      <td>Dashboard, Beranda, modal tambah, Habit, Statistik</td>
+      <td>FAB "Tanya Mochi" menutupi konten: tombol <strong>Simpan</strong> di modal tambah kebiasaan, tombol Statistik di kartu pertama, angka di stat tile (Dashboard "Streak saat ini", Statistik "Konsistensi" dan "Toples penuh"), kalender, dan toples. Lebarnya sekitar 170px, hampir setengah layar 375px.</td>
+      <td><code>apps/web/src/styles.css</code> ~2128 (<code>.chat-fab</code> mobile, <code>bottom: calc(86px + safe-area)</code>); <code>.container</code> padding-bottom hanya 72px; FAB di <code>components/chat/ChatPanel.tsx</code> ~882</td>
+      <td>FAB ikon saja (bulat 52px) di &lt;=640px, posisi pojok kanan bawah; tambah <code>padding-bottom</code> ~120px di <code>.container</code>; sembunyikan FAB saat modal terbuka. Spec <code>docs/superpowers/specs/2026-10-30-chat-agent-design.md</code> baris 267 bilang FAB tidak boleh menutupi aksi utama.</td>
+    </tr>
+    <tr>
+      <td>2</td><td><span class="sev high">High</span></td>
+      <td>Habit (Koin dalam Toples)</td>
+      <td>Overlay canvas toples terlalu besar: "Masukkan Koin" dan "Keluarkan 1 Koin" wrap jadi 2 baris dan berubah jadi blob besar yang menutupi separuh bawah toples. Label "Toples 1/1 · 2/100 koin" wrap 2 baris dan menutupi panah kiri/kanan sampai setengahnya.</td>
+      <td><code>styles.css</code> 595-610 (<code>.canvas-overlay</code>), 629-640 (<code>.jar-label</code> <code>padding: 8px 20px</code>), 667-670 (<code>.big-action</code> <code>padding: 15px 32px</code>, <code>font-size: 18px</code>), 758-762 (<code>.canvas-wrap</code> <code>height: 58vh</code>); <code>pages/HabitPage.tsx</code> 251-307</td>
+      <td>Di &lt;=600px: <code>.big-action</code> <code>padding: 12px 18px</code>, <code>font-size: 15px</code>, <code>white-space: nowrap</code>, atau tombol di bawah canvas (bukan overlay). Label toples dipendekkan ("1/1 · 2/100") atau dipecah ke 2 elemen, dengan <code>min-width: 0</code> agar panah tidak tertutup.</td>
+    </tr>
+    <tr>
+      <td>3</td><td><span class="sev med">Medium</span></td>
+      <td>Habit (Coret Kalender)</td>
+      <td>Tombol "✓ Hari ini tercoret (klik untuk batalkan)" wrap 2 baris dan menutupi 2 baris terakhir kalender (tanggal 25-31), padahal tanggal itu yang paling sering diklik.</td>
+      <td><code>styles.css</code> 595-610, 667-670, 758-762; <code>pages/HabitPage.tsx</code> 235-245</td>
+      <td>Teks pendek di mobile ("✓ Tercoret" dan hint "klik untuk batalkan" di bawah), atau tombol dipindah ke bawah canvas. Bisa juga canvas lebih tinggi di mobile.</td>
+    </tr>
+    <tr>
+      <td>4</td><td><span class="sev med">Medium</span></td>
+      <td>Landing</td>
+      <td>Navbar landing terlalu tinggi: 3 baris, sekitar 164px dari 667px (~25% layar). Karena sticky, area ini terus menutupi konten saat scroll (judul CTA dan tombol hero terpotong di bawah navbar). Baris 1 hanya logo dengan ruang kosong di kanan.</td>
+      <td><code>styles.css</code> 774 (<code>.landing-nav</code> sticky), 783 (<code>.landing-nav-inner</code>), 1377-1402 (media 700px: <code>flex-wrap</code>, <code>.landing-links</code> <code>width:100%</code> <code>order:3</code>)</td>
+      <td>Satu baris: logo kiri, CTA kecil kanan (<code>padding: 6px 12px</code>). Toggle EN/ID pindah ke footer atau jadi ikon. Link section disembunyikan di &lt;=700px atau diganti hamburger. Target tinggi 56-64px.</td>
+    </tr>
+    <tr>
+      <td>5</td><td><span class="sev med">Medium</span></td>
+      <td>Semua halaman setelah login</td>
+      <td>Navbar app timpang: brand, nav (Beranda/Dashboard), dan grup kanan (EN/ID, Keluar) masing-masing jadi baris sendiri, semua rata kiri, ruang kanan kosong. Sekitar 190px sebelum judul halaman.</td>
+      <td><code>styles.css</code> 83-147 (<code>.topbar</code> <code>flex-wrap: wrap</code> + <code>space-between</code>), 226-233 (media mobile); <code>components/Navbar.tsx</code></td>
+      <td>Baris 1: brand kiri, EN/ID dan Keluar kanan. Baris 2: nav sebagai segmented control lebar penuh. Atau hamburger. Sebaiknya satu pola header mobile yang sama dengan landing (#4).</td>
+    </tr>
+    <tr>
+      <td>6</td><td><span class="sev med">Medium</span></td>
+      <td>Habit, Statistik</td>
+      <td>Tombol page-head (Statistik/Tracking dan "← Beranda") rata kiri, kanan kosong. "← Beranda" berupa <code>btn-ghost</code> yang terlihat seperti teks biasa di samping tombol pill, jadi tidak konsisten.</td>
+      <td><code>styles.css</code> 672-679 (<code>.page-head</code>); <code>pages/StatsPage.tsx</code> 74-81 (inline <code>style={{display:"flex",gap:8}}</code>); <code>pages/HabitPage.tsx</code> 190-208</td>
+      <td>Pindahkan "← Beranda" ke atas judul sebagai link kecil (pola breadcrumb), sisakan satu tombol pill. Atau dua tombol lebar penuh 2 kolom. Ganti inline style dengan class.</td>
+    </tr>
+    <tr>
+      <td>7</td><td><span class="sev med">Medium</span></td>
+      <td>Dashboard</td>
+      <td>Tabel "Per kebiasaan": kolom terakhir terpotong dan butuh scroll horizontal tanpa petunjuk. Nama kebiasaan wrap 2 baris ("Olahraga / Pagi", "Bikin / Konten").</td>
+      <td><code>styles.css</code> 184-214 (<code>.table-wrap</code> <code>overflow-x:auto</code>, <code>.clay-table</code>); <code>pages/DashboardPage.tsx</code></td>
+      <td>Layout kartu per kebiasaan di mobile, atau sembunyikan kolom Jenis (ganti ikon di depan nama), atau beri fade di tepi kanan sebagai petunjuk scroll.</td>
+    </tr>
+    <tr>
+      <td>8</td><td><span class="sev low">Low</span></td>
+      <td>Dashboard, Statistik</td>
+      <td>Label stat tile panjangnya tidak rata ("Streak terbaik (hari) · Olahraga Pagi" jadi 3 baris), jadi tinggi tile beda-beda. Rotasi tile menambah kesan berantakan.</td>
+      <td><code>styles.css</code> ~703 (<code>.stat-tiles</code>); <code>pages/DashboardPage.tsx</code></td>
+      <td>Label pendek, nama kebiasaan sebagai subteks kecil; <code>align-items: stretch</code>; kurangi atau hapus rotasi di mobile.</td>
+    </tr>
+    <tr>
+      <td>9</td><td><span class="sev low">Low</span></td>
+      <td>Statistik (Coret Kalender)</td>
+      <td>Grid 2 kolom berisi 5 tile, jadi tile terakhir ("Hari aktif bulan ini") sendirian di kiri dengan ruang kosong di kanan. Statistik toples punya 6 tile, jadi rapi.</td>
+      <td><code>styles.css</code> ~703 (<code>.stat-tiles</code>); <code>pages/StatsPage.tsx</code></td>
+      <td>Tile terakhir <code>grid-column: 1 / -1</code> saat jumlah ganjil (<code>:last-child:nth-child(odd)</code>), atau tambah satu tile.</td>
+    </tr>
+    <tr>
+      <td>10</td><td><span class="sev low">Low</span></td>
+      <td>Dashboard, Statistik</td>
+      <td>Grafik 30 hari hanya punya satu bar di hari ke-30, sisanya kosong. Untuk user baru grafik terlihat seperti error.</td>
+      <td><code>styles.css</code> ~744 (<code>.chart-card</code>); tergantung data</td>
+      <td>Empty state singkat ("Data muncul setelah beberapa hari") saat data aktif kurang dari ~3 hari.</td>
+    </tr>
+    <tr>
+      <td>11</td><td><span class="sev low">Low</span></td>
+      <td>Login</td>
+      <td>Sheet Google One Tap ("Continue as ...") menutupi tombol Masuk dan link Daftar. Bisa ditutup oleh user.</td>
+      <td>Perilaku Google Identity Services, bukan layout app</td>
+      <td>Opsional: tampilkan One Tap hanya di desktop, atau beri <code>padding-bottom</code> di halaman login agar form bisa di-scroll di atas sheet.</td>
+    </tr>
+  </tbody>
+</table>
+<p class="note">Catatan: ada grup tombol ikon di luar viewport (x=375-445) yang kemungkinan overlay extension browser, bukan dari app. Background halaman yang terpotong jadi putih di screenshot full-page (Beranda, Dashboard, Habit, Statistik) adalah efek <code>background: ... fixed</code> pada <code>body</code> saat capture full-page, bukan masalah di HP sungguhan.</p>
+
+<h3>Yang sudah baik</h3>
+<ul>
+  <li>Konten landing (hero, demo interaktif, kartu alasan, cara kerja, dua mode, contoh statistik, FAQ, CTA, footer) rapi dan rata di 375px. Tidak ada overflow horizontal.</li>
+  <li>Bahasa EN tidak menimbulkan overflow. Teks EN umumnya lebih pendek, chip hero malah lebih rapat.</li>
+  <li>Card Login dan Daftar konsisten di ID dan EN, field dan tombol lebar penuh.</li>
+  <li>Panel chat Mochi saat terbuka tampil baik.</li>
+  <li>Kartu kebiasaan di Beranda konsisten antar tipe tracker.</li>
+</ul>
+
+<h2>Detail per halaman</h2>
+
+<div class="issue">
+<h3>Landing <code>/</code></h3>
+<p>Satu-satunya masalah adalah navbar 3 baris yang sticky (#4). Bagian lain rapi. Bahasa EN dicek juga, tidak ada overflow.</p>
+<div class="shots">
+  <figure><img src="assets/11-landing-top.png" alt="Landing atas"><figcaption>11 - Atas: navbar 3 baris, baris 1 hanya logo.</figcaption></figure>
+  <figure><img src="assets/12-landing-bottom.png" alt="Landing bawah"><figcaption>12 - Bawah: navbar sticky menutupi judul CTA.</figcaption></figure>
+  <figure><img src="assets/16-landing-en.png" alt="Landing EN"><figcaption>16 - EN: navbar sticky menutupi tombol "Start free" di hero.</figcaption></figure>
+  <figure><img src="assets/13-landing-chips-demo.png" alt="Chip dan demo"><figcaption>13 - Chip hero dan demo: rapi.</figcaption></figure>
+  <figure><img src="assets/14-landing-modes.png" alt="Dua mode"><figcaption>14 - Dua Mode: rapi.</figcaption></figure>
+  <figure><img src="assets/15-landing-stats.png" alt="Statistik landing"><figcaption>15 - Contoh statistik: rapi.</figcaption></figure>
+  <figure class="tall"><img src="assets/25-se-landing-full.png" alt="Landing full"><figcaption>25 - Seluruh halaman landing (scroll di dalam kotak).</figcaption></figure>
+</div>
+</div>
+
+<div class="issue">
+<h3>Login dan Daftar <code>/login</code></h3>
+<p>Card login rapi dan konsisten di kedua mode dan kedua bahasa. Satu-satunya masalah adalah sheet Google One Tap (#11).</p>
+<div class="shots">
+  <figure><img src="assets/09-login.png" alt="Login dengan One Tap"><figcaption>09 - Sheet One Tap menutupi Masuk dan Daftar.</figcaption></figure>
+  <figure><img src="assets/10-login-clean.png" alt="Login bersih"><figcaption>10 - Masuk, setelah sheet ditutup.</figcaption></figure>
+  <figure><img src="assets/18-register.png" alt="Daftar"><figcaption>18 - Mode Daftar (ID).</figcaption></figure>
+  <figure><img src="assets/17-register-en.png" alt="Daftar EN"><figcaption>17 - Mode Daftar (EN).</figcaption></figure>
+</div>
+</div>
+
+<div class="issue">
+<h3>Beranda <code>/app</code></h3>
+<p>Navbar timpang (#5). FAB menutupi tombol Statistik di kartu kebiasaan pertama, dan di modal tambah kebiasaan menutupi tombol <strong>Simpan</strong> (#1).</p>
+<div class="shots">
+  <figure class="tall"><img src="assets/19-se-beranda.png" alt="Beranda SE"><figcaption>19 - iPhone SE, seluruh halaman: FAB di atas tombol Statistik.</figcaption></figure>
+  <figure><img src="assets/05-home-top.png" alt="Beranda"><figcaption>05 - iPhone 16: FAB di atas kartu kebiasaan.</figcaption></figure>
+  <figure><img src="assets/06-home-bottom.png" alt="Modal tambah"><figcaption>06 - Modal tambah: FAB menutupi Simpan.</figcaption></figure>
+</div>
+</div>
+
+<div class="issue">
+<h3>Dashboard <code>/dashboard</code></h3>
+<p>Navbar timpang (#5), FAB menutupi label tile "Streak saat ini" (#1), label tile tidak rata (#8), grafik hampir kosong (#10), tabel terpotong dan nama wrap (#7). Panel chat Mochi tampil baik.</p>
+<div class="shots">
+  <figure class="tall"><img src="assets/20-se-dashboard.png" alt="Dashboard SE"><figcaption>20 - iPhone SE, seluruh halaman.</figcaption></figure>
+  <figure><img src="assets/01-top.png" alt="Dashboard atas"><figcaption>01 - iPhone 16, atas: navbar wrap, rata kiri.</figcaption></figure>
+  <figure><img src="assets/02-middle.png" alt="Dashboard tengah"><figcaption>02 - Tengah: tile dan grafik, FAB menutupi konten.</figcaption></figure>
+  <figure><img src="assets/03-bottom.png" alt="Dashboard bawah"><figcaption>03 - Bawah: tabel tertutup FAB.</figcaption></figure>
+  <figure><img src="assets/04-chat-panel.png" alt="Panel chat"><figcaption>04 - Panel chat Mochi terbuka: tidak ada masalah.</figcaption></figure>
+  <figure class="wide"><img src="assets/zoom-header.png" alt="Zoom navbar"><figcaption>Zoom navbar: ruang kosong di sisi kanan.</figcaption></figure>
+  <figure class="wide"><img src="assets/zoom-table-header.png" alt="Zoom header tabel"><figcaption>Zoom header tabel: kolom terakhir terpotong.</figcaption></figure>
+</div>
+</div>
+
+<div class="issue">
+<h3>Habit <code>/habits/:id</code></h3>
+<p>Page-head tidak konsisten (#6). Di tracker toples, tombol aksi dan label terlalu besar sehingga menutupi toples dan panah (#2). Di tracker kalender, tombol "Hari ini tercoret" menutupi baris terakhir kalender (#3). FAB ikut menutupi canvas (#1).</p>
+<div class="shots">
+  <figure class="tall"><img src="assets/21-se-habit-kalender.png" alt="Habit kalender"><figcaption>21 - iPhone SE, Coret Kalender.</figcaption></figure>
+  <figure class="tall"><img src="assets/22-se-habit-toples.png" alt="Habit toples"><figcaption>22 - iPhone SE, Koin dalam Toples.</figcaption></figure>
+  <figure><img src="assets/07-habit-top.png" alt="Habit iPhone 16"><figcaption>07 - iPhone 16: page-head rata kiri, FAB di atas kalender.</figcaption></figure>
+  <figure class="wide"><img src="assets/zoom-cal-overlay.png" alt="Zoom kalender"><figcaption>Zoom: tombol 2 baris menutupi tanggal 25-31, FAB menutupi tanggal 15-24.</figcaption></figure>
+  <figure class="wide"><img src="assets/zoom-jar-overlay.png" alt="Zoom toples"><figcaption>Zoom: label toples menutupi panah, tombol koin jadi blob 2 baris, FAB di atas toples.</figcaption></figure>
+</div>
+</div>
+
+<div class="issue">
+<h3>Statistik <code>/habits/:id/stats</code></h3>
+<p>Page-head tidak konsisten (#6). FAB menutupi angka tile Konsistensi (kalender) dan Toples penuh (toples) (#1). Statistik kalender punya 5 tile, jadi tile terakhir sendirian (#9). Grafik hampir kosong (#10).</p>
+<div class="shots">
+  <figure class="tall"><img src="assets/23-se-stats-kalender.png" alt="Statistik kalender"><figcaption>23 - iPhone SE, Statistik Coret Kalender: tile ke-5 sendirian.</figcaption></figure>
+  <figure class="tall"><img src="assets/24-se-stats-toples.png" alt="Statistik toples"><figcaption>24 - iPhone SE, Statistik Koin dalam Toples.</figcaption></figure>
+  <figure><img src="assets/08-stats-top.png" alt="Statistik iPhone 16"><figcaption>08 - iPhone 16: tombol tidak konsisten, FAB di atas tile.</figcaption></figure>
+</div>
+</div>
+
+<h2>Urutan perbaikan yang disarankan</h2>
+<ol>
+  <li><strong>FAB (#1)</strong>: dampak paling besar, karena menutupi aksi utama dan data di semua halaman setelah login. Satu perubahan CSS menyelesaikan banyak kasus.</li>
+  <li><strong>Overlay canvas Habit (#2, #3)</strong>: ini halaman yang paling sering dipakai setiap hari.</li>
+  <li><strong>Header mobile (#4, #5, #6)</strong>: satu pola yang sama untuk navbar landing, navbar app, dan page-head.</li>
+  <li><strong>Tabel dashboard (#7)</strong>.</li>
+  <li><strong>Polish</strong>: label tile, grid tile ganjil, empty state grafik, One Tap (#8-#11).</li>
+</ol>
+</main>
+</body>
+</html>

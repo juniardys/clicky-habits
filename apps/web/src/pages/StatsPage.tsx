@@ -13,6 +13,7 @@ import { api, type HabitStats } from "../lib/api";
 import { onHabitsChanged } from "../lib/chat";
 import { useI18n } from "../lib/i18n";
 import Navbar from "../components/Navbar";
+import { isSparse } from "../lib/chart";
 
 export default function StatsPage() {
   const { t } = useI18n();
@@ -64,6 +65,9 @@ export default function StatsPage() {
   return (
     <div className="container">
       <Navbar />
+      <Link to="/app" className="back-link">
+        {t("common.back")}
+      </Link>
       <div className="page-head">
         <div>
           <h1>{t("stats.title", { name: stats.name })}</h1>
@@ -71,14 +75,9 @@ export default function StatsPage() {
             {isJar ? t("home.typeJar") : t("home.typeCalendar")}
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <Link to={`/habits/${id}`}>
-            <button className="btn">{t("common.tracking")}</button>
-          </Link>
-          <Link to="/app">
-            <button className="btn-ghost">{t("common.back")}</button>
-          </Link>
-        </div>
+        <Link to={`/habits/${id}`} className="btn page-head-action">
+          {t("common.tracking")}
+        </Link>
       </div>
 
       <div className="stat-tiles">
@@ -112,6 +111,7 @@ export default function StatsPage() {
 
       <div className="chart-card">
         <h3>{isJar ? t("stats.chartJar") : t("stats.chartCalendar")}</h3>
+        {isSparse(chartData) && <p className="chart-sparse">{t("chart.sparse")}</p>}
         <ResponsiveContainer width="100%" height={260}>
           <BarChart data={chartData}>
             <CartesianGrid stroke="#e4d8cc" strokeDasharray="3 3" vertical={false} />
