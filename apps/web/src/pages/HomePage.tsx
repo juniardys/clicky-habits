@@ -5,12 +5,14 @@ import { api, type HabitSummary, type TrackerType } from "../lib/api";
 import { onHabitsChanged } from "../lib/chat";
 import { useI18n } from "../lib/i18n";
 import { playPop } from "../lib/sound";
+import { useOnceParam } from "../lib/useOnceParam";
 import Navbar from "../components/Navbar";
 
 const spring = { type: "spring" as const, duration: 0.45, bounce: 0 };
 
 export default function HomePage() {
   const { t } = useI18n();
+  const verifyLink = useOnceParam("verified");
   const [habits, setHabits] = useState<HabitSummary[] | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [name, setName] = useState("");
@@ -54,6 +56,8 @@ export default function HomePage() {
   return (
     <div className="container">
       <Navbar />
+      {verifyLink === "ok" && <p className="notice-success">{t("verify.done")}</p>}
+      {verifyLink === "error" && <p className="notice-error">{t("verify.linkInvalid")}</p>}
 
       <div className="page-head">
         <h1>{t("home.myHabits")}</h1>

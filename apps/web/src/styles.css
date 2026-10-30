@@ -144,6 +144,76 @@ a.brand {
   color: var(--char-dim);
   font-size: 14px;
   font-weight: 600;
+  text-decoration: none;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+a.topbar-user:hover {
+  color: var(--char);
+  text-decoration: underline;
+}
+
+/* ---------- verify email banner + notices ---------- */
+.verify-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin: -12px 0 24px;
+  padding: 12px 16px;
+  background: #fff3d1;
+  border: 2.5px solid var(--char);
+  border-radius: 18px;
+  box-shadow: 0 4px 0 rgba(70, 54, 74, 0.9);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.verify-banner-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.verify-banner .btn {
+  padding: 6px 14px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.notice-success {
+  margin: -12px 0 24px;
+  padding: 12px 16px;
+  background: var(--card-mint);
+  border: 2.5px solid var(--mint-deep);
+  border-radius: 18px;
+  color: var(--char);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.notice-error {
+  margin: -12px 0 24px;
+  padding: 12px 16px;
+  background: #ffe3e0;
+  border: 2.5px solid var(--red);
+  border-radius: 18px;
+  color: var(--char);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.success-text {
+  color: var(--mint-deep);
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
 }
 
 .lang-toggle {
@@ -466,6 +536,103 @@ input:focus {
   font-size: 14px;
   font-weight: 700;
   margin: 0;
+}
+
+/* ---------- profile ---------- */
+.profile-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 560px;
+}
+
+.profile-card {
+  background: var(--cream);
+  border: 3px solid var(--char);
+  border-radius: var(--radius);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 7px 0 rgba(70, 54, 74, 0.9);
+}
+
+.profile-card:nth-child(2) {
+  background: var(--card-mint);
+}
+
+.profile-card:nth-child(3) {
+  background: var(--card-lav);
+}
+
+.profile-card h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.profile-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--char-dim);
+}
+
+.profile-card .btn {
+  align-self: flex-start;
+}
+
+.profile-current {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.profile-label {
+  width: 100%;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--char-dim);
+}
+
+.profile-email {
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.profile-note {
+  margin: 0;
+  color: var(--char-dim);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 2px solid var(--char);
+}
+
+.badge-ok {
+  background: var(--mint);
+}
+
+.badge-warn {
+  background: var(--gold);
+}
+
+@media (max-width: 600px) {
+  .profile-card {
+    padding: 18px;
+  }
+  .profile-card .btn {
+    align-self: stretch;
+  }
 }
 
 /* ---------- habit list ---------- */

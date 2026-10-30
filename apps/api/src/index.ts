@@ -4,6 +4,8 @@ import { logger } from "hono/logger";
 import { auth, buildTrustedOrigins, missingTrustedOrigin } from "./auth";
 import { habitService } from "./habits-service";
 import { createChatRoutes } from "./chat/routes";
+import { prisma } from "./db";
+import { registerMeRoutes, SetPasswordError } from "./me-routes";
 
 type Env = {
   Variables: {
@@ -62,6 +64,32 @@ app.use("/habits", async (c, next) => {
   if (!session) return c.json({ error: "Unauthorized" }, 401);
   c.set("userId", session.user.id);
   await next();
+});
+app.use("/me/*", async (c, next) => {
+  const session = await auth.api.getSession({ headers: c.req.raw.headers });
+  if (!session) return c.json({ error: "Unauthorized" }, 401);
+  c.set("userId", session.user.id);
+  await next();
+});
+
+// ---------- account (/me) ----------
+registerMeRoutes(app, {
+  hasPassword: async (userId) =>
+    (await prisma.account.count({
+      where: { userId, providerId: "credential", password: { not: null } },
+    })) > 0,
+  setPassword: async (newPassword, headers) => {
+    try {
+      await auth.api.setPassword({ body: { newPassword }, headers });
+    } catch (err) {
+      // better-auth APIError carries its code on body.code.
+      const code = (err as { body?: { code?: string } })?.body?.code;
+      if (code === "PASSWORD_ALREADY_SET") throw new SetPasswordError("already_has_password");
+      if (code === "PASSWORD_TOO_SHORT") throw new SetPasswordError("password_too_short");
+      if (code === "PASSWORD_TOO_LONG") throw new SetPasswordError("password_too_long");
+      throw err;
+    }
+  },
 });
 
 // ---------- habits ----------

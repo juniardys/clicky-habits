@@ -256,6 +256,49 @@ const translations = {
     "login.signUpFailed": "Sign up failed",
     "login.wrongCreds": "Wrong email or password",
     "login.genericError": "Something went wrong",
+    // nav: profile
+    "nav.profile": "Profile",
+    // profile
+    "profile.title": "Profile",
+    "profile.nameSection": "Your name",
+    "profile.name": "Name",
+    "profile.nameSaved": "Name saved",
+    "profile.emailSection": "Email",
+    "profile.currentEmail": "Current email",
+    "profile.verified": "Verified",
+    "profile.unverified": "Not verified",
+    "profile.newEmail": "New email",
+    "profile.changeEmail": "Change email",
+    "profile.emailChangeSent":
+      "Check the inbox of your new email and click the link to confirm the change.",
+    "profile.emailChangedUnverified":
+      "Email updated. Check your inbox to verify the new address.",
+    "profile.emailChanged": "Your email has been changed and verified.",
+    "profile.emailInUse": "That email is already used by another account.",
+    "profile.emailLinkInvalid":
+      "That confirmation link is invalid or expired. Request the email change again.",
+    "profile.passwordSection": "Password",
+    "profile.currentPassword": "Current password",
+    "profile.newPassword": "New password (min. 8 characters)",
+    "profile.confirmPassword": "Confirm new password",
+    "profile.changePassword": "Change password",
+    "profile.setPassword": "Set password",
+    "profile.setPasswordNote":
+      "You sign in with Google. Set a password to also sign in with your email and password.",
+    "profile.passwordSaved": "Password saved. Other devices have been signed out.",
+    "profile.passwordSet": "Password set. You can now sign in with your email too.",
+    "profile.password_too_short": "Password must be at least 8 characters",
+    "profile.password_too_long": "Password must be at most 128 characters",
+    "profile.password_mismatch": "The passwords do not match",
+    "profile.already_has_password": "This account already has a password",
+    "profile.saveFailed": "Could not save. Please try again.",
+    // verify email
+    "verify.banner": "Please verify your email address. We sent a link to {email}.",
+    "verify.resend": "Resend link",
+    "verify.sent": "Link sent!",
+    "verify.done": "Your email is verified. Thanks!",
+    "verify.failed": "Could not send the link. Please try again.",
+    "verify.linkInvalid": "That verification link is invalid or expired. Use Resend link to get a new one.",
   },
   id: {
     // nav
@@ -502,6 +545,49 @@ const translations = {
     "login.signUpFailed": "Gagal daftar",
     "login.wrongCreds": "Email atau password salah",
     "login.genericError": "Terjadi kesalahan",
+    // nav: profile
+    "nav.profile": "Profil",
+    // profile
+    "profile.title": "Profil",
+    "profile.nameSection": "Nama kamu",
+    "profile.name": "Nama",
+    "profile.nameSaved": "Nama disimpan",
+    "profile.emailSection": "Email",
+    "profile.currentEmail": "Email sekarang",
+    "profile.verified": "Terverifikasi",
+    "profile.unverified": "Belum diverifikasi",
+    "profile.newEmail": "Email baru",
+    "profile.changeEmail": "Ganti email",
+    "profile.emailChangeSent":
+      "Cek inbox email baru kamu dan klik link-nya untuk konfirmasi perubahan.",
+    "profile.emailChangedUnverified":
+      "Email diperbarui. Cek inbox untuk verifikasi alamat baru.",
+    "profile.emailChanged": "Email kamu sudah diganti dan terverifikasi.",
+    "profile.emailInUse": "Email itu sudah dipakai akun lain.",
+    "profile.emailLinkInvalid":
+      "Link konfirmasi tidak valid atau sudah kedaluwarsa. Ajukan ganti email lagi.",
+    "profile.passwordSection": "Password",
+    "profile.currentPassword": "Password sekarang",
+    "profile.newPassword": "Password baru (min. 8 karakter)",
+    "profile.confirmPassword": "Konfirmasi password baru",
+    "profile.changePassword": "Ubah password",
+    "profile.setPassword": "Buat password",
+    "profile.setPasswordNote":
+      "Kamu masuk pakai Google. Buat password supaya bisa masuk juga dengan email dan password.",
+    "profile.passwordSaved": "Password disimpan. Perangkat lain sudah dikeluarkan.",
+    "profile.passwordSet": "Password dibuat. Sekarang kamu bisa masuk pakai email juga.",
+    "profile.password_too_short": "Password minimal 8 karakter",
+    "profile.password_too_long": "Password maksimal 128 karakter",
+    "profile.password_mismatch": "Password tidak sama",
+    "profile.already_has_password": "Akun ini sudah punya password",
+    "profile.saveFailed": "Gagal menyimpan. Coba lagi.",
+    // verify email
+    "verify.banner": "Verifikasi alamat email kamu. Kami sudah kirim link ke {email}.",
+    "verify.resend": "Kirim ulang link",
+    "verify.sent": "Link terkirim!",
+    "verify.done": "Email kamu sudah terverifikasi. Makasih!",
+    "verify.failed": "Gagal mengirim link. Coba lagi.",
+    "verify.linkInvalid": "Link verifikasi tidak valid atau sudah kedaluwarsa. Pakai Kirim ulang link untuk dapat yang baru.",
   },
 } as const;
 
