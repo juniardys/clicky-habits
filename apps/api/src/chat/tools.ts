@@ -282,7 +282,7 @@ export async function executeTool(
             `+${rawCount} koin ke "${habit.name}" · hari ini ${result.countToday} · total ${result.totalCount}`,
             `+${rawCount} coin(s) to "${habit.name}" · today ${result.countToday} · total ${result.totalCount}`
           ),
-          data: { habitId, name: habit.name, date, added: rawCount, ...result },
+          data: { habitId, name: habit.name, added: rawCount, ...result },
           undo: { kind: "coins", payload: { habitId, date, count: rawCount } },
         };
       }
