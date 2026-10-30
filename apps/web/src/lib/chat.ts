@@ -134,12 +134,12 @@ export interface ChatThreadResponse {
 
 export const chatApi = {
   async getThread(): Promise<ChatThreadResponse> {
-    const res = await fetch(`${API_URL}/api/chat/thread`, { credentials: "include" });
+    const res = await fetch(`${API_URL}/chat/thread`, { credentials: "include" });
     if (!res.ok) throw new ChatApiError(`HTTP ${res.status}`, res.status);
     return res.json() as Promise<ChatThreadResponse>;
   },
   async newThread(): Promise<{ threadId: string }> {
-    const res = await fetch(`${API_URL}/api/chat/threads`, {
+    const res = await fetch(`${API_URL}/chat/threads`, {
       method: "POST",
       credentials: "include",
     });
@@ -150,14 +150,14 @@ export const chatApi = {
     body: { threadId?: string; message?: string; retryMessageId?: string; today: string; lang: string },
     onEvent: (e: ChatStreamEvent) => void,
     signal?: AbortSignal
-  ) => streamPost("/api/chat", body, onEvent, signal),
+  ) => streamPost("/chat", body, onEvent, signal),
   confirm: (
     body: { pendingActionId: string; approve: boolean; today: string; lang: string },
     onEvent: (e: ChatStreamEvent) => void,
     signal?: AbortSignal
-  ) => streamPost("/api/chat/confirm", body, onEvent, signal),
+  ) => streamPost("/chat/confirm", body, onEvent, signal),
   async undo(actionId: string): Promise<{ changed: boolean; summary: string; undone: boolean }> {
-    const res = await fetch(`${API_URL}/api/chat/actions/${actionId}/undo`, {
+    const res = await fetch(`${API_URL}/chat/actions/${actionId}/undo`, {
       method: "POST",
       credentials: "include",
     });
