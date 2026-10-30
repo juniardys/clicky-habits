@@ -1,4 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Component,
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   chatApi,
@@ -25,10 +34,52 @@ const TOOL_ICONS: Record<string, string> = {
 
 const WRITE_TOOLS = new Set(["create_habit", "mark_day", "add_coins"]);
 
+const LazyMochi3D = lazy(() => import("./Mochi3D"));
+
+class MochiBoundary extends Component<
+  { children: ReactNode; onError: () => void },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch() {
+    this.props.onError();
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+
+function webglAvailable(): boolean {
+  try {
+    const canvas = document.createElement("canvas");
+    return Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
+  } catch {
+    return false;
+  }
+}
+
 function MochiAvatar({ status }: { status: MochiStatus }) {
+  const [use3D] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+      webglAvailable()
+  );
+  const [failed, setFailed] = useState(false);
   return (
     <div className={`chat-avatar chat-avatar-${status}`} aria-hidden="true">
-      <MochiFace size={62} />
+      {use3D && !failed ? (
+        <MochiBoundary onError={() => setFailed(true)}>
+          <Suspense fallback={<MochiFace size={62} />}>
+            <LazyMochi3D status={status} />
+          </Suspense>
+        </MochiBoundary>
+      ) : (
+        <MochiFace size={62} />
+      )}
     </div>
   );
 }

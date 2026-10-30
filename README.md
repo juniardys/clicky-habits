@@ -37,6 +37,29 @@ bun run dev:web   # http://localhost:5173
 
 Open http://localhost:5173. The web dev server proxies `/api` to the API, so auth cookies stay on a single origin.
 
+## Chat assistant (Mochi)
+
+Signed-in users get a floating chat assistant that can answer questions about
+their stats and perform actions (create habits, mark days, add coins) through
+server-side tools. Tool calls show up live in the chat, writes come with an
+Undo button, and deletes ask for confirmation first.
+
+The assistant talks to any OpenAI-compatible provider. Configure it in the
+root `.env`:
+
+```bash
+LLM_BASE_URL="https://api.meta.ai/v1"   # any OpenAI-compatible base URL
+LLM_API_KEY="..."
+LLM_MODEL="..."
+LLM_API_MODE="responses"                # "responses" or "chat" (chat/completions)
+```
+
+Leave `LLM_API_KEY`/`LLM_MODEL` empty to disable chat — the UI then shows a
+"Mochi isn't configured yet" notice and the rest of the app works as before.
+The API key is only ever used by the API server, never sent to the browser.
+Chat history, undoable actions, and pending delete confirmations are stored in
+PostgreSQL (see the `chat_agent` migration).
+
 ## Login
 
 - **Google SSO**: set `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` in `.env` (root).
