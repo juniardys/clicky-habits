@@ -132,7 +132,7 @@ function EmailCard({ session, refetch }: { session: Session; refetch: () => Prom
   }
 
   return (
-    <form className="profile-card" onSubmit={submit}>
+    <form className="profile-card profile-card-mint" onSubmit={submit}>
       <h2>{t("profile.emailSection")}</h2>
       {justChanged && <p className="success-text">{t("profile.emailChanged")}</p>}
       {changeLink === "error" && <p className="error-text">{t("profile.emailLinkInvalid")}</p>}
@@ -215,7 +215,7 @@ function PasswordCard() {
 
   if (loadError) {
     return (
-      <section className="profile-card">
+      <section className="profile-card profile-card-lav">
         <h2>{t("profile.passwordSection")}</h2>
         <p className="error-text">{t("profile.saveFailed")}</p>
       </section>
@@ -224,7 +224,7 @@ function PasswordCard() {
 
   if (hasPassword === null) {
     return (
-      <section className="profile-card">
+      <section className="profile-card profile-card-lav">
         <h2>{t("profile.passwordSection")}</h2>
         <div className="spinner" />
       </section>
@@ -232,7 +232,7 @@ function PasswordCard() {
   }
 
   return (
-    <form className="profile-card" onSubmit={submit}>
+    <form className="profile-card profile-card-lav" onSubmit={submit}>
       <h2>{t("profile.passwordSection")}</h2>
       {!hasPassword && <p className="profile-note">{t("profile.setPasswordNote")}</p>}
       {hasPassword && (
@@ -287,8 +287,10 @@ export default function ProfilePage() {
       </div>
       {session && (
         <div className="profile-stack">
-          <NameCard session={session} refetch={refetch} />
-          <EmailCard session={session} refetch={refetch} />
+          <div className="profile-col">
+            <NameCard session={session} refetch={refetch} />
+            <EmailCard session={session} refetch={refetch} />
+          </div>
           <PasswordCard />
         </div>
       )}

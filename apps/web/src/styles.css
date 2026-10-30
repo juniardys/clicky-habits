@@ -540,10 +540,16 @@ input:focus {
 
 /* ---------- profile ---------- */
 .profile-stack {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 22px;
+}
+
+.profile-col {
   display: flex;
   flex-direction: column;
   gap: 22px;
-  max-width: 560px;
 }
 
 .profile-card {
@@ -557,11 +563,11 @@ input:focus {
   box-shadow: 0 7px 0 rgba(70, 54, 74, 0.9);
 }
 
-.profile-card:nth-child(2) {
+.profile-card-mint {
   background: var(--card-mint);
 }
 
-.profile-card:nth-child(3) {
+.profile-card-lav {
   background: var(--card-lav);
 }
 
@@ -624,6 +630,12 @@ input:focus {
 
 .badge-warn {
   background: var(--gold);
+}
+
+@media (max-width: 760px) {
+  .profile-stack {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 600px) {
