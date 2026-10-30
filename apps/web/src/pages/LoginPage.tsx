@@ -49,7 +49,14 @@ export default function LoginPage() {
     setBusy(true);
     try {
       if (mode === "register") {
-        const { error } = await signUp.email({ email, password, name: name || email });
+        // callbackURL: where the verification link lands. Absolute because
+        // the link is served by the API, which may live on another origin.
+        const { error } = await signUp.email({
+          email,
+          password,
+          name: name || email,
+          callbackURL: `${window.location.origin}/app?verified=1`,
+        });
         if (error) throw new Error(error.message ?? t("login.signUpFailed"));
       } else {
         const { error } = await signIn.email({ email, password });

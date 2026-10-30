@@ -256,7 +256,6 @@ const translations = {
     "login.signUpFailed": "Sign up failed",
     "login.wrongCreds": "Wrong email or password",
     "login.genericError": "Something went wrong",
-    "login.checkEmail": "Account created! Check your inbox to verify your email.",
     // nav: profile
     "nav.profile": "Profile",
     // profile
@@ -542,7 +541,6 @@ const translations = {
     "login.signUpFailed": "Gagal daftar",
     "login.wrongCreds": "Email atau password salah",
     "login.genericError": "Terjadi kesalahan",
-    "login.checkEmail": "Akun dibuat! Cek inbox kamu untuk verifikasi email.",
     // nav: profile
     "nav.profile": "Profil",
     // profile
