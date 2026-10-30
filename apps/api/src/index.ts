@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { auth } from "./auth";
 import { prisma } from "./db";
@@ -12,6 +13,25 @@ type Env = {
 
 const app = new Hono<Env>();
 app.use(logger());
+
+// CORS: needed when the web app runs on a different origin, e.g.
+// https://clickyhabits.com calling https://api.clickyhabits.com.
+// Dev leaves CORS_ORIGINS empty -> same-origin via the Vite proxy, no CORS.
+const corsOrigins = (process.env.CORS_ORIGINS ?? "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+if (corsOrigins.length > 0) {
+  app.use(
+    "/api/*",
+    cors({
+      origin: corsOrigins,
+      credentials: true,
+      allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowHeaders: ["Content-Type", "Authorization"],
+    })
+  );
+}
 
 // better-auth handles everything under /api/auth/*
 app.on(["GET", "POST"], "/api/auth/*", (c) => auth.handler(c.req.raw));
@@ -232,7 +252,7 @@ app.get("/api/habits/:id/stats", async (c) => {
 });
 
 const port = Number(process.env.PORT ?? 3001);
-console.log(`API listening on http://localhost:${port}`);
+console.log(`API listening on port ${port}`);
 
 export default {
   port,

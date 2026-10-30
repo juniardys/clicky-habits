@@ -50,3 +50,46 @@ apps/
   api/   Hono + better-auth + Prisma (port 3001)
   web/   Vite + React + R3F (port 5173, proxy /api -> 3001)
 ```
+
+## Deploy (Dokploy, subdomain setup)
+
+Two services from one repo. The API runs on `api.clickyhabits.com`, the static web
+build on `clickyhabits.com`.
+
+### api service
+
+- Domain: `api.clickyhabits.com` -> port `3001`
+- Build: `bun install && bun run db:generate`
+- Start: `bun run --filter '@clicky/api' start`
+- First deploy only, run migrations once:
+  `bun run --filter '@clicky/api' db:migrate:deploy`
+- Env:
+  - `DATABASE_URL` (Postgres connection string)
+  - `BETTER_AUTH_SECRET` (`openssl rand -base64 32`)
+  - `BETTER_AUTH_URL=https://api.clickyhabits.com`
+  - `BETTER_AUTH_TRUSTED_ORIGINS=https://clickyhabits.com`
+  - `CORS_ORIGINS=https://clickyhabits.com`
+  - `PORT=3001`
+  - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` (optional)
+
+### web service (static)
+
+- Domain: `clickyhabits.com`, publish directory `apps/web/dist`
+- Build (env vars are baked in at build time):
+
+  ```bash
+  bun install
+  VITE_API_URL=https://api.clickyhabits.com bun run build:web
+  ```
+
+### Google SSO
+
+Authorized redirect URI in Google Console:
+
+```
+https://api.clickyhabits.com/api/auth/callback/google
+```
+
+Cookie note: browser treats `clickyhabits.com` and `api.clickyhabits.com` as the
+same site, so better-auth's default `SameSite=Lax` cookies work across the
+subdomain without extra configuration.

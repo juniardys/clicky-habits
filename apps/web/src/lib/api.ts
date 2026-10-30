@@ -1,3 +1,5 @@
+import { API_URL } from "./config";
+
 export type TrackerType = "CALENDAR" | "JAR";
 
 export interface HabitSummary {
@@ -44,7 +46,7 @@ export interface DashboardData {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, {
+  const res = await fetch(`${API_URL}${path}`, {
     credentials: "include",
     headers: init?.body ? { "Content-Type": "application/json" } : undefined,
     ...init,
