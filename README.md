@@ -75,6 +75,27 @@ PostgreSQL (see the `chat_agent` migration).
   `https://clickyhabits.com` in production). Leave it empty to disable the
   prompt; the regular Google button is unaffected either way.
 - **Email/password**: enabled by default for local development without Google credentials.
+- **Email verification**: sign-up sends a verification link. Unverified users
+  can still use the app and see a banner with a resend button. The same SMTP
+  setup sends the confirmation link when a user changes their email from the
+  Profile page.
+
+## Email (SMTP)
+
+Account emails go out through any SMTP server. Configure it in the root `.env`:
+
+```bash
+SMTP_HOST="smtp.gmail.com"   # empty = print emails (and links) to the API console
+SMTP_PORT="587"              # 587 STARTTLS, 465 TLS
+SMTP_SECURE="false"          # "true" for port 465
+SMTP_USER="you@gmail.com"    # empty = no SMTP auth
+SMTP_PASS="app-password"
+EMAIL_FROM="Clicky Habits <no-reply@clickyhabits.com>"
+```
+
+With `SMTP_HOST` empty (the local default) nothing is sent: each email is
+logged by the API with an `[email]` prefix, so you can open the verification
+link from the terminal. Send failures are logged and never break sign-up.
 
 ## Structure
 
@@ -122,6 +143,12 @@ the API. nginx answers them like any unknown path, with the SPA's
    GOOGLE_CLIENT_ID=
    GOOGLE_CLIENT_SECRET=
    VITE_GOOGLE_CLIENT_ID=
+   SMTP_HOST=smtp.example.com
+   SMTP_PORT=587
+   SMTP_SECURE=false
+   SMTP_USER=
+   SMTP_PASS=
+   EMAIL_FROM=Clicky Habits <no-reply@clickyhabits.com>
    ```
 
 3. Domains (Dokploy **Domains** tab, container ports):
