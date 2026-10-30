@@ -92,7 +92,7 @@ const translations = {
     // chat
     "chat.fab": "Ask Mochi",
     "chat.title": "Mochi",
-    "chat.statusOnline": "Online — ask me anything",
+    "chat.statusOnline": "Online - ask me anything",
     "chat.statusThinking": "Thinking…",
     "chat.statusWorking": "Working on it…",
     "chat.statusSpeaking": "Replying…",
@@ -100,7 +100,7 @@ const translations = {
     "chat.statusError": "Something went wrong",
     "chat.newChat": "New chat",
     "chat.close": "Close chat",
-    "chat.placeholder": "Ask about stats, or say “add a habit…”",
+    "chat.placeholder": "Ask Mochi anything...",
     "chat.send": "Send",
     "chat.stop": "Stop",
     "chat.retry": "Try again",
@@ -111,7 +111,7 @@ const translations = {
       "“{name}” and all its data will be permanently deleted. This cannot be undone.",
     "chat.delete": "Delete",
     "chat.confirmApproved": "Deleted ✓",
-    "chat.confirmDeclined": "Kept — not deleted",
+    "chat.confirmDeclined": "Kept - not deleted",
     "chat.confirmExpired": "This confirmation has expired",
     "chat.confirmCancelled": "Cancelled",
     "chat.promptStats": "How are my stats?",
@@ -119,7 +119,7 @@ const translations = {
     "chat.promptNew": "Add a new habit",
     "chat.emptyTitle": "Hi! I'm Mochi 🌱",
     "chat.emptyBody":
-      "Ask me about your streaks and stats, tell me to add a habit, or say you just finished one — I'll record it.",
+      "Ask me about your streaks and stats, tell me to add a habit, or say you just finished one - I'll record it.",
     "chat.notConfiguredTitle": "Mochi isn't configured yet",
     "chat.notConfiguredBody":
       "Set LLM_BASE_URL, LLM_API_KEY and LLM_MODEL in the root .env, then restart the API.",
@@ -332,7 +332,7 @@ const translations = {
     // chat
     "chat.fab": "Tanya Mochi",
     "chat.title": "Mochi",
-    "chat.statusOnline": "Online — tanya apa saja",
+    "chat.statusOnline": "Online - tanya apa saja",
     "chat.statusThinking": "Lagi mikir…",
     "chat.statusWorking": "Lagi ngerjain…",
     "chat.statusSpeaking": "Lagi jawab…",
@@ -340,7 +340,7 @@ const translations = {
     "chat.statusError": "Ada yang salah",
     "chat.newChat": "Chat baru",
     "chat.close": "Tutup chat",
-    "chat.placeholder": "Tanya statistik, atau bilang “tambah habit…”",
+    "chat.placeholder": "Tanya Mochi apa saja...",
     "chat.send": "Kirim",
     "chat.stop": "Berhenti",
     "chat.retry": "Coba lagi",
@@ -359,7 +359,7 @@ const translations = {
     "chat.promptNew": "Tambah habit baru",
     "chat.emptyTitle": "Hai! Aku Mochi 🌱",
     "chat.emptyBody":
-      "Tanya soal streak dan statistikmu, suruh aku tambah habit, atau bilang kamu barusan selesai — nanti kucatat.",
+      "Tanya soal streak dan statistikmu, suruh aku tambah habit, atau bilang kamu barusan selesai - nanti kucatat.",
     "chat.notConfiguredTitle": "Mochi belum dikonfigurasi",
     "chat.notConfiguredBody":
       "Isi LLM_BASE_URL, LLM_API_KEY dan LLM_MODEL di .env root, lalu restart API.",

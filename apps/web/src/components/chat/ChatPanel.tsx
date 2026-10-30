@@ -104,6 +104,7 @@ export default function ChatPanel() {
   const streamingRef = useRef(false);
   const celebrateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const composerRef = useRef<HTMLTextAreaElement>(null);
   const nearBottomRef = useRef(true);
   const panelRef = useRef<HTMLDivElement>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
@@ -167,6 +168,15 @@ export default function ChatPanel() {
       el.scrollTop = el.scrollHeight;
     }
   }, [messages, status, open]);
+
+  // Grow the composer with its content (up to the CSS max-height) so the
+  // textarea never shows a cramped internal scrollbar for short input.
+  useEffect(() => {
+    const el = composerRef.current;
+    if (!el) return;
+    el.style.height = "48px";
+    el.style.height = `${Math.min(el.scrollHeight, 110)}px`;
+  }, [input, open]);
 
   const applyEvent = useCallback(
     (assistantId: string) =>
@@ -644,6 +654,7 @@ export default function ChatPanel() {
                   }}
                 >
                   <textarea
+                    ref={composerRef}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder={t("chat.placeholder")}

@@ -1,3 +1,5 @@
+import { API_URL } from "./config";
+
 export type ChatStreamEvent =
   | { type: "thread"; threadId: string }
   | { type: "text_delta"; text: string }
@@ -96,7 +98,7 @@ async function streamPost(
   onEvent: (e: ChatStreamEvent) => void,
   signal?: AbortSignal
 ): Promise<void> {
-  const res = await fetch(path, {
+  const res = await fetch(`${API_URL}${path}`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -132,12 +134,12 @@ export interface ChatThreadResponse {
 
 export const chatApi = {
   async getThread(): Promise<ChatThreadResponse> {
-    const res = await fetch("/api/chat/thread", { credentials: "include" });
+    const res = await fetch(`${API_URL}/api/chat/thread`, { credentials: "include" });
     if (!res.ok) throw new ChatApiError(`HTTP ${res.status}`, res.status);
     return res.json() as Promise<ChatThreadResponse>;
   },
   async newThread(): Promise<{ threadId: string }> {
-    const res = await fetch("/api/chat/threads", {
+    const res = await fetch(`${API_URL}/api/chat/threads`, {
       method: "POST",
       credentials: "include",
     });
@@ -155,7 +157,7 @@ export const chatApi = {
     signal?: AbortSignal
   ) => streamPost("/api/chat/confirm", body, onEvent, signal),
   async undo(actionId: string): Promise<{ changed: boolean; summary: string; undone: boolean }> {
-    const res = await fetch(`/api/chat/actions/${actionId}/undo`, {
+    const res = await fetch(`${API_URL}/api/chat/actions/${actionId}/undo`, {
       method: "POST",
       credentials: "include",
     });
@@ -262,7 +264,7 @@ export function toMessageViews(
   }
 
   // Once a later assistant answer exists in the same turn, the interrupted
-  // attempt before it has already been retried — don't offer Retry again.
+  // attempt before it has already been retried - don't offer Retry again.
   let laterCompleted = false;
   for (let i = views.length - 1; i >= 0; i--) {
     const v = views[i];
