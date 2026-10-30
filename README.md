@@ -94,7 +94,9 @@ Three containers, one process each:
 
 The API always lives on its own subdomain (`api.<domain>`) and serves at its
 root: `/auth/*`, `/health`, `/habits/*`, `/chat/*`. The web origin has no
-route to it, so `<domain>/auth`, `/health`, `/habits` and `/chat` all 404.
+route to it: `<domain>/auth`, `/health`, `/habits` and `/chat` never reach
+the API. nginx answers them like any unknown path, with the SPA's
+`index.html` (HTTP 200), and the client-side router handles it.
 
 ### Dokploy - API on a subdomain (e.g. `api.clickyhabits.com`)
 

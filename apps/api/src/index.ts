@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
-import { auth, buildTrustedOrigins } from "./auth";
+import { auth, buildTrustedOrigins, missingTrustedOrigin } from "./auth";
 import { habitService } from "./habits-service";
 import { createChatRoutes } from "./chat/routes";
 
@@ -13,6 +13,16 @@ type Env = {
 
 const app = new Hono<Env>();
 app.use(logger());
+
+// Fail fast on a split-origin deploy that forgot TRUSTED_ORIGINS. Checked
+// against BETTER_AUTH_URL so local dev (localhost) stays silent.
+const trustedOriginWarning = missingTrustedOrigin(
+  process.env.BETTER_AUTH_URL ?? "http://localhost:5173"
+);
+if (trustedOriginWarning) {
+  console.error(`[config] ${trustedOriginWarning}`);
+  if (process.env.NODE_ENV === "production") process.exit(1);
+}
 
 // CORS: the web app always runs on a different origin than the API
 // (https://clickyhabits.com calling https://api.clickyhabits.com).
