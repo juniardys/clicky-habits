@@ -274,6 +274,7 @@ const translations = {
     "profile.emailChangedUnverified":
       "Email updated. Check your inbox to verify the new address.",
     "profile.emailChanged": "Your email has been changed and verified.",
+    "profile.emailInUse": "That email is already used by another account.",
     "profile.passwordSection": "Password",
     "profile.currentPassword": "Current password",
     "profile.newPassword": "New password (min. 8 characters)",
@@ -559,6 +560,7 @@ const translations = {
     "profile.emailChangedUnverified":
       "Email diperbarui. Cek inbox untuk verifikasi alamat baru.",
     "profile.emailChanged": "Email kamu sudah diganti dan terverifikasi.",
+    "profile.emailInUse": "Email itu sudah dipakai akun lain.",
     "profile.passwordSection": "Password",
     "profile.currentPassword": "Password sekarang",
     "profile.newPassword": "Password baru (min. 8 karakter)",
