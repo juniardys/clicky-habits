@@ -139,6 +139,10 @@ interface RespFunctionCallState {
 }
 
 class ResponsesClient extends BaseClient {
+  constructor(config: LlmConfig, fetchFn: FetchFn) {
+    super(config, fetchFn);
+  }
+
   protected endpoint(): string {
     return `${this.config.baseUrl.replace(/\/$/, "")}/responses`;
   }
@@ -291,6 +295,10 @@ interface ChatCallState {
 }
 
 class ChatClient extends BaseClient {
+  constructor(config: LlmConfig, fetchFn: FetchFn) {
+    super(config, fetchFn);
+  }
+
   protected endpoint(): string {
     return `${this.config.baseUrl.replace(/\/$/, "")}/chat/completions`;
   }
