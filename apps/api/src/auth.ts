@@ -1,7 +1,8 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./db";
-import { buildAuthPlugins, buildSocialProviders } from "./auth-config";
+import { buildAuthPlugins, buildEmailOptions, buildSocialProviders } from "./auth-config";
+import { sendEmail } from "./email";
 
 // Public base URL of the auth/API endpoints.
 // - Local dev:  http://localhost:5173 (Vite proxies /api to this server)
@@ -62,10 +63,9 @@ export const auth = betterAuth({
   basePath: "/auth",
   secret: process.env.BETTER_AUTH_SECRET,
   // Email/password is enabled so the app can be used locally before
-  // Google SSO credentials are configured.
-  emailAndPassword: {
-    enabled: true,
-  },
+  // Google SSO credentials are configured. Email verification and change
+  // email are configured in buildEmailOptions (see auth-config.ts).
+  ...buildEmailOptions(sendEmail),
   socialProviders: buildSocialProviders(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET
