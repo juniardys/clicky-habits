@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  // @dodopayments/opencode-plugin (0.6.5) targets the OpenCode V1 plugin API
+  // (default-export function + config hook). OpenCode V2 rejects it:
+  // "Plugin must export a default definition with an id and an effect or setup
+  // function." Its only job was registering the two MCP servers below, so they
+  // are declared directly in V2 shape instead. Skills still come from the
+  // locally pinned package.
+  "mcp": {
+    "servers": {
+      "dodopayments-api": {
+        "type": "remote",
+        "url": "https://mcp.dodopayments.com/mcp"
+      },
+      "dodo-knowledge": {
+        "type": "remote",
+        "url": "https://knowledge.dodopayments.com/mcp"
+      }
+    }
+  },
+  "skills": ["node_modules/@dodopayments/opencode-plugin/skills"]
+}
