@@ -6,9 +6,15 @@
     "dev": "bun --env-file=../../.env --hot src/index.ts",
     "start": "bun src/index.ts",
     "test": "bun test",
-    "db:migrate": "dotenv -e ../../.env -- bunx prisma migrate dev",
+    "db:migrate": "dotenv -e ../../.env -- bunx prisma migrate dev --skip-seed",
     "db:migrate:deploy": "bunx prisma migrate deploy",
-    "db:generate": "bunx prisma generate"
+    "db:generate": "bunx prisma generate",
+    "db:reset": "dotenv -e ../../.env -- bunx prisma migrate reset --skip-seed",
+    "db:reset:force": "dotenv -e ../../.env -- bunx prisma migrate reset --force --skip-seed",
+    "db:seed": "dotenv -e ../../.env -- bunx prisma db seed"
+  },
+  "prisma": {
+    "seed": "bun prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.16.2",
