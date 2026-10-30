@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { auth } from "./auth";
 import { habitService } from "./habits-service";
+import { createChatRoutes } from "./chat/routes";
 
 type Env = {
   Variables: {
@@ -102,6 +103,9 @@ app.get("/api/habits/:id/stats", async (c) => {
   if (!stats) return c.json({ error: "Not found" }, 404);
   return c.json(stats);
 });
+
+// ---------- chat agent ----------
+app.route("/", createChatRoutes());
 
 const port = Number(process.env.PORT ?? 3001);
 console.log(`API listening on http://localhost:${port}`);
