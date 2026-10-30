@@ -14,7 +14,12 @@ export default function LoginPage() {
 
   async function handleGoogle() {
     setError(null);
-    const { error } = await signIn.social({ provider: "google", callbackURL: "/app" });
+    // Absolute URL: the OAuth callback is handled by the API, which may live on
+    // another origin (api.<domain>). A relative "/app" would redirect there.
+    const { error } = await signIn.social({
+      provider: "google",
+      callbackURL: `${window.location.origin}/app`,
+    });
     if (error) {
       setError(t("login.googleFailed"));
     }
