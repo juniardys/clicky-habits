@@ -85,6 +85,14 @@ export const api = {
     ),
   getStats: (id: string) => request<HabitStats>(`/habits/${id}/stats`),
   getDashboard: () => request<DashboardData>("/habits-dashboard"),
+  getAccount: () => request<{ hasPassword: boolean }>("/me/account"),
+  // Only for accounts without a password (Google sign-up). Errors are thrown
+  // as their code: password_too_short, password_too_long, already_has_password.
+  setPassword: (newPassword: string) =>
+    request<{ ok: true }>("/me/password", {
+      method: "POST",
+      body: JSON.stringify({ newPassword }),
+    }),
 };
 
 export function todayKey(): string {
