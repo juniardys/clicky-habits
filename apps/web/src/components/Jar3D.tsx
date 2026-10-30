@@ -33,7 +33,10 @@ function coinTransform(indexInJar: number) {
   const radius = Math.sqrt(rand()) * maxR;
   const x = Math.cos(angle) * radius;
   const z = Math.sin(angle) * radius;
-  const y = 0.3 + layer * (COIN_THICKNESS + 0.05) + rand() * 0.03;
+  // Jar origin sits 0.1 below IslandRig origin while the island top surface
+  // reaches ~0.43 there (~0.53 in jar space). Pile base at 0.6 keeps the
+  // first layer resting on the island instead of sinking inside it.
+  const y = 0.6 + layer * (COIN_THICKNESS + 0.05) + rand() * 0.03;
   const tiltX = (rand() - 0.5) * 0.5;
   const tiltZ = (rand() - 0.5) * 0.5;
   const rotY = rand() * Math.PI;

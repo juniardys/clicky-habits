@@ -126,6 +126,8 @@ const translations = {
     "chat.loadFailed": "Couldn't load the chat. Check your connection and reopen the panel.",
     "chat.interrupted": "Stopped",
     "chat.genericError": "Something went wrong. Try again?",
+    "chat.activityDone": "Worked through {count} steps",
+    "chat.activityDoneWithErrors": "Worked through {count} steps - {errors} failed",
     // landing
     "landing.navHow": "How it works",
     "landing.navModes": "Two modes",
@@ -366,6 +368,8 @@ const translations = {
     "chat.loadFailed": "Chat gagal dimuat. Cek koneksi lalu buka lagi panelnya.",
     "chat.interrupted": "Dihentikan",
     "chat.genericError": "Terjadi kesalahan. Coba lagi ya?",
+    "chat.activityDone": "Selesai lewat {count} langkah",
+    "chat.activityDoneWithErrors": "Selesai lewat {count} langkah - {errors} gagal",
     // landing
     "landing.navHow": "Cara Kerja",
     "landing.navModes": "Dua Mode",
