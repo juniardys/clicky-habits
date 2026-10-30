@@ -2,12 +2,12 @@ import { describe, expect, test } from "bun:test";
 import { validatePassword } from "./password";
 
 describe("validatePassword", () => {
-  test("rejects 7 characters", () => {
-    expect(validatePassword("a".repeat(7))).toBe("password_too_short");
+  test("rejects 3 characters", () => {
+    expect(validatePassword("a".repeat(3))).toBe("password_too_short");
   });
 
-  test("accepts 8 and 128 characters", () => {
-    expect(validatePassword("a".repeat(8))).toBeNull();
+  test("accepts 4 and 128 characters", () => {
+    expect(validatePassword("a".repeat(4))).toBeNull();
     expect(validatePassword("a".repeat(128))).toBeNull();
   });
 

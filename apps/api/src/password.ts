@@ -1,6 +1,7 @@
 // Password rule shared by every password the API accepts directly.
-// Mirrors better-auth's default minPasswordLength (8) / maxPasswordLength (128).
-export const PASSWORD_MIN = 8;
+// Kept simple on purpose (not a banking app). Also passed to better-auth as
+// minPasswordLength; maxPasswordLength matches better-auth's default (128).
+export const PASSWORD_MIN = 4;
 export const PASSWORD_MAX = 128;
 
 export type PasswordError = "password_too_short" | "password_too_long";

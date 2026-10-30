@@ -20,7 +20,12 @@ describe("buildEmailOptions", () => {
 
   test("sends verification on sign-up and keeps login open for unverified users", () => {
     const { opts } = setup();
-    expect(opts.emailAndPassword).toEqual({ enabled: true, requireEmailVerification: false });
+    expect(opts.emailAndPassword).toEqual({
+      enabled: true,
+      requireEmailVerification: false,
+      minPasswordLength: 4,
+      maxPasswordLength: 128,
+    });
     expect(opts.emailVerification.sendOnSignUp).toBe(true);
     expect(opts.emailVerification.autoSignInAfterVerification).toBe(true);
     expect(opts.user.changeEmail).toMatchObject({ enabled: true, updateEmailWithoutVerification: true });
