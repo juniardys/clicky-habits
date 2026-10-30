@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "bun --env-file=../../.env --hot src/index.ts",
     "start": "bun --env-file=../../.env src/index.ts",
+    "test": "bun test",
     "db:migrate": "dotenv -e ../../.env -- bunx prisma migrate dev",
     "db:generate": "bunx prisma generate"
   },
