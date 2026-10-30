@@ -3,8 +3,8 @@ import { validateNewPassword } from "./password";
 
 describe("validateNewPassword", () => {
   test("rejects short passwords before checking the confirmation", () => {
-    expect(validateNewPassword("short", "short")).toBe("password_too_short");
-    expect(validateNewPassword("short", "other")).toBe("password_too_short");
+    expect(validateNewPassword("abc", "abc")).toBe("password_too_short");
+    expect(validateNewPassword("abc", "xyz")).toBe("password_too_short");
   });
 
   test("rejects a confirmation that does not match", () => {

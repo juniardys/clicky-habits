@@ -1,5 +1,6 @@
 import { oneTap } from "better-auth/plugins";
 import { changeEmailEmail, verificationEmail, type EmailMessage } from "./email";
+import { PASSWORD_MAX, PASSWORD_MIN } from "./password";
 
 // better-auth sends both the sign-up verification and the "confirm your new
 // email" link through sendVerificationEmail. The token payload tells them
@@ -23,7 +24,12 @@ function isChangeEmailToken(token: string): boolean {
 // Sending is never awaited (better-auth timing-attack guidance).
 export function buildEmailOptions(send: (msg: EmailMessage) => Promise<void>) {
   return {
-    emailAndPassword: { enabled: true, requireEmailVerification: false },
+    emailAndPassword: {
+      enabled: true,
+      requireEmailVerification: false,
+      minPasswordLength: PASSWORD_MIN,
+      maxPasswordLength: PASSWORD_MAX,
+    },
     emailVerification: {
       sendOnSignUp: true,
       autoSignInAfterVerification: true,

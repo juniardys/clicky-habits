@@ -39,7 +39,7 @@ describe("GET /me/account", () => {
 describe("POST /me/password", () => {
   test("rejects short password without calling setPassword", async () => {
     const { app, setCalls } = makeApp(false);
-    const res = await post(app, { newPassword: "short" });
+    const res = await post(app, { newPassword: "abc" });
     expect(res.status).toBe(400);
     expect(await res.json()).toEqual({ error: "password_too_short" });
     expect(setCalls).toEqual([]);

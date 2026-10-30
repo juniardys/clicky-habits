@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { authClient, signIn, signUp } from "../lib/auth";
 import { GOOGLE_CLIENT_ID } from "../lib/config";
 import { useI18n, type Lang } from "../lib/i18n";
+import { PASSWORD_MIN } from "../lib/password";
 
 export default function LoginPage() {
   const { lang, setLang, t } = useI18n();
@@ -118,7 +119,7 @@ export default function LoginPage() {
             type="password"
             placeholder={t("login.password")}
             required
-            minLength={8}
+            minLength={PASSWORD_MIN}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />

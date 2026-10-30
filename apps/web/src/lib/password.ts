@@ -1,6 +1,6 @@
 // Same length rule as the API (apps/api/src/password.ts). The apps share no
 // package, so keep both in sync.
-export const PASSWORD_MIN = 8;
+export const PASSWORD_MIN = 4;
 export const PASSWORD_MAX = 128;
 
 export type NewPasswordError = "password_too_short" | "password_too_long" | "password_mismatch";
