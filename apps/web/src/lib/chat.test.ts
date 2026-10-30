@@ -108,6 +108,28 @@ describe("toMessageViews", () => {
     expect(views[1].interrupted).toBe(true);
   });
 
+  test("interrupted attempt and its retry answer stay separate views; retry is not offered twice", () => {
+    const views = toMessageViews([
+      row({ role: "user", content: "halo" }),
+      row({ role: "assistant", content: "Sebentar ya", toolMeta: { interrupted: true } }),
+      row({ role: "assistant", content: "Jawaban lengkap." }),
+    ]);
+    const assistants = views.filter((v) => v.role === "assistant");
+    expect(assistants.length).toBe(2);
+    expect(assistants[0].interrupted).toBe(true);
+    expect(assistants[0].retryMessageId).toBeUndefined();
+    expect(assistants[1].content).toBe("Jawaban lengkap.");
+  });
+
+  test("interrupted attempt without a retry keeps its retry target", () => {
+    const views = toMessageViews([
+      row({ role: "user", content: "halo" }),
+      row({ role: "assistant", content: "", toolMeta: { interrupted: true } }),
+    ]);
+    const assistant = views.find((v) => v.role === "assistant");
+    expect(assistant?.retryMessageId).toBe(views[0].id);
+  });
+
   test("confirmation card resolves to approved when a hidden confirm result follows", () => {
     const views = toMessageViews([
       row({ role: "user", content: "hapus push-up" }),

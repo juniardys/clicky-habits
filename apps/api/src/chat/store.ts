@@ -50,6 +50,9 @@ export interface ChatStore {
   ): Promise<StoredAction>;
   getAction(userId: string, id: string): Promise<StoredAction | null>;
   markActionUndone(id: string): Promise<void>;
+  /** Atomically claim an action for undo; false when already claimed/undone. */
+  claimAction(userId: string, id: string): Promise<boolean>;
+  releaseAction(id: string): Promise<void>;
   listActions(userId: string, threadId: string): Promise<StoredAction[]>;
   createPending(
     userId: string,
@@ -102,10 +105,10 @@ export const prismaChatStore: ChatStore = {
   async listMessages(threadId, limit = 100) {
     const rows = await prisma.chatMessage.findMany({
       where: { threadId },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: "desc" },
       take: limit,
     });
-    return rows.map((m) => ({ ...m, toolMeta: asRecord(m.toolMeta) }));
+    return rows.reverse().map((m) => ({ ...m, toolMeta: asRecord(m.toolMeta) }));
   },
   async saveAction(userId, threadId, undo) {
     const a = await prisma.chatAction.create({
@@ -120,6 +123,16 @@ export const prismaChatStore: ChatStore = {
   },
   async markActionUndone(id) {
     await prisma.chatAction.update({ where: { id }, data: { undoneAt: new Date() } });
+  },
+  async claimAction(userId, id) {
+    const res = await prisma.chatAction.updateMany({
+      where: { id, userId, undoneAt: null },
+      data: { undoneAt: new Date() },
+    });
+    return res.count > 0;
+  },
+  async releaseAction(id) {
+    await prisma.chatAction.update({ where: { id }, data: { undoneAt: null } });
   },
   async listActions(userId, threadId) {
     const rows = await prisma.chatAction.findMany({ where: { userId, threadId } });

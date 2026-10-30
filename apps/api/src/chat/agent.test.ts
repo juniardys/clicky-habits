@@ -1,5 +1,11 @@
 import { describe, expect, test } from "bun:test";
-import { buildInstructions, runChatTurn, type ChatStreamEvent } from "./agent";
+import {
+  buildInstructions,
+  buildLlmHistory,
+  runChatTurn,
+  turnCompleted,
+  type ChatStreamEvent,
+} from "./agent";
 import type { LlmClient, LlmTurnInput, ToolCall } from "./llm";
 import type { ChatStore, StoredAction, StoredMessage, StoredPending } from "./store";
 import { makeFakeService } from "./tools.test";
@@ -57,6 +63,16 @@ class MemoryStore implements ChatStore {
   async markActionUndone(id: string) {
     const a = this.actions.find((x) => x.id === id);
     if (a) a.undoneAt = new Date();
+  }
+  async claimAction(userId: string, id: string) {
+    const a = this.actions.find((x) => x.id === id && x.userId === userId);
+    if (!a || a.undoneAt) return false;
+    a.undoneAt = new Date();
+    return true;
+  }
+  async releaseAction(id: string) {
+    const a = this.actions.find((x) => x.id === id);
+    if (a) a.undoneAt = null;
   }
   async listActions(userId: string, threadId: string) {
     return this.actions.filter((a) => a.userId === userId && a.threadId === threadId);
@@ -201,6 +217,100 @@ describe("runChatTurn", () => {
     // second LLM call must have received the tool error in history
     const secondInput = llm.inputs[1];
     expect(secondInput.messages.some((m) => m.role === "tool" && m.content.includes("false"))).toBe(true);
+  });
+});
+
+describe("buildLlmHistory tool-call pairing", () => {
+  test("drops tool calls that have no tool result (aborted batch)", async () => {
+    const store = new MemoryStore();
+    const thread = await store.createThread("u1");
+    await store.addMessage(thread.id, { role: "user", content: "catat" });
+    await store.addMessage(thread.id, {
+      role: "assistant",
+      content: "",
+      toolMeta: {
+        toolCalls: [
+          { callId: "c1", name: "add_coins", arguments: { habitId: "jar1" } },
+          { callId: "c2", name: "add_coins", arguments: { habitId: "jar1" } },
+        ],
+      },
+    });
+    await store.addMessage(thread.id, {
+      role: "tool",
+      content: '{"ok":true}',
+      toolName: "add_coins",
+      toolMeta: { callId: "c1" },
+    });
+    const history = buildLlmHistory(store.messages);
+    const assistant = history.find((m) => m.role === "assistant");
+    expect(assistant?.toolCalls?.map((c) => c.callId)).toEqual(["c1"]);
+  });
+
+  test("drops an assistant tool-call row with no results at all", async () => {
+    const store = new MemoryStore();
+    const thread = await store.createThread("u1");
+    await store.addMessage(thread.id, { role: "user", content: "halo" });
+    await store.addMessage(thread.id, {
+      role: "assistant",
+      content: "",
+      toolMeta: { toolCalls: [{ callId: "c9", name: "list_habits", arguments: {} }] },
+    });
+    const history = buildLlmHistory(store.messages);
+    expect(history.some((m) => m.role === "assistant")).toBe(false);
+  });
+});
+
+describe("turnCompleted", () => {
+  test("intermediate tool-call text does not count as completed; final flag does", async () => {
+    const store = new MemoryStore();
+    const thread = await store.createThread("u1");
+    const preamble = await store.addMessage(thread.id, {
+      role: "assistant",
+      content: "Siap, aku catat dulu",
+      toolMeta: { toolCalls: [{ callId: "c1", name: "add_coins", arguments: {} }] },
+    });
+    const interrupted = await store.addMessage(thread.id, {
+      role: "assistant",
+      content: "",
+      toolMeta: { interrupted: true },
+    });
+    expect(turnCompleted([preamble, interrupted])).toBe(false);
+    const final = await store.addMessage(thread.id, {
+      role: "assistant",
+      content: "Selesai!",
+      toolMeta: { final: true },
+    });
+    expect(turnCompleted([preamble, interrupted, final])).toBe(true);
+  });
+});
+
+describe("pending delete batching", () => {
+  test("two delete calls in one batch leave one pending and force a text-only closing call", async () => {
+    const { store, svc, thread, llm } = await setup([
+      {
+        toolCalls: [
+          { callId: "c1", name: "delete_habit", arguments: { habitId: "jar1" } },
+          { callId: "c2", name: "delete_habit", arguments: { habitId: "jar1" } },
+        ],
+      },
+      { text: "Yakin mau hapus?" },
+    ]);
+    const events: ChatStreamEvent[] = [];
+    await runChatTurn(
+      { llm, svc, store },
+      {
+        userId: "u1",
+        threadId: thread.id,
+        today: "2026-10-30",
+        lang: "id",
+        emit: (e) => {
+          events.push(e);
+        },
+      }
+    );
+    expect(store.pendings.length).toBe(1);
+    expect(llm.inputs[1].tools).toEqual([]);
+    expect(events.at(-1)?.type).toBe("done");
   });
 });
 

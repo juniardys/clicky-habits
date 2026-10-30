@@ -371,8 +371,19 @@ export default function ChatPanel() {
     [lang, runStream]
   );
 
+  const [undoingIds, setUndoingIds] = useState<ReadonlySet<string>>(new Set());
   const handleUndo = useCallback(async (viewId: string, card: ToolCardData) => {
     if (!card.undoActionId) return;
+    const actionId = card.undoActionId;
+    let already = false;
+    setUndoingIds((prev) => {
+      if (prev.has(actionId)) {
+        already = true;
+        return prev;
+      }
+      return new Set(prev).add(actionId);
+    });
+    if (already) return;
     try {
       const result = await chatApi.undo(card.undoActionId);
       if (result.undone || result.changed) {
@@ -405,6 +416,12 @@ export default function ChatPanel() {
       }
     } catch {
       // card keeps its state; user can retry the undo
+    } finally {
+      setUndoingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(actionId);
+        return next;
+      });
     }
   }, []);
 
@@ -538,6 +555,7 @@ export default function ChatPanel() {
                               <button
                                 type="button"
                                 className="chat-undo-btn"
+                                disabled={undoingIds.has(card.undoActionId)}
                                 onClick={() => handleUndo(m.id, card)}
                               >
                                 ↩ {t("chat.undo")}

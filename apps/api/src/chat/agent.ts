@@ -61,9 +61,42 @@ export function buildLlmHistory(messages: StoredMessage[]): LlmMessage[] {
       });
     }
   }
-  const sliced = mapped.slice(-HISTORY_LIMIT);
+  // Repair: an aborted/failed batch can persist an assistant tool-call row
+  // whose tool results never arrived. Providers reject unpaired calls, so
+  // keep only calls that have a following tool result, and drop tool
+  // results whose call was pruned.
+  const paired: LlmMessage[] = [];
+  let lastKeptCallIds = new Set<string>();
+  for (let i = 0; i < mapped.length; i++) {
+    const m = mapped[i];
+    if (m.role === "assistant" && m.toolCalls?.length) {
+      const resultIds = new Set<string>();
+      for (let j = i + 1; j < mapped.length && mapped[j].role === "tool"; j++) {
+        if (mapped[j].toolCallId) resultIds.add(mapped[j].toolCallId as string);
+      }
+      const kept = m.toolCalls.filter((c) => resultIds.has(c.callId));
+      lastKeptCallIds = new Set(kept.map((c) => c.callId));
+      if (kept.length > 0) {
+        paired.push({ ...m, toolCalls: kept });
+      } else if (m.content) {
+        paired.push({ role: "assistant", content: m.content });
+      }
+      continue;
+    }
+    if (m.role === "tool") {
+      if (m.toolCallId && lastKeptCallIds.has(m.toolCallId)) paired.push(m);
+      continue;
+    }
+    paired.push(m);
+  }
+
+  const sliced = paired.slice(-HISTORY_LIMIT);
   while (sliced.length > 0 && sliced[0].role === "tool") sliced.shift();
   return sliced;
+}
+
+export function turnCompleted(after: StoredMessage[]): boolean {
+  return after.some((m) => m.role === "assistant" && m.toolMeta?.final === true);
 }
 
 export interface AgentDeps {
@@ -103,13 +136,14 @@ export async function runChatTurn(deps: AgentDeps, opts: AgentTurnOpts): Promise
   const instructions = buildInstructions({ today: opts.today, lang: opts.lang });
 
   let streamedText = "";
+  let forceNextText = false;
   try {
     for (let step = 0; step <= MAX_TOOL_STEPS; step++) {
       if (opts.signal?.aborted) throw new Error("aborted");
-      const forceText = step === MAX_TOOL_STEPS;
+      const forceText = step === MAX_TOOL_STEPS || forceNextText;
       streamedText = "";
       const result = await deps.llm.runTurn(
-        { instructions, messages: history, tools: forceText ? [] : toolDefs },
+        { instructions, messages: history, tools: forceText ? [] : toolDefs, signal: opts.signal },
         (text) => {
           streamedText += text;
           void emit({ type: "text_delta", text });
@@ -118,9 +152,11 @@ export async function runChatTurn(deps: AgentDeps, opts: AgentTurnOpts): Promise
       const finalText = result.text || streamedText;
 
       if (result.toolCalls.length === 0 || forceText) {
+        if (opts.signal?.aborted) throw new Error("aborted");
         const msg = await store.addMessage(opts.threadId, {
           role: "assistant",
           content: finalText,
+          toolMeta: { final: true },
         });
         await emit({ type: "done", messageId: msg.id });
         return;
@@ -133,6 +169,7 @@ export async function runChatTurn(deps: AgentDeps, opts: AgentTurnOpts): Promise
       });
       history.push({ role: "assistant", content: finalText, toolCalls: result.toolCalls });
 
+      let batchPending = false;
       for (const call of result.toolCalls) {
         if (opts.signal?.aborted) throw new Error("aborted");
         const label = await describeToolCall(call, ctx, svc);
@@ -146,6 +183,9 @@ export async function runChatTurn(deps: AgentDeps, opts: AgentTurnOpts): Promise
         }
         let pendingActionId: string | undefined;
         if (outcome.pendingDelete) {
+          batchPending = true;
+          // One pending action per thread: a new request replaces the old.
+          await store.discardPendingForThread(opts.threadId);
           const pending = await store.createPending(opts.userId, opts.threadId, call.name, {
             ...call.arguments,
             habitId: outcome.pendingDelete.habitId,
@@ -191,6 +231,9 @@ export async function runChatTurn(deps: AgentDeps, opts: AgentTurnOpts): Promise
         });
         history.push({ role: "tool", content: toolContent, toolCallId: call.callId });
       }
+      // A confirmation request ends tool use: the next call is text-only so
+      // Mochi asks for confirmation instead of chaining more actions.
+      if (batchPending) forceNextText = true;
     }
   } catch (err) {
     if (opts.signal?.aborted || (err instanceof Error && err.message === "aborted")) {

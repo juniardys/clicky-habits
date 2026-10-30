@@ -224,6 +224,9 @@ export function toMessageViews(
       if (meta.interrupted === true) view.interrupted = true;
       if (meta.error === true) view.error = true;
       if ((view.interrupted || view.error) && lastUserId) view.retryMessageId = lastUserId;
+      // A failed/interrupted attempt closes the turn: a retry's answer is a
+      // separate view, not a concatenation onto the failed text.
+      if (view.interrupted || view.error) current = null;
       continue;
     }
     if (row.role === "tool") {
@@ -256,6 +259,19 @@ export function toMessageViews(
         lastConfirmView = view;
       }
     }
+  }
+
+  // Once a later assistant answer exists in the same turn, the interrupted
+  // attempt before it has already been retried — don't offer Retry again.
+  let laterCompleted = false;
+  for (let i = views.length - 1; i >= 0; i--) {
+    const v = views[i];
+    if (v.role === "user") {
+      laterCompleted = false;
+      continue;
+    }
+    if (laterCompleted && v.retryMessageId) delete v.retryMessageId;
+    if (v.content.trim() && !v.interrupted && !v.error) laterCompleted = true;
   }
   return views;
 }

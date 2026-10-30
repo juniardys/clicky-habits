@@ -21,6 +21,7 @@ export interface LlmTurnInput {
   instructions: string;
   messages: LlmMessage[];
   tools: LlmToolDef[];
+  signal?: AbortSignal;
 }
 
 export interface LlmClient {
@@ -90,9 +91,14 @@ abstract class BaseClient implements LlmClient {
     protected fetchFn: FetchFn
   ) {}
 
-  protected async request(body: Record<string, unknown>): Promise<Response> {
+  protected async request(body: Record<string, unknown>, signal?: AbortSignal): Promise<Response> {
     const timeout = this.config.timeoutMs ?? 30_000;
     const url = this.endpoint();
+    const timeoutSignal = AbortSignal.timeout(timeout);
+    const combined =
+      signal && typeof AbortSignal.any === "function"
+        ? AbortSignal.any([timeoutSignal, signal])
+        : timeoutSignal;
     const doFetch = (payload: Record<string, unknown>) =>
       this.fetchFn(url, {
         method: "POST",
@@ -101,7 +107,7 @@ abstract class BaseClient implements LlmClient {
           Authorization: `Bearer ${this.config.apiKey}`,
         },
         body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(timeout),
+        signal: combined,
       });
 
     let res: Response;
@@ -184,7 +190,7 @@ class ResponsesClient extends BaseClient {
   }
 
   async runTurn(input: LlmTurnInput, onText: (text: string) => void) {
-    const res = await this.request(this.buildBody(input));
+    const res = await this.request(this.buildBody(input), input.signal);
     const contentType = res.headers.get("content-type") ?? "";
 
     if (!contentType.includes("text/event-stream") || !res.body) {
@@ -334,7 +340,7 @@ class ChatClient extends BaseClient {
   }
 
   async runTurn(input: LlmTurnInput, onText: (text: string) => void) {
-    const res = await this.request(this.buildBody(input));
+    const res = await this.request(this.buildBody(input), input.signal);
     const contentType = res.headers.get("content-type") ?? "";
 
     if (!contentType.includes("text/event-stream") || !res.body) {

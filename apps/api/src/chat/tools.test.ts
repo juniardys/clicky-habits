@@ -182,6 +182,24 @@ describe("executeTool validation", () => {
     expect(b.ok).toBe(false);
   });
 
+  test("non-string date is an error, never a silent write for today", async () => {
+    const svc = seed();
+    const a = await executeTool(
+      { callId: "c", name: "add_coins", arguments: { habitId: "jar1", date: 20261030 } },
+      ctx,
+      svc
+    );
+    const b = await executeTool(
+      { callId: "c", name: "mark_day", arguments: { habitId: "cal1", date: { y: 2026 } } },
+      ctx,
+      svc
+    );
+    expect(a.ok).toBe(false);
+    expect(b.ok).toBe(false);
+    expect(svc.habits.find((h) => h.id === "jar1")!.entries.get("2026-10-30")).toBe(2);
+    expect(svc.habits.find((h) => h.id === "cal1")!.entries.size).toBe(0);
+  });
+
   test("invalid date and out-of-range coin count fail", async () => {
     const svc = seed();
     const a = await executeTool(

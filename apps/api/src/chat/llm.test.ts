@@ -166,6 +166,33 @@ describe("chat mode", () => {
     }
   });
 
+  test("an already-aborted caller signal stops the request immediately", async () => {
+    const { fn } = stubFetch((_url, init) => {
+      return new Promise<Response>((_resolve, reject) => {
+        const signal = init.signal as AbortSignal;
+        if (signal.aborted) reject(new DOMException("aborted", "AbortError"));
+        signal.addEventListener("abort", () =>
+          reject(new DOMException("aborted", "AbortError"))
+        );
+      }) as unknown as Response;
+    });
+    const client = createLlmClient({ ...config, mode: "responses", timeoutMs: 30_000 }, fn);
+    const controller = new AbortController();
+    controller.abort();
+    const run = client.runTurn(
+      { instructions: "", messages: [], tools, signal: controller.signal },
+      () => {}
+    );
+    const outcome = await Promise.race([
+      run.then(
+        () => "resolved",
+        () => "rejected"
+      ),
+      new Promise<string>((r) => setTimeout(() => r("hung"), 1000)),
+    ]);
+    expect(outcome).toBe("rejected");
+  });
+
   test("malformed tool arguments surface as __malformed marker, not a crash", async () => {
     const body = `data: ${JSON.stringify({
       choices: [

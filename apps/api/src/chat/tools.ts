@@ -98,6 +98,15 @@ function strArg(args: Record<string, unknown>, key: string): string | undefined 
   return trimmed ? trimmed : undefined;
 }
 
+/** Present-but-invalid dates are an error; only an absent date defaults to today. */
+function dateArg(args: Record<string, unknown>, today: string): string | null {
+  const raw = args.date;
+  if (raw === undefined) return today;
+  if (typeof raw !== "string") return null;
+  const key = raw.trim();
+  return validDateKey(key) ? key : null;
+}
+
 function validDateKey(key: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return false;
   const d = new Date(key + "T00:00:00Z");
@@ -223,8 +232,8 @@ export async function executeTool(
       case "mark_day": {
         const habitId = strArg(args, "habitId");
         if (!habitId) return fail(pick(lang, "habitId wajib diisi.", "habitId is required."));
-        const date = strArg(args, "date") ?? ctx.today;
-        if (!validDateKey(date)) return fail(pick(lang, "Tanggal tidak valid.", "Invalid date."));
+        const date = dateArg(args, ctx.today);
+        if (!date) return fail(pick(lang, "Tanggal tidak valid.", "Invalid date."));
         const habit = await svc.getHabit(ctx.userId, habitId);
         if (!habit) return fail(pick(lang, "Habit tidak ditemukan.", "Habit not found."));
         if (habit.type !== "CALENDAR") {
@@ -256,8 +265,8 @@ export async function executeTool(
       case "add_coins": {
         const habitId = strArg(args, "habitId");
         if (!habitId) return fail(pick(lang, "habitId wajib diisi.", "habitId is required."));
-        const date = strArg(args, "date") ?? ctx.today;
-        if (!validDateKey(date)) return fail(pick(lang, "Tanggal tidak valid.", "Invalid date."));
+        const date = dateArg(args, ctx.today);
+        if (!date) return fail(pick(lang, "Tanggal tidak valid.", "Invalid date."));
         const rawCount = args.count ?? 1;
         if (typeof rawCount !== "number" || !Number.isInteger(rawCount) || rawCount < 1 || rawCount > 20) {
           return fail(pick(lang, "Jumlah koin harus 1–20.", "Coin count must be 1–20."));
