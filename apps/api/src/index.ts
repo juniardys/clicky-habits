@@ -4,6 +4,8 @@ import { logger } from "hono/logger";
 import { auth, buildTrustedOrigins, missingTrustedOrigin } from "./auth";
 import { habitService } from "./habits-service";
 import { createChatRoutes } from "./chat/routes";
+import { prisma } from "./db";
+import { registerMeRoutes } from "./me-routes";
 
 type Env = {
   Variables: {
@@ -62,6 +64,23 @@ app.use("/habits", async (c, next) => {
   if (!session) return c.json({ error: "Unauthorized" }, 401);
   c.set("userId", session.user.id);
   await next();
+});
+app.use("/me/*", async (c, next) => {
+  const session = await auth.api.getSession({ headers: c.req.raw.headers });
+  if (!session) return c.json({ error: "Unauthorized" }, 401);
+  c.set("userId", session.user.id);
+  await next();
+});
+
+// ---------- account (/me) ----------
+registerMeRoutes(app, {
+  hasPassword: async (userId) =>
+    (await prisma.account.count({
+      where: { userId, providerId: "credential", password: { not: null } },
+    })) > 0,
+  setPassword: async (newPassword, headers) => {
+    await auth.api.setPassword({ body: { newPassword }, headers });
+  },
 });
 
 // ---------- habits ----------

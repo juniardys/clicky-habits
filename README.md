@@ -35,7 +35,7 @@ bun run dev:api   # http://localhost:3001
 bun run dev:web   # http://localhost:5173
 ```
 
-Open http://localhost:5173. The web dev server proxies the API paths (`/auth`, `/health`, `/habits`, `/chat`) to the API on :3001, so auth cookies stay on a single origin while developing.
+Open http://localhost:5173. The web dev server proxies the API paths (`/auth`, `/health`, `/habits`, `/chat`, `/me`) to the API on :3001, so auth cookies stay on a single origin while developing.
 
 ## Chat assistant (Mochi)
 
@@ -102,7 +102,7 @@ link from the terminal. Send failures are logged and never break sign-up.
 ```
 apps/
   api/   Hono + better-auth + Prisma (port 3001)
-  web/   Vite + React + R3F (port 5173, proxy /auth /health /habits /chat -> 3001)
+  web/   Vite + React + R3F (port 5173, proxy /auth /health /habits /chat /me -> 3001)
 docker/
   api.Dockerfile        api image (Bun runtime)
   web.Dockerfile        web image (Vite build served by nginx)
@@ -124,8 +124,8 @@ Three containers, one process each:
 | `web` | `docker/web.Dockerfile` | nginx serving the Vite build only. No API proxy: it cannot reach the API |
 
 The API always lives on its own subdomain (`api.<domain>`) and serves at its
-root: `/auth/*`, `/health`, `/habits/*`, `/chat/*`. The web origin has no
-route to it: `<domain>/auth`, `/health`, `/habits` and `/chat` never reach
+root: `/auth/*`, `/health`, `/habits/*`, `/chat/*`, `/me/*`. The web origin has no
+route to it: `<domain>/auth`, `/health`, `/habits`, `/chat` and `/me` never reach
 the API. nginx answers them like any unknown path, with the SPA's
 `index.html` (HTTP 200), and the client-side router handles it.
 
