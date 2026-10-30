@@ -191,7 +191,7 @@ const translations = {
     "landing.q5": "Can I undo a mistake?",
     "landing.a5":
       "Yes. On a calendar, click a crossed date again to undo it. Your stats recalculate from the corrected history.",
-    "landing.finalTitle": "Your first jar is empty. Fix that today.",
+    "landing.finalTitle": "A blank calendar and an empty jar. Fill one today.",
     "landing.finalBody":
       "Create your first habit, pick a tracker, and earn your first cross - or your first coin - in the next minute.",
     "landing.finalButton": "Create my free account",
@@ -394,7 +394,7 @@ const translations = {
     "landing.q5": "Kalau salah klik bisa dibatalkan?",
     "landing.a5":
       "Bisa. Di kalender, klik lagi tanggal yang tercoret untuk membatalkannya. Statistikmu dihitung ulang dari riwayat yang sudah diperbaiki.",
-    "landing.finalTitle": "Toples pertamamu masih kosong. Isi hari ini.",
+    "landing.finalTitle": "Kalender kosong, toples kosong. Isi salah satunya hari ini.",
     "landing.finalBody":
       "Buat kebiasaan pertamamu, pilih tracker, dan dapatkan coretan pertama - atau koin pertamamu - dalam semenit ke depan.",
     "landing.finalButton": "Buat akun gratisku",
