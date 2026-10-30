@@ -121,8 +121,7 @@ Notes:
 - The compose file publishes **no host ports**. Traefik reaches the
   containers over the Docker network, so there is no clash with ports already
   in use on the server (Dokploy itself listens on 3000) and the API is not
-  reachable via `http://<server-ip>:3001`. `APP_PORT` / `API_PORT` are not
-  needed in Dokploy.
+  reachable via `http://<server-ip>:3001`.
 - Behind a Cloudflare Tunnel, TLS ends at Cloudflare: route both hostnames in
   the tunnel to Traefik (e.g. `http://localhost:80`) and leave HTTPS /
   Let's Encrypt off on the Dokploy domains. The public URLs in the env stay
@@ -156,6 +155,6 @@ cp .env.example .env   # point DATABASE_URL at a reachable Postgres
 #   VITE_API_URL="http://localhost:3001"
 #   TRUSTED_ORIGINS="http://localhost:3000"
 docker compose -f docker-compose.yml -f docker-compose.local.yml up -d --build
-# web: http://localhost:3000 (APP_PORT), api: http://localhost:3001 (API_PORT)
+# web: http://localhost:3000, api: http://localhost:3001
 ```
 
