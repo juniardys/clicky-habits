@@ -14,7 +14,12 @@ type Env = {
 };
 
 const app = new Hono<Env>();
-app.use(logger());
+// Request log, minus /health so frequent health checks don't flood the logs.
+const requestLogger = logger();
+app.use(async (c, next) => {
+  if (c.req.path === "/health") return next();
+  return requestLogger(c, next);
+});
 
 // Fail fast on a split-origin deploy that forgot TRUSTED_ORIGINS. Checked
 // against BETTER_AUTH_URL so local dev (localhost) stays silent.
