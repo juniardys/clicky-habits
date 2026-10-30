@@ -142,6 +142,29 @@ export default function HabitPage() {
     }
   }
 
+  async function handleRemoveCoin() {
+    if (!habit || busy || total === 0) return;
+    setBusy(true);
+    try {
+      const res = await api.removeCoin(habit.id);
+      const date = res.date;
+      if (res.removed > 0 && date) {
+        playPop();
+        setJustAdded(false);
+        setViewJar(null); // jump to the active jar so the removal is visible
+        const entries =
+          res.countToday > 0
+            ? habit.entries.map((e) => (e.date === date ? { ...e, count: res.countToday } : e))
+            : habit.entries.filter((e) => e.date !== date);
+        setHabit({ ...habit, entries, totalCount: res.totalCount });
+      }
+    } catch {
+      setHabit(await api.getHabit(habit.id));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function prevMonth() {
     if (viewMonth === 0) {
       setViewMonth(11);
@@ -271,6 +294,13 @@ export default function HabitPage() {
                   disabled={busy}
                 >
                   {t("habit.addCoin")}
+                </button>
+                <button
+                  className="btn big-action"
+                  onClick={handleRemoveCoin}
+                  disabled={busy || total === 0}
+                >
+                  {t("habit.removeCoin")}
                 </button>
               </div>
             </div>

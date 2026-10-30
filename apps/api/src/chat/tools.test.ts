@@ -94,6 +94,27 @@ export function makeFakeService(seed: FakeHabit[]): HabitService & { habits: Fak
       else h.entries.set(date, left);
       return { removed, countToday: left };
     },
+    async removeLastCoin(userId, id) {
+      const h = owned(userId, id);
+      if (!h || h.type !== "JAR") return null;
+      const date =
+        [...h.entries.entries()]
+          .filter(([, count]) => count > 0)
+          .map(([d]) => d)
+          .sort()
+          .at(-1) ?? null;
+      if (!date) return { date: null, removed: 0, countToday: 0, totalCount: 0 };
+      const cur = h.entries.get(date) ?? 0;
+      const left = cur - 1;
+      if (left <= 0) h.entries.delete(date);
+      else h.entries.set(date, left);
+      return {
+        date,
+        removed: 1,
+        countToday: left,
+        totalCount: [...h.entries.values()].reduce((s, c) => s + c, 0),
+      };
+    },
     async getDashboard(userId): Promise<DashboardData> {
       const mine = habits.filter((h) => h.userId === userId);
       return {

@@ -119,6 +119,16 @@ app.post("/habits/:id/coin", async (c) => {
   return c.json(result);
 });
 
+// Jar tracker: take one coin back out of the newest entry that has coins.
+app.post("/habits/:id/coin/remove", async (c) => {
+  const habit = await habitService.getHabit(c.get("userId"), c.req.param("id"));
+  if (!habit) return c.json({ error: "Not found" }, 404);
+  if (habit.type !== "JAR") return c.json({ error: "Not a jar habit" }, 400);
+  const result = await habitService.removeLastCoin(c.get("userId"), c.req.param("id"));
+  if (!result) return c.json({ error: "Not found" }, 404);
+  return c.json(result);
+});
+
 // Aggregated dashboard across all habits of the user.
 app.get("/habits-dashboard", async (c) => {
   return c.json(await habitService.getDashboard(c.get("userId")));

@@ -83,6 +83,10 @@ export interface HabitService {
     date: string,
     count: number
   ): Promise<{ removed: number; countToday: number }>;
+  removeLastCoin(
+    userId: string,
+    id: string
+  ): Promise<{ date: string | null; removed: number; countToday: number; totalCount: number } | null>;
   getDashboard(userId: string): Promise<DashboardData>;
   getHabitStats(userId: string, id: string): Promise<HabitStatsResult | null>;
 }
@@ -215,6 +219,24 @@ async function decrementCoins(userId: string, id: string, dateKey: string, count
   return { removed, countToday };
 }
 
+/** Newest entry date (YYYY-MM-DD) that still holds at least one coin. */
+export function latestCoinDate(entries: { date: string; count: number }[]): string | null {
+  let latest: string | null = null;
+  for (const e of entries) {
+    if (e.count > 0 && (latest === null || e.date > latest)) latest = e.date;
+  }
+  return latest;
+}
+
+async function removeLastCoin(userId: string, id: string) {
+  const habit = await getHabit(userId, id);
+  if (!habit || habit.type !== "JAR") return null;
+  const date = latestCoinDate(habit.entries);
+  if (!date) return { date: null, removed: 0, countToday: 0, totalCount: 0 };
+  const { removed, countToday } = await decrementCoins(userId, id, date, 1);
+  return { date, removed, countToday, totalCount: habit.totalCount - removed };
+}
+
 async function getDashboard(userId: string): Promise<DashboardData> {
   const habits = await prisma.habit.findMany({
     where: { userId },
@@ -289,6 +311,7 @@ export const habitService: HabitService = {
   addCoins,
   removeMark,
   decrementCoins,
+  removeLastCoin,
   getDashboard,
   getHabitStats,
 };
