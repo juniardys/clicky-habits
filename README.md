@@ -2,8 +2,8 @@
 
 Habit tracker digital yang mensimulasikan habit tracker fisik dalam 3D:
 
-- 🗓️ **Coret kalender** — tiap kebiasaan selesai, coret tanggalnya (1x per hari).
-- 🪙 **Koin dalam toples** — tiap kebiasaan selesai, masukkan koin. Satu toples muat **100 koin**; penuh, lanjut ke toples berikutnya (toples = satuan ratusan).
+- 🗓️ **Coret kalender** - tiap kebiasaan selesai, coret tanggalnya (1x per hari).
+- 🪙 **Koin dalam toples** - tiap kebiasaan selesai, masukkan koin. Satu toples muat **100 koin**; penuh, lanjut ke toples berikutnya (toples = satuan ratusan).
 
 Plus dashboard statistik: streak, konsistensi 30 hari, grafik aktivitas.
 
@@ -22,7 +22,7 @@ bun install
 
 # 2. Siapkan env (satu file di root)
 cp .env.example .env
-# edit .env — isi BETTER_AUTH_SECRET (dan Google creds jika mau SSO)
+# edit .env - isi BETTER_AUTH_SECRET (dan Google creds jika mau SSO)
 
 # 3. Buat database (sekali saja)
 psql -h localhost -U postgres -c "CREATE DATABASE clicky_habits;"

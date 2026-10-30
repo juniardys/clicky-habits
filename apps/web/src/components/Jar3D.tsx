@@ -75,8 +75,10 @@ function Coin({ indexInJar, falling, onLand }: CoinProps) {
     ref.current.rotation.z += s.spin * delta;
     if (s.y <= position[1]) {
       s.bounces++;
-      playCoinClink();
-      onLand?.();
+      if (s.bounces === 1) {
+        playCoinClink();
+        onLand?.();
+      }
       if (s.v > 2.4 && s.bounces < 3) {
         s.y = position[1];
         s.v = -s.v * 0.3;

@@ -138,6 +138,16 @@ function Cloud({ start, y, z, scale, speed }: { start: number; y: number; z: num
   );
 }
 
+/** Pulls the camera back on narrow canvases so the whole board stays in frame. */
+function ResponsiveCamera() {
+  const { camera, size } = useThree();
+  const aspect = size.width / Math.max(size.height, 1);
+  const scale = THREE.MathUtils.clamp(1.55 / aspect, 1, 1.9);
+  camera.position.set(0, 8.6 * scale, 6.0 * scale);
+  camera.lookAt(0, 0, 0);
+  return null;
+}
+
 /** Tilts the whole board toward the pointer for a parallax feel. */
 function ParallaxRig({ children }: { children: React.ReactNode }) {
   const group = useRef<THREE.Group>(null);
@@ -190,6 +200,7 @@ export default function Calendar3D({ year, month, markedDates, onToggle }: Calen
       <ambientLight intensity={1.1} color="#fff1e0" />
       <directionalLight position={[5, 10, 5]} intensity={2.0} castShadow />
       <directionalLight position={[-6, 4, -4]} intensity={0.7} color="#b9a6f2" />
+      <ResponsiveCamera />
       <ParallaxRig>
         <group position={[0, 0, 0.4]} key={`${year}-${month}`}>
           {/* clay board: mint top + earth base, like a floating island slab */}

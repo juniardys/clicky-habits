@@ -19,11 +19,11 @@ export default function Navbar() {
 
   return (
     <div className="topbar">
-      <Link to="/" className="brand">
+      <Link to="/app" className="brand">
         Clicky <span>Habits</span>
       </Link>
       <nav className="nav-links">
-        <NavLink to="/" end className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+        <NavLink to="/app" end className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
           {t("nav.home")}
         </NavLink>
         <NavLink
