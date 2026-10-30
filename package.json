@@ -12,5 +12,8 @@
     "build:web": "bun run --filter '@clicky/web' build",
     "db:generate": "bun run --filter '@clicky/api' db:generate",
     "db:migrate": "bun run --filter '@clicky/api' db:migrate"
+  },
+  "devDependencies": {
+    "@dodopayments/opencode-plugin": "^0.6.5"
   }
 }
