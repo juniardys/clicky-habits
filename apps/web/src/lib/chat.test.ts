@@ -67,6 +67,43 @@ describe("toMessageViews", () => {
     expect(views[1].toolCards[0].status).toBe("ok");
   });
 
+  test("blocks keep narration before tools and answer after tools split", () => {
+    const views = toMessageViews([
+      row({ role: "user", content: "statistikku gimana?" }),
+      row({
+        role: "assistant",
+        content: "Siap, aku intip dulu datamu ya!",
+        toolMeta: {
+          toolCalls: [
+            { callId: "c1", name: "get_dashboard", arguments: {} },
+            { callId: "c2", name: "list_habits", arguments: {} },
+          ],
+        },
+      }),
+      row({
+        role: "tool",
+        toolName: "get_dashboard",
+        content: '{"ok":true}',
+        toolMeta: { callId: "c1", label: "Lihat statistik kamu", ok: true, summary: "1 habit" },
+      }),
+      row({
+        role: "tool",
+        toolName: "list_habits",
+        content: '{"ok":true}',
+        toolMeta: { callId: "c2", label: "Lihat daftar habit kamu", ok: true, summary: "1 habit ditemukan." },
+      }),
+      row({ role: "assistant", content: "Kamu punya 1 habit!" }),
+    ]);
+    const view = views[1];
+    // concatenated content kept for retry detection / back-compat
+    expect(view.content).toBe("Siap, aku intip dulu datamu ya!Kamu punya 1 habit!");
+    expect(view.blocks).toEqual([
+      { type: "text", text: "Siap, aku intip dulu datamu ya!" },
+      { type: "tools", callIds: ["c1", "c2"] },
+      { type: "text", text: "Kamu punya 1 habit!" },
+    ]);
+  });
+
   test("reconstructs an undone card from the actions list", () => {
     const views = toMessageViews(
       [

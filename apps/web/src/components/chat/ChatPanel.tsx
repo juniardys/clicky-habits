@@ -14,6 +14,7 @@ import {
   ChatApiError,
   notifyHabitsChanged,
   toMessageViews,
+  type ChatBlock,
   type ChatMessageView,
   type ChatStreamEvent,
   type ToolCardData,
@@ -80,6 +81,183 @@ function MochiAvatar({ status }: { status: MochiStatus }) {
       ) : (
         <MochiFace size={62} />
       )}
+    </div>
+  );
+}
+
+/** Append streamed text to the trailing text block (or start one after tools). */
+function appendTextBlock(blocks: ChatBlock[] | undefined, text: string): ChatBlock[] {
+  const next = blocks ? [...blocks] : [];
+  const last = next[next.length - 1];
+  if (last?.type === "text") next[next.length - 1] = { type: "text", text: last.text + text };
+  else next.push({ type: "text", text });
+  return next;
+}
+
+/** Append a started tool call to the trailing tools block (or start one). */
+function appendToolBlock(blocks: ChatBlock[] | undefined, callId: string): ChatBlock[] {
+  const next = blocks ? [...blocks] : [];
+  const last = next[next.length - 1];
+  if (last?.type === "tools") {
+    if (!last.callIds.includes(callId)) {
+      next[next.length - 1] = { type: "tools", callIds: [...last.callIds, callId] };
+    }
+  } else {
+    next.push({ type: "tools", callIds: [callId] });
+  }
+  return next;
+}
+
+function ToolCardView({
+  card,
+  onUndo,
+  undoDisabled,
+}: {
+  card: ToolCardData;
+  onUndo?: () => void;
+  undoDisabled?: boolean;
+}) {
+  const { t } = useI18n();
+  return (
+    <div className={`chat-tool chat-tool-${card.status}`}>
+      <div className="chat-tool-head">
+        <span className="chat-tool-icon">{TOOL_ICONS[card.tool] ?? "🔧"}</span>
+        <span className="chat-tool-label">{card.label}</span>
+        <span className="chat-tool-state">
+          {card.status === "running" ? (
+            <span className="chat-mini-spinner" aria-label="…" />
+          ) : card.status === "ok" ? (
+            "✓"
+          ) : card.status === "error" ? (
+            "!"
+          ) : (
+            "↩"
+          )}
+        </span>
+      </div>
+      {card.summary && <p className="chat-tool-summary">{card.summary}</p>}
+      {card.status === "ok" && card.undoActionId && onUndo && (
+        <button type="button" className="chat-undo-btn" disabled={undoDisabled} onClick={onUndo}>
+          ↩ {t("chat.undo")}
+        </button>
+      )}
+      {card.status === "undone" && <p className="chat-tool-summary">{t("chat.undone")}</p>}
+    </div>
+  );
+}
+
+/** Compact timeline row inside an activity group (placidway trail step). */
+function ToolTrailStep({
+  card,
+  onUndo,
+  undoDisabled,
+}: {
+  card: ToolCardData;
+  onUndo: () => void;
+  undoDisabled: boolean;
+}) {
+  const { t } = useI18n();
+  return (
+    <div className={`chat-trail-step chat-trail-${card.status}`}>
+      <span className="chat-trail-node" aria-hidden="true">
+        {card.status === "running" ? (
+          <span className="chat-mini-spinner" />
+        ) : (
+          (TOOL_ICONS[card.tool] ?? "🔧")
+        )}
+      </span>
+      <div className="chat-trail-copy">
+        <span className="chat-trail-label">{card.label}</span>
+        {card.summary && <span className="chat-trail-detail">{card.summary}</span>}
+        {card.status === "ok" && card.undoActionId && (
+          <button type="button" className="chat-undo-btn" disabled={undoDisabled} onClick={onUndo}>
+            ↩ {t("chat.undo")}
+          </button>
+        )}
+        {card.status === "undone" && <span className="chat-trail-detail">{t("chat.undone")}</span>}
+      </div>
+      <span className="chat-trail-state" aria-hidden="true">
+        {card.status === "ok" ? "✓" : card.status === "error" ? "!" : card.status === "undone" ? "↩" : ""}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * One batch of consecutive tool calls as a single collapsible activity card,
+ * placidway-style: expanded while running, folds into a "worked" summary
+ * once every call in the batch has finished.
+ */
+function ToolActivityGroup({
+  cards,
+  onUndo,
+  undoingIds,
+}: {
+  cards: ToolCardData[];
+  onUndo: (card: ToolCardData) => void;
+  undoingIds: ReadonlySet<string>;
+}) {
+  const { t } = useI18n();
+  const live = cards.some((c) => c.status === "running");
+  const [open, setOpen] = useState(live);
+  const [wasLive, setWasLive] = useState(live);
+  // Fold when the batch finishes; expand when a new batch starts running.
+  if (live !== wasLive) {
+    setWasLive(live);
+    setOpen(live);
+  }
+  if (cards.length === 0) return null;
+  if (cards.length === 1 && !live) {
+    const card = cards[0];
+    return (
+      <ToolCardView
+        card={card}
+        onUndo={() => onUndo(card)}
+        undoDisabled={card.undoActionId ? undoingIds.has(card.undoActionId) : false}
+      />
+    );
+  }
+  const running = cards.find((c) => c.status === "running");
+  const errors = cards.filter((c) => c.status === "error").length;
+  const summary = live
+    ? (running?.label ?? t("chat.statusWorking"))
+    : errors > 0
+      ? t("chat.activityDoneWithErrors", { count: cards.length, errors })
+      : t("chat.activityDone", { count: cards.length });
+  return (
+    <div className={`chat-activity${live ? " is-live" : ""}${open ? " is-open" : ""}`}>
+      <button
+        type="button"
+        className="chat-activity-toggle"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="chat-activity-orb" aria-hidden="true">
+          {live ? <span className="chat-activity-pulse" /> : errors > 0 ? "!" : "✓"}
+        </span>
+        <span className={`chat-activity-summary${live ? " is-shimmer" : ""}`}>{summary}</span>
+        <span className="chat-activity-chevron" aria-hidden="true">
+          ▾
+        </span>
+      </button>
+      <div className="chat-activity-body">
+        <div className="chat-activity-list">
+          {cards.map((card, i) => (
+            <motion.div
+              key={card.callId}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04, duration: 0.25 }}
+            >
+              <ToolTrailStep
+                card={card}
+                onUndo={() => onUndo(card)}
+                undoDisabled={card.undoActionId ? undoingIds.has(card.undoActionId) : false}
+              />
+            </motion.div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -187,12 +365,17 @@ export default function ChatPanel() {
             break;
           case "text_delta":
             setStatus("speaking");
-            patchAssistant(assistantId, (m) => ({ ...m, content: m.content + e.text }));
+            patchAssistant(assistantId, (m) => ({
+              ...m,
+              content: m.content + e.text,
+              blocks: appendTextBlock(m.blocks, e.text),
+            }));
             break;
           case "tool_start":
             setStatus("tool");
             patchAssistant(assistantId, (m) => ({
               ...m,
+              blocks: appendToolBlock(m.blocks, e.callId),
               toolCards: [
                 ...m.toolCards,
                 { callId: e.callId, tool: e.tool, label: e.label, status: "running" },
@@ -313,7 +496,7 @@ export default function ChatPanel() {
       setMessages((prev) => [
         ...prev,
         { id: userId, role: "user", content: text, toolCards: [] },
-        { id: assistantId, role: "assistant", content: "", toolCards: [] },
+        { id: assistantId, role: "assistant", content: "", toolCards: [], blocks: [] },
       ]);
       nearBottomRef.current = true;
       await runStream(assistantId, (onEvent, signal) =>
@@ -334,7 +517,7 @@ export default function ChatPanel() {
       const assistantId = tmpId();
       setMessages((prev) => [
         ...prev,
-        { id: assistantId, role: "assistant", content: "", toolCards: [] },
+        { id: assistantId, role: "assistant", content: "", toolCards: [], blocks: [] },
       ]);
       await runStream(assistantId, (onEvent, signal) =>
         chatApi.sendMessage(
@@ -354,7 +537,7 @@ export default function ChatPanel() {
       const assistantId = tmpId();
       setMessages((prev) => [
         ...prev,
-        { id: assistantId, role: "assistant", content: "", toolCards: [] },
+        { id: assistantId, role: "assistant", content: "", toolCards: [], blocks: [] },
       ]);
       const succeeded = await runStream(assistantId, (onEvent, signal) =>
         chatApi.confirm({ pendingActionId, approve, today: todayKey(), lang }, onEvent, signal)
@@ -530,52 +713,57 @@ export default function ChatPanel() {
                       </div>
                     ) : (
                       <div key={m.id} className="chat-turn">
-                        {(m.content || m.toolCards.length === 0) && (
-                          <div className="chat-bubble chat-bubble-assistant">
-                            {m.content || (
-                              <span className="chat-typing" aria-hidden="true">
-                                <i />
-                                <i />
-                                <i />
-                              </span>
-                            )}
-                          </div>
-                        )}
-                        {m.toolCards.map((card) => (
-                          <div key={card.callId} className={`chat-tool chat-tool-${card.status}`}>
-                            <div className="chat-tool-head">
-                              <span className="chat-tool-icon">
-                                {TOOL_ICONS[card.tool] ?? "🔧"}
-                              </span>
-                              <span className="chat-tool-label">{card.label}</span>
-                              <span className="chat-tool-state">
-                                {card.status === "running" ? (
-                                  <span className="chat-mini-spinner" aria-label="…" />
-                                ) : card.status === "ok" ? (
-                                  "✓"
-                                ) : card.status === "error" ? (
-                                  "!"
-                                ) : (
-                                  "↩"
-                                )}
-                              </span>
-                            </div>
-                            {card.summary && <p className="chat-tool-summary">{card.summary}</p>}
-                            {card.status === "ok" && card.undoActionId && (
-                              <button
-                                type="button"
-                                className="chat-undo-btn"
-                                disabled={undoingIds.has(card.undoActionId)}
-                                onClick={() => handleUndo(m.id, card)}
-                              >
-                                ↩ {t("chat.undo")}
-                              </button>
-                            )}
-                            {card.status === "undone" && (
-                              <p className="chat-tool-summary">{t("chat.undone")}</p>
-                            )}
-                          </div>
-                        ))}
+                        {(() => {
+                          const byId = new Map(m.toolCards.map((c) => [c.callId, c]));
+                          const blocks: ChatBlock[] =
+                            m.blocks && m.blocks.length > 0
+                              ? m.blocks
+                              : [
+                                  ...(m.content
+                                    ? [{ type: "text" as const, text: m.content }]
+                                    : []),
+                                  ...(m.toolCards.length > 0
+                                    ? [
+                                        {
+                                          type: "tools" as const,
+                                          callIds: m.toolCards.map((c) => c.callId),
+                                        },
+                                      ]
+                                    : []),
+                                ];
+                          const visible = blocks.filter((b) =>
+                            b.type === "text"
+                              ? b.text.length > 0
+                              : b.callIds.some((id) => byId.has(id))
+                          );
+                          if (visible.length === 0) {
+                            return (
+                              <div className="chat-bubble chat-bubble-assistant">
+                                <span className="chat-typing" aria-hidden="true">
+                                  <i />
+                                  <i />
+                                  <i />
+                                </span>
+                              </div>
+                            );
+                          }
+                          return visible.map((block, i) =>
+                            block.type === "text" ? (
+                              <div key={i} className="chat-bubble chat-bubble-assistant">
+                                {block.text}
+                              </div>
+                            ) : (
+                              <ToolActivityGroup
+                                key={i}
+                                cards={block.callIds
+                                  .map((id) => byId.get(id))
+                                  .filter((c): c is ToolCardData => Boolean(c))}
+                                onUndo={(card) => handleUndo(m.id, card)}
+                                undoingIds={undoingIds}
+                              />
+                            )
+                          );
+                        })()}
                         {m.confirm && (
                           <div className="chat-confirm">
                             <strong>{t("chat.confirmTitle")}</strong>

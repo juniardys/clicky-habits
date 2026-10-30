@@ -1704,6 +1704,207 @@ a.btn.landing-cta-soft {
   line-height: 1.45;
 }
 
+/* Collapsible tool activity group (placidway-style trail) */
+.chat-activity {
+  width: min(86%, 320px);
+  background: var(--card-lav);
+  border: 2.5px solid var(--char);
+  border-radius: 16px;
+  box-shadow: 0 3px 0 rgba(70, 54, 74, 0.55);
+  overflow: hidden;
+}
+
+.chat-activity.is-live {
+  background: #efe9ff;
+}
+
+.chat-activity-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 13.5px;
+  text-align: left;
+}
+
+.chat-activity-orb {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--mint);
+  color: var(--mint-deep);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.chat-activity-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mint-deep);
+  animation: chat-pulse 1.4s ease-out infinite;
+}
+
+@keyframes chat-pulse {
+  from { box-shadow: 0 0 0 0 rgba(46, 160, 106, 0.4); }
+  to { box-shadow: 0 0 0 7px rgba(46, 160, 106, 0); }
+}
+
+.chat-activity-summary {
+  flex: 1;
+  min-width: 0;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 700;
+}
+
+.chat-activity-summary.is-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--char) 0%,
+    var(--char) 40%,
+    var(--char-dim) 50%,
+    var(--char) 60%,
+    var(--char) 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: chat-shimmer 2.2s linear infinite;
+}
+
+@keyframes chat-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -150% 0; }
+}
+
+.chat-activity-chevron {
+  flex: none;
+  color: var(--char-dim);
+  font-size: 12px;
+  transition: transform 0.3s var(--ease-swift);
+}
+
+.chat-activity.is-open .chat-activity-chevron {
+  transform: rotate(180deg);
+}
+
+.chat-activity-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s var(--ease-swift);
+}
+
+.chat-activity.is-open .chat-activity-body {
+  grid-template-rows: 1fr;
+}
+
+.chat-activity-list {
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-activity.is-open .chat-activity-list {
+  padding-bottom: 10px;
+}
+
+.chat-trail-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  gap: 9px;
+  padding: 7px 0;
+}
+
+.chat-trail-step:first-child {
+  border-top: 2px dashed rgba(70, 54, 74, 0.25);
+  padding-top: 11px;
+}
+
+.chat-trail-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 10.5px;
+  top: 32px;
+  bottom: -7px;
+  width: 2px;
+  border-radius: 2px;
+  background: rgba(70, 54, 74, 0.22);
+}
+
+.chat-trail-step:first-child:not(:last-child)::after {
+  top: 36px;
+}
+
+.chat-trail-node {
+  position: relative;
+  z-index: 1;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 2px solid rgba(70, 54, 74, 0.35);
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.chat-trail-step.chat-trail-running .chat-trail-node {
+  border-color: var(--char);
+}
+
+.chat-trail-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.chat-trail-label {
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 700;
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.chat-trail-step.chat-trail-running .chat-trail-label {
+  font-weight: 800;
+}
+
+.chat-trail-detail {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--char-dim);
+  line-height: 1.45;
+}
+
+.chat-trail-state {
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--mint-deep);
+  padding-top: 2px;
+}
+
+.chat-trail-step.chat-trail-error .chat-trail-state {
+  color: var(--red);
+}
+
+.chat-trail-step.chat-trail-error .chat-trail-label {
+  color: var(--red);
+}
+
 .chat-undo-btn {
   margin-top: 7px;
   padding: 5px 12px;

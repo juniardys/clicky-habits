@@ -45,11 +45,18 @@ export interface ConfirmData {
   state: "pending" | "approved" | "declined" | "expired" | "cancelled";
 }
 
+/**
+ * Chronological layout of an assistant turn: text written before tools,
+ * the tool batch, then the answer that used the tool results.
+ */
+export type ChatBlock = { type: "text"; text: string } | { type: "tools"; callIds: string[] };
+
 export interface ChatMessageView {
   id: string;
   role: "user" | "assistant";
   content: string;
   toolCards: ToolCardData[];
+  blocks?: ChatBlock[];
   confirm?: ConfirmData;
   interrupted?: boolean;
   error?: boolean;
@@ -222,7 +229,20 @@ export function toMessageViews(
     }
     if (row.role === "assistant") {
       const view = ensureAssistant(row.id);
-      if (row.content) view.content += row.content;
+      if (row.content) {
+        view.content += row.content;
+        const blocks = (view.blocks ??= []);
+        const last = blocks[blocks.length - 1];
+        if (last?.type === "text") last.text += row.content;
+        else blocks.push({ type: "text", text: row.content });
+      }
+      // A narration row carries its tool calls: anchor the tools block here.
+      const rawCalls = meta.toolCalls;
+      if (Array.isArray(rawCalls) && rawCalls.length > 0) {
+        const blocks = (view.blocks ??= []);
+        const last = blocks[blocks.length - 1];
+        if (last?.type !== "tools") blocks.push({ type: "tools", callIds: [] });
+      }
       if (meta.interrupted === true) view.interrupted = true;
       if (meta.error === true) view.error = true;
       if ((view.interrupted || view.error) && lastUserId) view.retryMessageId = lastUserId;
@@ -234,6 +254,13 @@ export function toMessageViews(
     if (row.role === "tool") {
       const view = ensureAssistant(row.id);
       const callId = typeof meta.callId === "string" ? meta.callId : row.id;
+      const blocks = (view.blocks ??= []);
+      const lastBlock = blocks[blocks.length - 1];
+      if (lastBlock?.type === "tools") {
+        if (!lastBlock.callIds.includes(callId)) lastBlock.callIds.push(callId);
+      } else {
+        blocks.push({ type: "tools", callIds: [callId] });
+      }
       const undoActionId = typeof meta.undoActionId === "string" ? meta.undoActionId : undefined;
       const ok = meta.ok === true;
       view.toolCards.push({
