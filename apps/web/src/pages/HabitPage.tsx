@@ -61,7 +61,7 @@ export default function HabitPage() {
       <div className="container">
         <Navbar />
         <p className="error-text">{error}</p>
-        <Link to="/">
+        <Link to="/app">
           <button className="btn">{t("common.back")}</button>
         </Link>
       </div>
@@ -123,7 +123,7 @@ export default function HabitPage() {
         : [...habit.entries, { date: t, count: res.countToday }];
       setHabit({ ...habit, entries, totalCount: res.totalCount });
       if (res.totalCount % JAR_CAPACITY === 0) {
-        // jar just became full — big celebration
+        // jar just became full - big celebration
         playChime();
         burstAt(coinButtonRef.current, true);
       } else if (res.totalCount % 10 === 0) {
@@ -172,7 +172,7 @@ export default function HabitPage() {
           <Link to={`/habits/${id}/stats`}>
             <button className="btn">{t("common.stats")}</button>
           </Link>
-          <Link to="/">
+          <Link to="/app">
             <button className="btn-ghost">{t("common.back")}</button>
           </Link>
         </div>

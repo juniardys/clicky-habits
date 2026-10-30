@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { signIn, signUp } from "../lib/auth";
 import { useI18n, type Lang } from "../lib/i18n";
 
@@ -13,7 +14,7 @@ export default function LoginPage() {
 
   async function handleGoogle() {
     setError(null);
-    const { error } = await signIn.social({ provider: "google", callbackURL: "/" });
+    const { error } = await signIn.social({ provider: "google", callbackURL: "/app" });
     if (error) {
       setError(t("login.googleFailed"));
     }
@@ -103,6 +104,9 @@ export default function LoginPage() {
         >
           {mode === "login" ? t("login.noAccount") : t("login.hasAccount")}
         </button>
+        <Link to="/" className="landing-text-link login-back">
+          {t("login.backHome")}
+        </Link>
       </div>
     </div>
   );

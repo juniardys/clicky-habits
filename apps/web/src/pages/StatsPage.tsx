@@ -32,7 +32,7 @@ export default function StatsPage() {
       <div className="container">
         <Navbar />
         <p className="error-text">{error}</p>
-        <Link to="/">
+        <Link to="/app">
           <button className="btn">{t("common.back")}</button>
         </Link>
       </div>
@@ -67,7 +67,7 @@ export default function StatsPage() {
           <Link to={`/habits/${id}`}>
             <button className="btn">{t("common.tracking")}</button>
           </Link>
-          <Link to="/">
+          <Link to="/app">
             <button className="btn-ghost">{t("common.back")}</button>
           </Link>
         </div>
