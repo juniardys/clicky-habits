@@ -63,7 +63,17 @@ PostgreSQL (see the `chat_agent` migration).
 ## Login
 
 - **Google SSO**: set `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` in `.env` (root).
-  Redirect URI: `http://localhost:5173/auth/callback/google`.
+  Redirect URI: `http://localhost:5173/auth/callback/google`. The OAuth flow
+  always shows the Google account picker (`prompt=select_account`), even when
+  the browser is already signed in to Google.
+- **Google One Tap**: the login page also shows the floating "Continue as ..."
+  prompt (like Notion) to visitors already signed in to Google in the browser.
+  Set `VITE_GOOGLE_CLIENT_ID` to the same client ID as `GOOGLE_CLIENT_ID` (it
+  is baked into the web bundle at build time) and register every web origin
+  that shows the prompt under **Authorized JavaScript origins** of the OAuth
+  client in Google Cloud Console (`http://localhost:5173` locally,
+  `https://clickyhabits.com` in production). Leave it empty to disable the
+  prompt; the regular Google button is unaffected either way.
 - **Email/password**: enabled by default for local development without Google credentials.
 
 ## Structure
@@ -111,6 +121,7 @@ the API. nginx answers them like any unknown path, with the SPA's
    VITE_API_URL=https://api.clickyhabits.com
    GOOGLE_CLIENT_ID=
    GOOGLE_CLIENT_SECRET=
+   VITE_GOOGLE_CLIENT_ID=
    ```
 
 3. Domains (Dokploy **Domains** tab, container ports):
@@ -131,6 +142,10 @@ Notes:
 - `VITE_API_URL` is a **build arg** of `web`: changing it requires a rebuild.
   It is required in production; leaving it empty makes the SPA call its own
   origin, which has no API.
+- `VITE_GOOGLE_CLIENT_ID` is also a **build arg** of `web` (same rebuild
+  rule). It only enables the Google One Tap prompt on the login page; set it
+  to the same value as `GOOGLE_CLIENT_ID` and register the web origin under
+  Authorized JavaScript origins in Google Cloud Console.
 - `TRUSTED_ORIGINS` enables credentialed CORS for the web origin and adds it
   to better-auth's trusted origins.
 - `clickyhabits.com` and `api.clickyhabits.com` are the same site, so

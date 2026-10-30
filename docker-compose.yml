@@ -45,6 +45,9 @@ services:
         # Baked into the SPA at build time. Required in production:
         # the web container has no route to the API.
         VITE_API_URL: ${VITE_API_URL:-}
+        # Public Google client ID for the One Tap prompt on the login page.
+        # Optional; empty disables One Tap (regular Google button unaffected).
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
     image: clicky-habits-web:latest
     container_name: clicky-habits-web
     restart: unless-stopped

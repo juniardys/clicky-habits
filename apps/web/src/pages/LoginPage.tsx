@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { signIn, signUp } from "../lib/auth";
+import { authClient, signIn, signUp } from "../lib/auth";
+import { GOOGLE_CLIENT_ID } from "../lib/config";
 import { useI18n, type Lang } from "../lib/i18n";
 
 export default function LoginPage() {
@@ -11,6 +12,20 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const oneTapPrompted = useRef(false);
+
+  // Google One Tap: floating "Continue as ..." prompt (like Notion) for
+  // visitors already signed in to Google in this browser. Best effort only:
+  // dismissal, cooldown, or an unregistered origin must never surface as an
+  // error here, the buttons below keep working either way. On success the
+  // plugin redirects to callbackURL (absolute, same reason as handleGoogle).
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID || oneTapPrompted.current) return;
+    oneTapPrompted.current = true;
+    authClient
+      .oneTap({ callbackURL: `${window.location.origin}/app` })
+      .catch(() => {});
+  }, []);
 
   async function handleGoogle() {
     setError(null);

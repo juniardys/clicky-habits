@@ -18,6 +18,10 @@ COPY apps/web apps/web
 # (e.g. https://api.clickyhabits.com). Empty = dev only (Vite proxy).
 ARG VITE_API_URL=""
 ENV VITE_API_URL=$VITE_API_URL
+# Public Google OAuth client ID for the One Tap prompt on the login page.
+# Empty disables the prompt; the regular Google button does not need it.
+ARG VITE_GOOGLE_CLIENT_ID=""
+ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
 RUN cd apps/web && bun run build
 
 # ---------- runner ----------

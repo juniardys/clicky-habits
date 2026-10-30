@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./db";
+import { buildAuthPlugins, buildSocialProviders } from "./auth-config";
 
 // Public base URL of the auth/API endpoints.
 // - Local dev:  http://localhost:5173 (Vite proxies /api to this server)
@@ -65,15 +66,11 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  socialProviders:
-    process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-      ? {
-          google: {
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-          },
-        }
-      : {},
+  socialProviders: buildSocialProviders(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET
+  ),
+  plugins: buildAuthPlugins(process.env.GOOGLE_CLIENT_ID),
   trustedOrigins: buildTrustedOrigins(),
 });
 
