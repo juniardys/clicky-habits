@@ -1,11 +1,11 @@
 # Clicky Habits
 
-Habit tracker digital yang mensimulasikan habit tracker fisik dalam 3D:
+A digital habit tracker that simulates physical habit trackers in 3D:
 
-- 🗓️ **Coret kalender** - tiap kebiasaan selesai, coret tanggalnya (1x per hari).
-- 🪙 **Koin dalam toples** - tiap kebiasaan selesai, masukkan koin. Satu toples muat **100 koin**; penuh, lanjut ke toples berikutnya (toples = satuan ratusan).
+- 🗓️ **Cross off a calendar** - every time you finish a habit, cross off the date (once per day).
+- 🪙 **Coins in a jar** - every time you finish a habit, drop in a coin. One jar holds **100 coins**; when it fills up, continue to the next jar (a jar = a unit of hundreds).
 
-Plus dashboard statistik: streak, konsistensi 30 hari, grafik aktivitas.
+Plus a stats dashboard: streaks, 30-day consistency, and activity charts.
 
 ## Stack
 
@@ -20,30 +20,30 @@ Plus dashboard statistik: streak, konsistensi 30 hari, grafik aktivitas.
 # 1. Install dependencies
 bun install
 
-# 2. Siapkan env (satu file di root)
+# 2. Prepare the env (a single file at the root)
 cp .env.example .env
-# edit .env - isi BETTER_AUTH_SECRET (dan Google creds jika mau SSO)
+# edit .env - fill in BETTER_AUTH_SECRET (and Google creds if you want SSO)
 
-# 3. Buat database (sekali saja)
+# 3. Create the database (one time only)
 psql -h localhost -U postgres -c "CREATE DATABASE clicky_habits;"
 
-# 4. Migrasi + generate Prisma client
+# 4. Migrate + generate the Prisma client
 bun run db:migrate
 
-# 5. Jalankan (dua terminal)
+# 5. Run (two terminals)
 bun run dev:api   # http://localhost:3001
 bun run dev:web   # http://localhost:5173
 ```
 
-Buka http://localhost:5173. Web dev server mem-proxy `/api` ke API, jadi cookie auth satu origin.
+Open http://localhost:5173. The web dev server proxies `/api` to the API, so auth cookies stay on a single origin.
 
 ## Login
 
-- **Google SSO**: isi `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` di `.env` (root).
+- **Google SSO**: set `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` in `.env` (root).
   Redirect URI: `http://localhost:5173/api/auth/callback/google`.
-- **Email/password**: aktif secara default untuk development lokal tanpa kredensial Google.
+- **Email/password**: enabled by default for local development without Google credentials.
 
-## Struktur
+## Structure
 
 ```
 apps/
