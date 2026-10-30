@@ -367,7 +367,7 @@ a.topbar-user:focus-visible {
 }
 
 @media (max-width: 760px) {
-  /* Row 1: brand left, language + log out right. Row 2: nav as a full-width
+  /* Row 1: brand left, language + avatar + log out right. Row 2: nav as a full-width
      segmented control. Same compact pattern as the landing navbar. */
   .topbar {
     flex-wrap: wrap;
@@ -384,7 +384,12 @@ a.topbar-user:focus-visible {
   .topbar-right .btn-ghost {
     padding: 7px 10px;
   }
+  /* Profile lives only behind the account chip, so keep it on mobile as an
+     avatar-only button. */
   .topbar-user {
+    padding: 3px;
+  }
+  .topbar-user-name {
     display: none;
   }
   .nav-links {

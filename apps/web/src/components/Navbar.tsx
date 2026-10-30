@@ -42,16 +42,13 @@ export default function Navbar() {
           <NavLink to="/dashboard" className={navClass}>
             {t("nav.dashboard")}
           </NavLink>
-          <NavLink to="/profile" className={navClass}>
-            {t("nav.profile")}
-          </NavLink>
         </nav>
         <div className="topbar-right">
           <div className="lang-toggle" role="group" aria-label="Language">
             {langButton("en", "EN")}
             {langButton("id", "ID")}
           </div>
-          <Link to="/profile" className="topbar-user" title={t("nav.profile")}>
+          <Link to="/profile" className="topbar-user" title={t("nav.profile")} aria-label={t("nav.profile")}>
             <span className="topbar-avatar" aria-hidden="true">
               {initialsOf(session?.user.name || session?.user.email?.split("@")[0] || "")}
             </span>
