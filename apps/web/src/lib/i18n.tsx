@@ -138,12 +138,12 @@ const translations = {
     "landing.navStats": "Stats",
     "landing.navFaq": "FAQ",
     "landing.signIn": "Sign in",
-    "landing.badge": "🪙 Cross the calendar. Fill the jar.",
-    "landing.heroTitleA": "Habits are ",
-    "landing.heroTitleB": "play",
-    "landing.heroTitleC": ", not a chore.",
+    "landing.badge": "🪙 For people who keep quitting habit apps",
+    "landing.heroTitleA": "Build habits that ",
+    "landing.heroTitleB": "finally stick",
+    "landing.heroTitleC": ".",
     "landing.heroLede":
-      "Clicky Habits turns a finished habit into something you can see and feel: cross off today's date, or drop a coin into a jar. One click per win. Miss a day? Nothing breaks - just pick up where you are.",
+      "Cross off today's date or drop a coin into a jar. One click per win, and every win feels real. Miss a day? Your streak doesn't reset over one bad day, so you just pick up tomorrow.",
     "landing.heroPrimary": "Start free",
     "landing.heroSecondary": "See how it works",
     "landing.heroMicro": "Free to start · 1-minute sign-up · No credit card",
@@ -244,7 +244,7 @@ const translations = {
     "landing.footer": "Clicky Habits - cross the calendar, fill the jar.",
     // login
     "login.tagline":
-      "Cross off a calendar or drop a coin into a jar every time your habit is done. Miss a day and nothing resets.",
+      "Build habits that finally stick. Cross off a calendar or drop a coin into a jar, and one bad day won't wipe out your streak.",
     "login.google": "Sign in with Google",
     "login.orEmail": "or use email",
     "login.name": "Name",
@@ -430,12 +430,12 @@ const translations = {
     "landing.navStats": "Statistik",
     "landing.navFaq": "FAQ",
     "landing.signIn": "Masuk",
-    "landing.badge": "🪙 Coret kalender. Isi toples.",
-    "landing.heroTitleA": "Kebiasaan itu ",
-    "landing.heroTitleB": "mainan",
-    "landing.heroTitleC": ", bukan beban.",
+    "landing.badge": "🪙 Buat kamu yang selalu berhenti pakai habit app",
+    "landing.heroTitleA": "Kebiasaan yang akhirnya ",
+    "landing.heroTitleB": "nempel",
+    "landing.heroTitleC": ".",
     "landing.heroLede":
-      "Clicky Habits mengubah kebiasaan yang selesai jadi sesuatu yang terlihat dan terasa: coret tanggal hari ini, atau jatuhkan koin ke toples. Satu klik per kemenangan. Bolong sehari? Tidak ada yang putus - lanjut saja dari hari ini.",
+      "Coret tanggal hari ini atau jatuhkan koin ke toples. Satu klik per kemenangan, dan tiap kemenangan benar-benar terasa. Bolong sehari? Streak-mu nggak hangus, besok tinggal lanjut.",
     "landing.heroPrimary": "Mulai gratis",
     "landing.heroSecondary": "Lihat cara kerjanya",
     "landing.heroMicro": "Gratis untuk mulai · Daftar 1 menit · Tanpa kartu kredit",
@@ -536,7 +536,7 @@ const translations = {
     "landing.footer": "Clicky Habits - coret kalendernya, isi toplesnya.",
     // login
     "login.tagline":
-      "Coret kalender atau masukkan koin ke toples tiap kali kebiasaanmu selesai. Bolong sehari, tidak ada yang di-reset.",
+      "Kebiasaan yang akhirnya nempel. Coret kalender atau isi toples, dan bolong sehari nggak bikin streak-mu hangus.",
     "login.google": "Masuk dengan Google",
     "login.orEmail": "atau pakai email",
     "login.name": "Nama",
