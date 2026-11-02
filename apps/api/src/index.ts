@@ -98,8 +98,10 @@ registerMeRoutes(app, {
 });
 
 // ---------- habits ----------
+// Read routes take `?today=YYYY-MM-DD`, the user's local date, so "done today"
+// and streaks line up with the local dates entries are stored under.
 app.get("/habits", async (c) => {
-  return c.json(await habitService.listHabits(c.get("userId")));
+  return c.json(await habitService.listHabits(c.get("userId"), c.req.query("today")));
 });
 
 app.post("/habits", async (c) => {
@@ -164,11 +166,15 @@ app.post("/habits/:id/coin/remove", async (c) => {
 
 // Aggregated dashboard across all habits of the user.
 app.get("/habits-dashboard", async (c) => {
-  return c.json(await habitService.getDashboard(c.get("userId")));
+  return c.json(await habitService.getDashboard(c.get("userId"), c.req.query("today")));
 });
 
 app.get("/habits/:id/stats", async (c) => {
-  const stats = await habitService.getHabitStats(c.get("userId"), c.req.param("id"));
+  const stats = await habitService.getHabitStats(
+    c.get("userId"),
+    c.req.param("id"),
+    c.req.query("today")
+  );
   if (!stats) return c.json({ error: "Not found" }, 404);
   return c.json(stats);
 });

@@ -138,12 +138,12 @@ const translations = {
     "landing.navStats": "Stats",
     "landing.navFaq": "FAQ",
     "landing.signIn": "Sign in",
-    "landing.badge": "🪙 Physical habit trackers, gone digital",
+    "landing.badge": "🪙 Cross the calendar. Fill the jar.",
     "landing.heroTitleA": "Habits are ",
     "landing.heroTitleB": "play",
     "landing.heroTitleC": ", not a chore.",
     "landing.heroLede":
-      "Clicky Habits turns a finished habit into something you can see and feel: cross off today's date, or drop a coin into a jar. One click per win - your streak does the persuading.",
+      "Clicky Habits turns a finished habit into something you can see and feel: cross off today's date, or drop a coin into a jar. One click per win. Miss a day? Nothing breaks - just pick up where you are.",
     "landing.heroPrimary": "Start free",
     "landing.heroSecondary": "See how it works",
     "landing.heroMicro": "Free to start · 1-minute sign-up · No credit card",
@@ -190,7 +190,7 @@ const translations = {
     "landing.modesLead": "This is the question every new user asks - here is the honest difference.",
     "landing.calRule": "Once per day, max.",
     "landing.calBody":
-      "Finish today's habit, cross today's date with a fat red ✕. Miss a day and the chain visibly breaks - that is the point.",
+      "Finish today's habit, cross today's date with a fat red ✕. Miss one day and your streak holds; it only ends after two empty days in a row.",
     "landing.calBest": "Best for: once-a-day habits",
     "landing.calExamples": "Workout · Reading · Meditate · No sugar",
     "landing.jarRule": "As many times a day as you do it.",
@@ -199,8 +199,8 @@ const translations = {
     "landing.jarBest": "Best for: countable repetitions",
     "landing.jarExamples": "Push-ups · Writing sessions · Sales calls · Practice rounds",
     "landing.modesNote": "You can run both at once - different habits, different trackers, one account.",
-    "landing.statsEyebrow": "Proof, not vibes",
-    "landing.statsTitle": "See whether you're actually consistent",
+    "landing.statsEyebrow": "Progress, not pressure",
+    "landing.statsTitle": "See how far you've come",
     "landing.statsBody":
       "Every cross and coin feeds the same dashboard: current streak, best streak, consistency over the last 30 days, and activity charts per habit and across all habits.",
     "landing.statsL1": "Current streak",
@@ -221,7 +221,7 @@ const translations = {
     "landing.faqTitle": "Still unsure? Here are the answers.",
     "landing.q1": "What exactly is Clicky Habits?",
     "landing.a1":
-      "A digital version of two physical habit trackers: crossing days off a wall calendar, and dropping a coin in a jar for every rep. You create habits, choose one tracker per habit, and click each time you finish.",
+      "A habit tracker built on two physical rituals: crossing days off a wall calendar, and dropping a coin in a jar for every rep. You create habits, choose one tracker per habit, and click each time you finish.",
     "landing.q2": "Which mode should I choose?",
     "landing.a2":
       "If the habit is done once a day, choose Calendar. If you can do it several times a day and want to count repetitions, choose Jar (100 coins per jar).",
@@ -234,6 +234,9 @@ const translations = {
     "landing.q5": "Can I undo a mistake?",
     "landing.a5":
       "Yes. On a calendar, click a crossed date again to undo it. Your stats recalculate from the corrected history.",
+    "landing.q6": "What if I miss a day?",
+    "landing.a6":
+      "Nothing resets. One empty day keeps your streak alive; it only ends after two empty days in a row (the “never miss twice” rule). Empty days stay empty, never marked as failed.",
     "landing.finalTitle": "A blank calendar and an empty jar. Fill one today.",
     "landing.finalBody":
       "Create your first habit, pick a tracker, and earn your first cross - or your first coin - in the next minute.",
@@ -241,7 +244,7 @@ const translations = {
     "landing.footer": "Clicky Habits - cross the calendar, fill the jar.",
     // login
     "login.tagline":
-      "Physical habit trackers, gone digital. Cross off a calendar or drop a coin into a jar every time your habit is done.",
+      "Cross off a calendar or drop a coin into a jar every time your habit is done. Miss a day and nothing resets.",
     "login.google": "Sign in with Google",
     "login.orEmail": "or use email",
     "login.name": "Name",
@@ -427,12 +430,12 @@ const translations = {
     "landing.navStats": "Statistik",
     "landing.navFaq": "FAQ",
     "landing.signIn": "Masuk",
-    "landing.badge": "🪙 Habit tracker fisik, jadi digital",
+    "landing.badge": "🪙 Coret kalender. Isi toples.",
     "landing.heroTitleA": "Kebiasaan itu ",
     "landing.heroTitleB": "mainan",
     "landing.heroTitleC": ", bukan beban.",
     "landing.heroLede":
-      "Clicky Habits mengubah kebiasaan yang selesai jadi sesuatu yang terlihat dan terasa: coret tanggal hari ini, atau jatuhkan koin ke toples. Satu klik per kemenangan - streak yang akan membujukmu lanjut.",
+      "Clicky Habits mengubah kebiasaan yang selesai jadi sesuatu yang terlihat dan terasa: coret tanggal hari ini, atau jatuhkan koin ke toples. Satu klik per kemenangan. Bolong sehari? Tidak ada yang putus - lanjut saja dari hari ini.",
     "landing.heroPrimary": "Mulai gratis",
     "landing.heroSecondary": "Lihat cara kerjanya",
     "landing.heroMicro": "Gratis untuk mulai · Daftar 1 menit · Tanpa kartu kredit",
@@ -479,7 +482,7 @@ const translations = {
     "landing.modesLead": "Ini pertanyaan yang selalu ditanyakan user baru - ini perbedaan jujurnya.",
     "landing.calRule": "Sekali per hari, maksimal.",
     "landing.calBody":
-      "Selesaikan kebiasaan hari ini, coret tanggalnya dengan ✕ merah gendut. Bolong sehari, rantainya terlihat putus - memang itu tujuannya.",
+      "Selesaikan kebiasaan hari ini, coret tanggalnya dengan ✕ merah gendut. Bolong sehari, streak-mu tetap jalan; baru putus kalau bolong dua hari berturut-turut.",
     "landing.calBest": "Cocok untuk: kebiasaan sekali sehari",
     "landing.calExamples": "Olahraga · Membaca · Meditasi · Tanpa gula",
     "landing.jarRule": "Sebanyak kamu melakukannya dalam sehari.",
@@ -488,8 +491,8 @@ const translations = {
     "landing.jarBest": "Cocok untuk: repetisi yang bisa dihitung",
     "landing.jarExamples": "Push-up · Sesi menulis · Telepon sales · Latihan",
     "landing.modesNote": "Keduanya bisa jalan bersamaan - kebiasaan berbeda, tracker berbeda, satu akun.",
-    "landing.statsEyebrow": "Bukti, bukan perasaan",
-    "landing.statsTitle": "Lihat apakah kamu benar-benar konsisten",
+    "landing.statsEyebrow": "Progres, bukan tekanan",
+    "landing.statsTitle": "Lihat sejauh mana kamu sudah melangkah",
     "landing.statsBody":
       "Tiap coretan dan koin masuk ke dashboard yang sama: streak saat ini, streak terbaik, konsistensi 30 hari terakhir, dan grafik aktivitas per kebiasaan maupun gabungan.",
     "landing.statsL1": "Streak saat ini",
@@ -510,7 +513,7 @@ const translations = {
     "landing.faqTitle": "Masih ragu? Ini jawabannya.",
     "landing.q1": "Sebenarnya Clicky Habits itu apa?",
     "landing.a1":
-      "Versi digital dari dua habit tracker fisik: mencoret hari di kalender dinding, dan memasukkan koin ke toples tiap repetisi. Kamu membuat kebiasaan, memilih satu tracker per kebiasaan, dan klik tiap kali selesai.",
+      "Habit tracker yang dibangun dari dua ritual fisik: mencoret hari di kalender dinding, dan memasukkan koin ke toples tiap repetisi. Kamu membuat kebiasaan, memilih satu tracker per kebiasaan, dan klik tiap kali selesai.",
     "landing.q2": "Pilih mode yang mana?",
     "landing.a2":
       "Kalau kebiasaannya selesai sekali sehari, pilih Kalender. Kalau bisa dilakukan beberapa kali sehari dan mau menghitung repetisi, pilih Toples (100 koin per toples).",
@@ -523,6 +526,9 @@ const translations = {
     "landing.q5": "Kalau salah klik bisa dibatalkan?",
     "landing.a5":
       "Bisa. Di kalender, klik lagi tanggal yang tercoret untuk membatalkannya. Statistikmu dihitung ulang dari riwayat yang sudah diperbaiki.",
+    "landing.q6": "Bagaimana kalau aku bolong sehari?",
+    "landing.a6":
+      "Tidak ada yang di-reset. Bolong satu hari, streak-mu tetap hidup; baru berakhir setelah dua hari kosong berturut-turut (aturan “jangan bolong dua kali”). Hari kosong tetap kosong, tidak pernah ditandai gagal.",
     "landing.finalTitle": "Kalender kosong, toples kosong. Isi salah satunya hari ini.",
     "landing.finalBody":
       "Buat kebiasaan pertamamu, pilih tracker, dan dapatkan coretan pertama - atau koin pertamamu - dalam semenit ke depan.",
@@ -530,7 +536,7 @@ const translations = {
     "landing.footer": "Clicky Habits - coret kalendernya, isi toplesnya.",
     // login
     "login.tagline":
-      "Habit tracker fisik, jadi digital. Coret kalender atau masukkan koin ke toples tiap kali kebiasaanmu selesai.",
+      "Coret kalender atau masukkan koin ke toples tiap kali kebiasaanmu selesai. Bolong sehari, tidak ada yang di-reset.",
     "login.google": "Masuk dengan Google",
     "login.orEmail": "atau pakai email",
     "login.name": "Nama",
