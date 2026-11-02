@@ -1,9 +1,11 @@
 # Clicky Habits
 
-A digital habit tracker that simulates physical habit trackers in 3D:
+Build habits that finally stick, for people who keep quitting habit apps. Each habit is tracked with one of two physical rituals, rendered in 3D:
 
 - 🗓️ **Cross off a calendar** - every time you finish a habit, cross off the date (once per day).
 - 🪙 **Coins in a jar** - every time you finish a habit, drop in a coin. One jar holds **100 coins**; when it fills up, continue to the next jar (a jar = a unit of hundreds).
+
+Streaks forgive one missed day ("never miss twice"): a streak only ends after two empty days in a row.
 
 Plus a stats dashboard: streaks, 30-day consistency, and activity charts.
 
