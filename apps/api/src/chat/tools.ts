@@ -169,7 +169,7 @@ export async function executeTool(
   try {
     switch (call.name) {
       case "list_habits": {
-        const habits = await svc.listHabits(ctx.userId);
+        const habits = await svc.listHabits(ctx.userId, ctx.today);
         return {
           ok: true,
           summary: pick(lang, `${habits.length} habit ditemukan.`, `${habits.length} habits found.`),
@@ -184,7 +184,7 @@ export async function executeTool(
         };
       }
       case "get_dashboard": {
-        const dash = await svc.getDashboard(ctx.userId);
+        const dash = await svc.getDashboard(ctx.userId, ctx.today);
         return {
           ok: true,
           summary: pick(
@@ -198,7 +198,7 @@ export async function executeTool(
       case "get_habit_stats": {
         const habitId = strArg(args, "habitId");
         if (!habitId) return fail(pick(lang, "habitId wajib diisi.", "habitId is required."));
-        const stats = await svc.getHabitStats(ctx.userId, habitId);
+        const stats = await svc.getHabitStats(ctx.userId, habitId, ctx.today);
         if (!stats) return fail(pick(lang, "Habit tidak ditemukan.", "Habit not found."));
         return {
           ok: true,

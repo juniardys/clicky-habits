@@ -15,16 +15,25 @@ export interface HabitStats {
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+// "Never miss twice": one empty day between done days keeps a streak alive,
+// two empty days in a row end it. Streak length counts done days only.
+const MAX_GAP_DAYS = 2;
+
 function toKey(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-function utcToday(): Date {
+/** Today's date as a UTC-midnight Date. `todayKey` is the user's local date (YYYY-MM-DD). */
+export function resolveToday(todayKey?: string): Date {
+  if (todayKey && /^\d{4}-\d{2}-\d{2}$/.test(todayKey)) {
+    const d = new Date(todayKey + "T00:00:00Z");
+    if (!Number.isNaN(d.getTime())) return d;
+  }
   const now = new Date();
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 }
 
-export function computeStats(entries: EntryLike[]): HabitStats {
+export function computeStats(entries: EntryLike[], todayKey?: string): HabitStats {
   const byDay = new Map<string, number>();
   for (const e of entries) {
     const key = toKey(e.date);
@@ -34,29 +43,25 @@ export function computeStats(entries: EntryLike[]): HabitStats {
   const totalCount = entries.reduce((s, e) => s + e.count, 0);
   const totalDays = byDay.size;
 
-  // Streaks over days that have at least one entry.
-  const sortedKeys = [...byDay.keys()].sort();
+  // Streaks over days that have at least one entry. Days after today are
+  // ignored so a future-dated mark cannot keep a streak alive.
+  const today = resolveToday(todayKey);
+  const sortedKeys = [...byDay.keys()].sort().filter((k) => k <= toKey(today));
   let bestStreak = 0;
   let run = 0;
   let prev: Date | null = null;
   for (const key of sortedKeys) {
     const d = new Date(key + "T00:00:00Z");
-    run = prev !== null && d.getTime() - prev.getTime() === DAY_MS ? run + 1 : 1;
+    run = prev !== null && d.getTime() - prev.getTime() <= MAX_GAP_DAYS * DAY_MS ? run + 1 : 1;
     bestStreak = Math.max(bestStreak, run);
     prev = d;
   }
 
-  // Current streak: consecutive days ending today or yesterday.
-  const today = utcToday();
-  let currentStreak = 0;
-  let cursor = today;
-  if (!byDay.has(toKey(cursor))) {
-    cursor = new Date(cursor.getTime() - DAY_MS);
-  }
-  while (byDay.has(toKey(cursor))) {
-    currentStreak++;
-    cursor = new Date(cursor.getTime() - DAY_MS);
-  }
+  // Current streak: the run ending on the newest done day, still alive while
+  // that day is no more than MAX_GAP_DAYS before today.
+  const last = prev;
+  const currentStreak =
+    last !== null && today.getTime() - last.getTime() <= MAX_GAP_DAYS * DAY_MS ? run : 0;
 
   const last30Days: { date: string; count: number }[] = [];
   let daysDone30 = 0;

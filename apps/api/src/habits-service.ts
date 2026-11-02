@@ -1,5 +1,5 @@
 import { prisma } from "./db";
-import { computeStats, type HabitStats } from "./stats";
+import { computeStats, resolveToday, type HabitStats } from "./stats";
 
 export type TrackerType = "CALENDAR" | "JAR";
 
@@ -43,16 +43,14 @@ function toDate(dateKey: string): Date {
   return new Date(dateKey + "T00:00:00Z");
 }
 
-function todayKeyUtc(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
 async function findOwnedHabit(userId: string, id: string) {
   return prisma.habit.findFirst({ where: { id, userId } });
 }
 
+// `today` on the read methods is the user's local date (YYYY-MM-DD); entries
+// are stored under local dates, so "today" must match them. Defaults to UTC.
 export interface HabitService {
-  listHabits(userId: string): Promise<HabitSummary[]>;
+  listHabits(userId: string, today?: string): Promise<HabitSummary[]>;
   createHabit(
     userId: string,
     name: string,
@@ -87,17 +85,17 @@ export interface HabitService {
     userId: string,
     id: string
   ): Promise<{ date: string | null; removed: number; countToday: number; totalCount: number } | null>;
-  getDashboard(userId: string): Promise<DashboardData>;
-  getHabitStats(userId: string, id: string): Promise<HabitStatsResult | null>;
+  getDashboard(userId: string, today?: string): Promise<DashboardData>;
+  getHabitStats(userId: string, id: string, today?: string): Promise<HabitStatsResult | null>;
 }
 
-async function listHabits(userId: string): Promise<HabitSummary[]> {
+async function listHabits(userId: string, todayKey?: string): Promise<HabitSummary[]> {
   const habits = await prisma.habit.findMany({
     where: { userId },
     orderBy: { createdAt: "asc" },
     include: { entries: { select: { date: true, count: true } } },
   });
-  const today = todayKeyUtc();
+  const today = resolveToday(todayKey).toISOString().slice(0, 10);
   return habits.map((h) => ({
     id: h.id,
     name: h.name,
@@ -237,7 +235,7 @@ async function removeLastCoin(userId: string, id: string) {
   return { date, removed, countToday, totalCount: habit.totalCount - removed };
 }
 
-async function getDashboard(userId: string): Promise<DashboardData> {
+async function getDashboard(userId: string, todayKey?: string): Promise<DashboardData> {
   const habits = await prisma.habit.findMany({
     where: { userId },
     orderBy: { createdAt: "asc" },
@@ -248,7 +246,7 @@ async function getDashboard(userId: string): Promise<DashboardData> {
     id: h.id,
     name: h.name,
     type: h.type,
-    ...computeStats(h.entries),
+    ...computeStats(h.entries, todayKey),
   }));
 
   const combined = new Map<string, number>();
@@ -258,8 +256,7 @@ async function getDashboard(userId: string): Promise<DashboardData> {
       combined.set(key, (combined.get(key) ?? 0) + e.count);
     }
   }
-  const now = new Date();
-  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const todayUtc = resolveToday(todayKey).getTime();
   const last30Days: { date: string; count: number }[] = [];
   let activeDays30 = 0;
   for (let i = 29; i >= 0; i--) {
@@ -292,13 +289,17 @@ async function getDashboard(userId: string): Promise<DashboardData> {
   };
 }
 
-async function getHabitStats(userId: string, id: string): Promise<HabitStatsResult | null> {
+async function getHabitStats(
+  userId: string,
+  id: string,
+  todayKey?: string
+): Promise<HabitStatsResult | null> {
   const habit = await prisma.habit.findFirst({
     where: { id, userId },
     include: { entries: true },
   });
   if (!habit) return null;
-  return { id: habit.id, name: habit.name, type: habit.type, ...computeStats(habit.entries) };
+  return { id: habit.id, name: habit.name, type: habit.type, ...computeStats(habit.entries, todayKey) };
 }
 
 export const habitService: HabitService = {

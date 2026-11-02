@@ -59,7 +59,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  listHabits: () => request<HabitSummary[]>("/habits"),
+  // Read calls send the local date so the API's "today" matches stored entries.
+  listHabits: () => request<HabitSummary[]>(`/habits?today=${todayKey()}`),
   createHabit: (name: string, type: TrackerType) =>
     request<HabitSummary>("/habits", {
       method: "POST",
@@ -83,8 +84,8 @@ export const api = {
       `/habits/${id}/coin/remove`,
       { method: "POST", body: JSON.stringify({}) }
     ),
-  getStats: (id: string) => request<HabitStats>(`/habits/${id}/stats`),
-  getDashboard: () => request<DashboardData>("/habits-dashboard"),
+  getStats: (id: string) => request<HabitStats>(`/habits/${id}/stats?today=${todayKey()}`),
+  getDashboard: () => request<DashboardData>(`/habits-dashboard?today=${todayKey()}`),
   getAccount: () => request<{ hasPassword: boolean }>("/me/account"),
   // Only for accounts without a password (Google sign-up). Errors are thrown
   // as their code: password_too_short, password_too_long, already_has_password.

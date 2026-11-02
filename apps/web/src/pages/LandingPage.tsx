@@ -72,6 +72,7 @@ export default function LandingPage() {
     { q: t("landing.q3"), a: t("landing.a3") },
     { q: t("landing.q4"), a: t("landing.a4") },
     { q: t("landing.q5"), a: t("landing.a5") },
+    { q: t("landing.q6"), a: t("landing.a6") },
   ];
 
   // Rendered twice: in the navbar (desktop) and in the footer (phones, where
